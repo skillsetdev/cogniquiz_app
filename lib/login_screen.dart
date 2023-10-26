@@ -2,6 +2,7 @@ import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 //make a darker bg-color ; make a card view; after the pressed button rotate to navigate to other page(lighter)
 class LoginScreen extends StatefulWidget {
@@ -32,6 +33,13 @@ class _LoginScreenState extends State<LoginScreen> {
         SnackBar(content: Text("Passwords don't match")),
       );
     }
+  }
+
+  Future signIn() async {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: _signInEmailController.text.trim(),
+      password: _signInPasswordController.text.trim(),
+    );
   }
 
   bool isDarkMode(BuildContext context) {
@@ -263,6 +271,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               const EdgeInsets.only(left: 20.0),
                                           child: Center(
                                             child: TextField(
+                                                autocorrect: false,
                                                 controller:
                                                     _signUpEmailController,
                                                 decoration: InputDecoration(
@@ -309,6 +318,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                               const EdgeInsets.only(left: 20.0),
                                           child: Center(
                                             child: TextField(
+                                                autocorrect: false,
+                                                obscureText: true,
                                                 controller:
                                                     _signUpPasswordController,
                                                 decoration: InputDecoration(
@@ -355,6 +366,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                               const EdgeInsets.only(left: 20.0),
                                           child: Center(
                                             child: TextField(
+                                                autocorrect: false,
+                                                obscureText: true,
                                                 controller:
                                                     _confirmPasswordController,
                                                 decoration: InputDecoration(
@@ -483,6 +496,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                               const EdgeInsets.only(left: 20.0),
                                           child: Center(
                                             child: TextField(
+                                                autocorrect: false,
+                                                controller:
+                                                    _signInEmailController,
                                                 decoration: InputDecoration(
                                                     hintText:
                                                         "Enter Your Email..",
@@ -527,6 +543,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                               const EdgeInsets.only(left: 20.0),
                                           child: Center(
                                             child: TextField(
+                                                obscureText: true,
+                                                autocorrect: false,
+                                                controller:
+                                                    _signInPasswordController,
                                                 decoration: InputDecoration(
                                                     hintText:
                                                         "Enter Your Password..",

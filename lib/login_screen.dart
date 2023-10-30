@@ -567,7 +567,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         horizontal: screenWidth * 0.01),
                                     child: GestureDetector(
                                       onTap: () {
-                                        _flipTheCard();
+                                        signIn();
                                       },
                                       child: Container(
                                           height: 65,
@@ -587,7 +587,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               borderRadius:
                                                   BorderRadius.circular(12)),
                                           child: Center(
-                                            child: Text('Sign Up',
+                                            child: Text('Sign In',
                                                 style: TextStyle(
                                                     color: isDarkMode(context)
                                                         ? Colors.white

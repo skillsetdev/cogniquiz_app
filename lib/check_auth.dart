@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flashcards/home_page.dart';
 import 'package:flashcards/login_screen.dart';
+import 'package:flashcards/pages/nav_page.dart';
 import 'package:flutter/material.dart';
 
 class CheckAuth extends StatelessWidget {
@@ -14,7 +14,7 @@ class CheckAuth extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: ((context, snapshot) {
         if (snapshot.hasData) {
-          return HomePage();
+          return NavPage();
         } else {
           return LoginScreen();
         }

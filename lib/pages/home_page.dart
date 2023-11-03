@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -139,8 +140,8 @@ class _HomePageState extends State<HomePage> {
                 height: screenHeight * 0.025,
               ),
               Container(
-                margin: EdgeInsets.fromLTRB(screenWidth * 0.05,
-                    screenWidth * 0.05, screenWidth * 0.05, 0),
+                margin: EdgeInsets.fromLTRB(
+                    screenWidth * 0.05, 0, screenWidth * 0.05, 0),
                 height: screenHeight * 0.15,
                 decoration: BoxDecoration(
                     border: Border.all(

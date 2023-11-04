@@ -11,7 +11,7 @@ class Folder {
 }
 
 class FoldersData extends ChangeNotifier {
-  Folder rootFolders = Folder("Root Folder", []);
+  Folder rootFolders = Folder("Root", []);
   void addFolder(Folder parentFolder) {
     final newFolder = Folder("", []);
     parentFolder.subfolders.insert(0, newFolder);

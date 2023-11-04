@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Folder {
-  final String name;
-  final List<Folder> subfolders;
+  String name;
+  List<Folder> subfolders;
   //final List<CardStack> cardstacks;
   Folder(
     this.name,
@@ -11,11 +11,23 @@ class Folder {
 }
 
 class FoldersData extends ChangeNotifier {
-  List<Folder> rootFolders = [];
-  void addFolder(Folder parentFolder, String folderName) {
-    final newFolder = Folder(folderName, []);
-    parentFolder.subfolders.add(newFolder);
+  Folder rootFolders = Folder("Root Folder", []);
+  void addFolder(Folder parentFolder) {
+    final newFolder = Folder("", []);
+    parentFolder.subfolders.insert(0, newFolder);
     notifyListeners();
+    rootFolders.subfolders.forEach((subfolder) {
+      print(subfolder.name);
+    });
+  }
+
+  void nameFolder(
+      Folder parentFolder, String newFolderName, int indexToRename) {
+    parentFolder.subfolders[indexToRename].name = newFolderName;
+    notifyListeners();
+    rootFolders.subfolders.forEach((subfolder) {
+      print(subfolder.name);
+    });
   }
 }
 /*class CardStack {

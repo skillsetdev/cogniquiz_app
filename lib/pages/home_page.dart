@@ -60,6 +60,7 @@ class _HomePageState extends State<HomePage> {
                 padding: EdgeInsets.only(left: screenWidth * 0.05),
                 child: Text("Recents:",
                     style: TextStyle(
+                      fontSize: 15.5,
                       color: !isDarkMode(context)
                           ? const Color.fromARGB(255, 7, 12, 59)
                           : Color.fromARGB(255, 227, 230, 255),
@@ -131,6 +132,7 @@ class _HomePageState extends State<HomePage> {
                 padding: EdgeInsets.only(left: screenWidth * 0.05),
                 child: Text("Communities:",
                     style: TextStyle(
+                      fontSize: 15.5,
                       color: !isDarkMode(context)
                           ? const Color.fromARGB(255, 7, 12, 59)
                           : Color.fromARGB(255, 227, 230, 255),

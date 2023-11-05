@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
               ),
               Padding(
                 padding: EdgeInsets.only(left: screenWidth * 0.05),
-                child: Text("Recents:",
+                child: Text("Recentss:",
                     style: TextStyle(
                       fontSize: 15.5,
                       color: !isDarkMode(context)

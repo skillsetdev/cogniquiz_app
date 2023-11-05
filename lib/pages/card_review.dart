@@ -1,4 +1,8 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flashcards/cardsdata.dart';
+import 'package:flashcards/pages/subfolder_page.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -21,11 +25,13 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     foldersData = Provider.of<FoldersData>(context);
+    Folder pageFolder = foldersData.rootFolders;
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return Consumer(
       builder: (context, value, child) => Scaffold(
         floatingActionButton: SpeedDial(
+          // ignore: sort_child_properties_last
           child: Container(
             height: 60,
             width: 60,
@@ -72,9 +78,9 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
               labelStyle: TextStyle(fontSize: 18.0),
               labelBackgroundColor: !isDarkMode(context)
                   ? Color.fromARGB(255, 128, 141, 254)
-                  : Color.fromARGB(255, 5, 5, 6),
+                  : Color.fromARGB(255, 72, 80, 197),
               onTap: () {
-                foldersData.addFolder(foldersData.rootFolders);
+                foldersData.addFolder(pageFolder);
               },
               onLongPress: () => print('FIRST CHILD LONG PRESS'),
             ),
@@ -168,50 +174,138 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                 Expanded(
                     child: ListView.separated(
                   physics: NeverScrollableScrollPhysics(),
-                  itemCount: foldersData.rootFolders.subfolders.length,
+                  itemCount: pageFolder.subfolders.length,
                   separatorBuilder: (context, index) =>
                       SizedBox(height: screenHeight * 0.025),
                   itemBuilder: (context, index) {
-                    if (foldersData.rootFolders.subfolders[index].name != "") {
-                      return Container(
-                        margin: EdgeInsets.fromLTRB(screenWidth * 0.05,
-                            screenHeight * 0.025, screenWidth * 0.05, 0),
-                        height: screenHeight * 0.15,
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                                color: isDarkMode(context)
-                                    ? Colors.white
-                                    : Colors.black54,
-                                width: 1),
-                            color: !isDarkMode(context)
-                                ? Color.fromARGB(255, 128, 141, 254)
-                                //Color.fromARGB(255, 100, 109, 227)
-                                : Color.fromARGB(255, 72, 80, 197),
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Row(
+                    if (pageFolder.subfolders[index].name != "") {
+                      return LongPressDraggable(
+                          data: index,
+                          //ignore: sort_child_properties_last
+                          child: Container(
+                            margin: EdgeInsets.fromLTRB(screenWidth * 0.05,
+                                screenHeight * 0.025, screenWidth * 0.05, 0),
+                            height: screenHeight * 0.15,
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: isDarkMode(context)
+                                        ? Colors.white
+                                        : Colors.black54,
+                                    width: 1),
+                                color: !isDarkMode(context)
+                                    ? Color.fromARGB(255, 128, 141, 254)
+                                    //Color.fromARGB(255, 100, 109, 227)
+                                    : Color.fromARGB(255, 72, 80, 197),
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  SizedBox(width: screenWidth * 0.08),
-                                  Icon(Icons.folder_outlined),
-                                  Spacer(),
-                                  Text(
-                                      foldersData
-                                          .rootFolders.subfolders[index].name,
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600)),
-                                  Spacer(),
-                                  IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(Icons.arrow_forward_ios),
-                                  ),
-                                  SizedBox(width: screenWidth * 0.08),
-                                ],
-                              )
-                            ]),
-                      );
+                                  Row(
+                                    children: [
+                                      SizedBox(width: screenWidth * 0.08),
+                                      Icon(Icons.folder_outlined),
+                                      Spacer(),
+                                      GestureDetector(
+                                        onLongPress: () {
+                                          foldersData.nameFolder(
+                                              pageFolder, "", index);
+                                        },
+                                        child: Text(
+                                            pageFolder.subfolders[index].name,
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w600)),
+                                      ),
+                                      Spacer(),
+                                      IconButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      SubfolderPage(
+                                                          selectedFolder:
+                                                              pageFolder
+                                                                      .subfolders[
+                                                                  index])));
+                                        },
+                                        icon: Icon(Icons.arrow_forward_ios),
+                                      ),
+                                      SizedBox(width: screenWidth * 0.08),
+                                    ],
+                                  )
+                                ]),
+                          ),
+                          feedback: Container(
+                            margin: EdgeInsets.fromLTRB(screenWidth * 0.05,
+                                screenHeight * 0.025, screenWidth * 0.05, 0),
+                            height: screenHeight * 0.15,
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: isDarkMode(context)
+                                        ? Colors.white
+                                        : Colors.black54,
+                                    width: 1),
+                                color: !isDarkMode(context)
+                                    ? Color.fromARGB(255, 128, 141, 254)
+                                    //Color.fromARGB(255, 100, 109, 227)
+                                    : Color.fromARGB(255, 72, 80, 197),
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    children: [
+                                      SizedBox(width: screenWidth * 0.08),
+                                      Icon(Icons.folder_outlined),
+                                      Spacer(),
+                                      GestureDetector(
+                                        onLongPress: () {
+                                          foldersData.nameFolder(
+                                              pageFolder, "", index);
+                                        },
+                                        child: Text(
+                                            pageFolder.subfolders[index].name,
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w600)),
+                                      ),
+                                      Spacer(),
+                                      IconButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      SubfolderPage(
+                                                          selectedFolder:
+                                                              pageFolder
+                                                                      .subfolders[
+                                                                  index])));
+                                        },
+                                        icon: Icon(Icons.arrow_forward_ios),
+                                      ),
+                                      SizedBox(width: screenWidth * 0.08),
+                                    ],
+                                  )
+                                ]),
+                          ),
+                          childWhenDragging: Container(
+                            margin: EdgeInsets.fromLTRB(screenWidth * 0.05,
+                                screenHeight * 0.025, screenWidth * 0.05, 0),
+                            height: screenHeight * 0.15,
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: isDarkMode(context)
+                                        ? Colors.white
+                                        : Colors.black54,
+                                    width: 1),
+                                color: !isDarkMode(context)
+                                    ? Color.fromARGB(255, 128, 141, 254)
+                                    //Color.fromARGB(255, 100, 109, 227)
+                                    : Color.fromARGB(255, 72, 80, 197),
+                                borderRadius: BorderRadius.circular(12)),
+                          ));
                     } else {
                       return Container(
                         margin: EdgeInsets.fromLTRB(screenWidth * 0.05,
@@ -249,9 +343,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                   IconButton(
                                     onPressed: () {
                                       foldersData.nameFolder(
-                                          foldersData.rootFolders,
-                                          newFolderName,
-                                          index);
+                                          pageFolder, newFolderName, index);
                                     },
                                     icon: Icon(Icons.done),
                                   ),
@@ -262,93 +354,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                       );
                     }
                   },
-                )
-
-                    /* child: ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    scrollDirection: Axis.vertical,
-                    itemCount: foldersData.rootFolders.length,
-                    itemBuilder: (context, index) {
-                      final folderMember = foldersData.rootFolders[index];
-                      bool isNamed = false;
-                      if (foldersData.rootFolders[index].name != "") {
-                        setState(() {
-                          isNamed = true;
-                        });
-                      } else {
-                        setState(() {
-                          isNamed = true;
-                        });
-                      }
-                      return isNamed
-                          ? Container(
-                              margin: EdgeInsets.fromLTRB(screenWidth * 0.05,
-                                  screenHeight * 0.025, screenWidth * 0.05, 0),
-                              height: screenHeight * 0.15,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: isDarkMode(context)
-                                          ? Colors.white
-                                          : Colors.black54,
-                                      width: 1),
-                                  color: !isDarkMode(context)
-                                      ? Color.fromARGB(255, 128, 141, 254)
-                                      //Color.fromARGB(255, 100, 109, 227)
-                                      : Color.fromARGB(255, 72, 80, 197),
-                                  borderRadius: BorderRadius.circular(12)),
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        SizedBox(width: screenWidth * 0.08),
-                                        Icon(Icons.folder_outlined),
-                                        Spacer(),
-                                        Text(folderMember.name,
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w600)),
-                                        Spacer(),
-                                        Icon(Icons.arrow_forward_ios),
-                                        SizedBox(width: screenWidth * 0.08),
-                                      ],
-                                    )
-                                  ]),
-                            )
-                          : Container(
-                              margin: EdgeInsets.fromLTRB(screenWidth * 0.05,
-                                  screenHeight * 0.025, screenWidth * 0.05, 0),
-                              height: screenHeight * 0.15,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: isDarkMode(context)
-                                          ? Colors.white
-                                          : Colors.black54,
-                                      width: 1),
-                                  color: !isDarkMode(context)
-                                      ? Color.fromARGB(255, 128, 141, 254)
-                                      //Color.fromARGB(255, 100, 109, 227)
-                                      : Color.fromARGB(255, 72, 80, 197),
-                                  borderRadius: BorderRadius.circular(12)),
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        SizedBox(width: screenWidth * 0.08),
-                                        Icon(Icons.folder_outlined),
-                                        Spacer(),
-                                        TextField(),
-                                        Spacer(),
-                                        Icon(Icons.arrow_forward_ios),
-                                        SizedBox(width: screenWidth * 0.08),
-                                      ],
-                                    )
-                                  ]),
-                            );
-                    },
-                  ),*/
-                    ),
+                )),
               ],
             ),
           )),

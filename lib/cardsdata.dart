@@ -16,18 +16,12 @@ class FoldersData extends ChangeNotifier {
     final newFolder = Folder("", []);
     parentFolder.subfolders.insert(0, newFolder);
     notifyListeners();
-    rootFolders.subfolders.forEach((subfolder) {
-      print(subfolder.name);
-    });
   }
 
   void nameFolder(
       Folder parentFolder, String newFolderName, int indexToRename) {
     parentFolder.subfolders[indexToRename].name = newFolderName;
     notifyListeners();
-    rootFolders.subfolders.forEach((subfolder) {
-      print(subfolder.name);
-    });
   }
 }
 /*class CardStack {

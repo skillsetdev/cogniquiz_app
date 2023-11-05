@@ -7,8 +7,12 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(ChangeNotifierProvider(
-    create: (context) => FoldersData(),
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) => FoldersData())
+      //1) creates an instance of a ChangeNotifier (FoldersData() here).
+      //2) makes the ChangeNotifier available to all descendant widgets in the widget tree.
+    ],
     child: MyApp(),
   ));
 }

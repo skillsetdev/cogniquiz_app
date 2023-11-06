@@ -1,4 +1,4 @@
-import 'package:flashcards/cardsdata.dart';
+import 'package:flashcards/folderssdata.dart';
 import 'package:flashcards/check_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';

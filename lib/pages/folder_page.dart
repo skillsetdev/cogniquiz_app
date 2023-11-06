@@ -1,18 +1,22 @@
+// ignore_for_file: prefer_const_constructors
+//Next Task: correct and complete the Cards list; wrap lists with Expanded
 import 'package:flashcards/folderssdata.dart';
+import 'package:flashcards/pages/subfolder_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
-class SubfolderPage extends StatefulWidget {
-  const SubfolderPage({required this.selectedFolder, super.key});
-  final Folder selectedFolder;
+class CardReview extends StatefulWidget {
+  const CardReview({super.key});
+
   @override
-  State<SubfolderPage> createState() => _SubfolderPageState();
+  State<CardReview> createState() => _CardReviewState();
 }
 
-class _SubfolderPageState extends State<SubfolderPage>
-    with WidgetsBindingObserver {
+class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
   String newFolderName = "";
+  String newCardStackName = "";
   late FoldersData foldersData;
 
   bool isDarkMode(BuildContext context) {
@@ -22,28 +26,13 @@ class _SubfolderPageState extends State<SubfolderPage>
   @override
   Widget build(BuildContext context) {
     foldersData = Provider.of<FoldersData>(context);
-    Folder pageFolder = widget.selectedFolder;
+    Folder pageFolder = foldersData.rootFolders;
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return Consumer(
       builder: (context, value, child) => Scaffold(
-        appBar: AppBar(
-          backgroundColor: isDarkMode(context)
-              ? const Color.fromARGB(255, 7, 12, 59)
-              : Color.fromARGB(255, 227, 230, 255),
-          title: Text(pageFolder.name),
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.search),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.more_vert),
-            )
-          ],
-        ),
         floatingActionButton: SpeedDial(
+          // ignore: sort_child_properties_last
           child: Container(
             height: 60,
             width: 60,
@@ -56,16 +45,15 @@ class _SubfolderPageState extends State<SubfolderPage>
                 color: isDarkMode(context) ? Colors.white : Colors.black54,
                 size: 35),
           ),
-          switchLabelPosition: false,
-          direction: SpeedDialDirection.up,
-          activeIcon: Icons.close, //icon when menu is expanded on button
+          switchLabelPosition: true,
+          direction: SpeedDialDirection.down,
+          activeIcon: Icons.close,
           backgroundColor: !isDarkMode(context)
               ? Color.fromARGB(255, 128, 141, 254)
               //Color.fromARGB(255, 100, 109, 227)
               : Color.fromARGB(255, 72, 80, 197), //background color of button
           foregroundColor: Colors.white, //font color, icon color in button
-          activeBackgroundColor:
-              Colors.red, //background color when menu is expanded
+          activeBackgroundColor: Colors.red,
           activeForegroundColor: Colors.white,
           useRotationAnimation: true,
           visible: true,
@@ -107,12 +95,14 @@ class _SubfolderPageState extends State<SubfolderPage>
               labelBackgroundColor: !isDarkMode(context)
                   ? Color.fromARGB(255, 128, 141, 254)
                   : Color.fromARGB(255, 72, 80, 197),
-              onTap: () => print('SECOND CHILD'),
+              onTap: () {
+                pageFolder.cardstacks.add(CardStack("", []));
+              },
               onLongPress: () => print('SECOND CHILD LONG PRESS'),
             ),
           ],
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
         backgroundColor: isDarkMode(context)
             ? const Color.fromARGB(255, 7, 12, 59)
             : Color.fromARGB(255, 227, 230, 255),
@@ -126,16 +116,6 @@ class _SubfolderPageState extends State<SubfolderPage>
               children: [
                 Row(
                   children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: screenWidth * 0.05),
-                      child: Text("Folders:",
-                          style: TextStyle(
-                            fontSize: 15.5,
-                            color: !isDarkMode(context)
-                                ? const Color.fromARGB(255, 7, 12, 59)
-                                : Color.fromARGB(255, 227, 230, 255),
-                          )),
-                    ),
                     Spacer(),
                     TextButton(
                       onPressed: () {},
@@ -148,22 +128,36 @@ class _SubfolderPageState extends State<SubfolderPage>
                     )
                   ],
                 ),
-
-                /*Container(
-                  margin: EdgeInsets.fromLTRB(
-                      screenWidth * 0.05, 0, screenWidth * 0.05, 0),
-                  height: screenHeight * 0.15,
+                SizedBox(
+                  height: screenHeight * 0.1,
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+                  height: screenHeight * 0.2,
                   decoration: BoxDecoration(
                       border: Border.all(
-                          color:
-                              isDarkMode(context) ? Colors.white : Colors.black54,
+                          color: isDarkMode(context)
+                              ? Colors.white
+                              : Colors.black54,
                           width: 1),
                       color: !isDarkMode(context)
                           ? Color.fromARGB(255, 128, 141, 254)
-                          //Color.fromARGB(255, 100, 109, 227)
                           : Color.fromARGB(255, 72, 80, 197),
                       borderRadius: BorderRadius.circular(12)),
-                ),*/
+                ),
+                SizedBox(
+                  height: screenHeight * 0.05,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: screenWidth * 0.05),
+                  child: Text("Folders:",
+                      style: TextStyle(
+                        fontSize: 15.5,
+                        color: !isDarkMode(context)
+                            ? const Color.fromARGB(255, 7, 12, 59)
+                            : Color.fromARGB(255, 227, 230, 255),
+                      )),
+                ),
                 Expanded(
                   child: Theme(
                     data: ThemeData(
@@ -206,7 +200,7 @@ class _SubfolderPageState extends State<SubfolderPage>
                                       Icon(Icons.folder_outlined),
                                       Spacer(),
                                       GestureDetector(
-                                        onLongPress: () {
+                                        onTap: () {
                                           foldersData.nameFolder(
                                               pageFolder, "", index);
                                         },
@@ -386,6 +380,256 @@ class _SubfolderPageState extends State<SubfolderPage>
                                         onPressed: () {
                                           foldersData.nameFolder(
                                               pageFolder, newFolderName, index);
+                                        },
+                                        icon: Icon(Icons.done,
+                                            color: !isDarkMode(context)
+                                                ? const Color.fromARGB(
+                                                    255, 7, 12, 59)
+                                                : Color.fromARGB(
+                                                    255, 227, 230, 255)),
+                                      ),
+                                      SizedBox(width: screenWidth * 0.08),
+                                    ],
+                                  )
+                                ]),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: screenWidth * 0.05),
+                  child: Text("Cards:",
+                      style: TextStyle(
+                        fontSize: 15.5,
+                        color: !isDarkMode(context)
+                            ? const Color.fromARGB(255, 7, 12, 59)
+                            : Color.fromARGB(255, 227, 230, 255),
+                      )),
+                ),
+                Expanded(
+                  child: Theme(
+                    data: ThemeData(
+                      canvasColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                    ),
+                    child: ReorderableListView.builder(
+                      proxyDecorator: (widget, index, animation) {
+                        return AnimatedBuilder(
+                          animation: animation,
+                          builder: (BuildContext context, Widget? child) {
+                            const double elevation = 0.0;
+                            return Material(
+                              elevation: elevation,
+                              shadowColor: Colors.black.withOpacity(0.5),
+                              child: child,
+                            );
+                          },
+                          child: Container(
+                            margin: EdgeInsets.fromLTRB(screenWidth * 0.05,
+                                screenHeight * 0.025, screenWidth * 0.05, 0),
+                            height: screenHeight * 0.15,
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: isDarkMode(context)
+                                        ? Colors.white
+                                        : Colors.black54,
+                                    width: 1),
+                                color: !isDarkMode(context)
+                                    ? Color.fromARGB(255, 128, 141, 254)
+                                    //Color.fromARGB(255, 100, 109, 227)
+                                    : Color.fromARGB(255, 72, 80, 197),
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    children: [
+                                      SizedBox(width: screenWidth * 0.08),
+                                      Icon(Icons.folder_outlined),
+                                      Spacer(),
+                                      GestureDetector(
+                                        onTap: () {
+                                          foldersData.nameCardStack(pageFolder,
+                                              newCardStackName, index);
+                                        },
+                                        child: Text(
+                                            pageFolder.cardstacks[index].name,
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w600)),
+                                      ),
+                                      Spacer(),
+                                      IconButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      SubfolderPage(
+                                                          selectedFolder:
+                                                              pageFolder
+                                                                      .subfolders[
+                                                                  index])));
+                                        },
+                                        icon: Icon(Icons.arrow_forward_ios),
+                                      ),
+                                      SizedBox(width: screenWidth * 0.08),
+                                    ],
+                                  )
+                                ]),
+                          ),
+                        );
+                      },
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: pageFolder.cardstacks.length,
+                      onReorder: (oldIndex, newIndex) {
+                        setState(() {
+                          if (newIndex > oldIndex) {
+                            newIndex -= 1;
+                          }
+                          final folder =
+                              pageFolder.subfolders.removeAt(oldIndex);
+                          pageFolder.subfolders.insert(newIndex, folder);
+                        });
+                      },
+                      itemBuilder: (context, index) {
+                        if (!pageFolder.cardstacks[index].name.isEmpty) {
+                          return Container(
+                            key: Key('$index'),
+                            margin: EdgeInsets.fromLTRB(screenWidth * 0.05,
+                                screenHeight * 0.025, screenWidth * 0.05, 0),
+                            height: screenHeight * 0.15,
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: isDarkMode(context)
+                                        ? Colors.white
+                                        : Colors.black54,
+                                    width: 1),
+                                color: !isDarkMode(context)
+                                    ? Color.fromARGB(255, 128, 141, 254)
+                                    //Color.fromARGB(255, 100, 109, 227)
+                                    : Color.fromARGB(255, 72, 80, 197),
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    children: [
+                                      SizedBox(width: screenWidth * 0.08),
+                                      Icon(Icons.folder_outlined,
+                                          color: !isDarkMode(context)
+                                              ? const Color.fromARGB(
+                                                  255, 7, 12, 59)
+                                              : Color.fromARGB(
+                                                  255, 227, 230, 255)),
+                                      Spacer(),
+                                      GestureDetector(
+                                        onTap: () {
+                                          foldersData.nameCardStack(
+                                              pageFolder, "", index);
+                                        },
+                                        child: Text(
+                                            pageFolder.subfolders[index].name,
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w600,
+                                                color: !isDarkMode(context)
+                                                    ? const Color.fromARGB(
+                                                        255, 7, 12, 59)
+                                                    : Color.fromARGB(
+                                                        255, 227, 230, 255))),
+                                      ),
+                                      Spacer(),
+                                      IconButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      SubfolderPage(
+                                                          selectedFolder:
+                                                              pageFolder
+                                                                      .subfolders[
+                                                                  index])));
+                                        },
+                                        icon: Icon(Icons.arrow_forward_ios,
+                                            color: !isDarkMode(context)
+                                                ? const Color.fromARGB(
+                                                    255, 7, 12, 59)
+                                                : Color.fromARGB(
+                                                    255, 227, 230, 255)),
+                                      ),
+                                      SizedBox(width: screenWidth * 0.08),
+                                    ],
+                                  )
+                                ]),
+                          );
+                        } else {
+                          return Container(
+                            key: Key('$index'),
+                            margin: EdgeInsets.fromLTRB(screenWidth * 0.05,
+                                screenHeight * 0.025, screenWidth * 0.05, 0),
+                            height: screenHeight * 0.15,
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: isDarkMode(context)
+                                        ? Colors.white
+                                        : Colors.black54,
+                                    width: 1),
+                                color: !isDarkMode(context)
+                                    ? Color.fromARGB(255, 128, 141, 254)
+                                    //Color.fromARGB(255, 100, 109, 227)
+                                    : Color.fromARGB(255, 72, 80, 197),
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    children: [
+                                      SizedBox(width: screenWidth * 0.08),
+                                      Icon(Icons.folder_outlined,
+                                          color: !isDarkMode(context)
+                                              ? const Color.fromARGB(
+                                                  255, 7, 12, 59)
+                                              : Color.fromARGB(
+                                                  255, 227, 230, 255)),
+                                      SizedBox(
+                                        width: screenWidth * 0.05,
+                                      ),
+                                      Expanded(
+                                          child: TextField(
+                                        maxLength: 20,
+                                        decoration: InputDecoration(
+                                          counterStyle: TextStyle(
+                                            fontSize: 0,
+                                            color: !isDarkMode(context)
+                                                ? const Color.fromARGB(
+                                                    255, 7, 12, 59)
+                                                : Color.fromARGB(
+                                                    255, 227, 230, 255),
+                                          ),
+                                          focusedBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: !isDarkMode(context)
+                                                      ? const Color.fromARGB(
+                                                          255, 7, 12, 59)
+                                                      : Color.fromARGB(
+                                                          255, 227, 230, 255))),
+                                        ),
+                                        onChanged: (value) {
+                                          newCardStackName = value;
+                                        },
+                                      )),
+                                      SizedBox(
+                                        width: screenWidth * 0.05,
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          foldersData.nameCardStack(pageFolder,
+                                              newCardStackName, index);
                                         },
                                         icon: Icon(Icons.done,
                                             color: !isDarkMode(context)

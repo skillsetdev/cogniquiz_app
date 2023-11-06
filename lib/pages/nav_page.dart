@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flashcards/pages/calendar_page.dart';
-import 'package:flashcards/pages/card_review.dart';
+import 'package:flashcards/pages/folder_page.dart';
 import 'package:flashcards/pages/home_page.dart';
 import 'package:flashcards/pages/stats_page.dart';
 import 'package:flutter/material.dart';

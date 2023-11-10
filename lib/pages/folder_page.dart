@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
-//Next Task: correct and complete the Cards list; wrap lists with Expanded
+//Next Task: disptay add+ when no items in the list; when add card or folder pressed make nawCarStackName=""
 import 'package:flashcards/folderssdata.dart';
+import 'package:flashcards/pages/cardstack_page.dart';
 import 'package:flashcards/pages/subfolder_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -96,7 +97,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                   ? Color.fromARGB(255, 128, 141, 254)
                   : Color.fromARGB(255, 72, 80, 197),
               onTap: () {
-                pageFolder.cardstacks.add(CardStack("", []));
+                foldersData.addCardStack(pageFolder);
               },
               onLongPress: () => print('SECOND CHILD LONG PRESS'),
             ),
@@ -158,7 +159,8 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                             : Color.fromARGB(255, 227, 230, 255),
                       )),
                 ),
-                Expanded(
+                Container(
+                  height: (screenHeight * 0.175) * pageFolder.subfolders.length,
                   child: Theme(
                     data: ThemeData(
                       canvasColor: Colors.transparent,
@@ -346,7 +348,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                               : Color.fromARGB(
                                                   255, 227, 230, 255)),
                                       SizedBox(
-                                        width: screenWidth * 0.05,
+                                        width: screenWidth * 0.0,
                                       ),
                                       Expanded(
                                           child: TextField(
@@ -370,7 +372,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                                           255, 227, 230, 255))),
                                         ),
                                         onChanged: (value) {
-                                          newFolderName = value;
+                                          newFolderName = value.trim();
                                         },
                                       )),
                                       SizedBox(
@@ -382,11 +384,8 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                               pageFolder, newFolderName, index);
                                         },
                                         icon: Icon(Icons.done,
-                                            color: !isDarkMode(context)
-                                                ? const Color.fromARGB(
-                                                    255, 7, 12, 59)
-                                                : Color.fromARGB(
-                                                    255, 227, 230, 255)),
+                                            color: Color.fromARGB(
+                                                255, 4, 228, 86)),
                                       ),
                                       SizedBox(width: screenWidth * 0.08),
                                     ],
@@ -398,6 +397,9 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                     ),
                   ),
                 ),
+                SizedBox(
+                  height: screenHeight * 0.025,
+                ),
                 Padding(
                   padding: EdgeInsets.only(left: screenWidth * 0.05),
                   child: Text("Cards:",
@@ -408,7 +410,8 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                             : Color.fromARGB(255, 227, 230, 255),
                       )),
                 ),
-                Expanded(
+                Container(
+                  height: (screenHeight * 0.175) * pageFolder.cardstacks.length,
                   child: Theme(
                     data: ThemeData(
                       canvasColor: Colors.transparent,
@@ -447,7 +450,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                   Row(
                                     children: [
                                       SizedBox(width: screenWidth * 0.08),
-                                      Icon(Icons.folder_outlined),
+                                      Icon(Icons.copy),
                                       Spacer(),
                                       GestureDetector(
                                         onTap: () {
@@ -489,9 +492,9 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                           if (newIndex > oldIndex) {
                             newIndex -= 1;
                           }
-                          final folder =
-                              pageFolder.subfolders.removeAt(oldIndex);
-                          pageFolder.subfolders.insert(newIndex, folder);
+                          final cardstack =
+                              pageFolder.cardstacks.removeAt(oldIndex);
+                          pageFolder.cardstacks.insert(newIndex, cardstack);
                         });
                       },
                       itemBuilder: (context, index) {
@@ -518,7 +521,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                   Row(
                                     children: [
                                       SizedBox(width: screenWidth * 0.08),
-                                      Icon(Icons.folder_outlined,
+                                      Icon(Icons.copy,
                                           color: !isDarkMode(context)
                                               ? const Color.fromARGB(
                                                   255, 7, 12, 59)
@@ -531,7 +534,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                               pageFolder, "", index);
                                         },
                                         child: Text(
-                                            pageFolder.subfolders[index].name,
+                                            pageFolder.cardstacks[index].name,
                                             style: TextStyle(
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.w600,
@@ -548,10 +551,10 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      SubfolderPage(
-                                                          selectedFolder:
+                                                      CardStackPage(
+                                                          selectedCardStack:
                                                               pageFolder
-                                                                      .subfolders[
+                                                                      .cardstacks[
                                                                   index])));
                                         },
                                         icon: Icon(Icons.arrow_forward_ios,
@@ -589,7 +592,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                   Row(
                                     children: [
                                       SizedBox(width: screenWidth * 0.08),
-                                      Icon(Icons.folder_outlined,
+                                      Icon(Icons.copy,
                                           color: !isDarkMode(context)
                                               ? const Color.fromARGB(
                                                   255, 7, 12, 59)
@@ -620,7 +623,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                                           255, 227, 230, 255))),
                                         ),
                                         onChanged: (value) {
-                                          newCardStackName = value;
+                                          newCardStackName = value.trim();
                                         },
                                       )),
                                       SizedBox(
@@ -632,11 +635,8 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                               newCardStackName, index);
                                         },
                                         icon: Icon(Icons.done,
-                                            color: !isDarkMode(context)
-                                                ? const Color.fromARGB(
-                                                    255, 7, 12, 59)
-                                                : Color.fromARGB(
-                                                    255, 227, 230, 255)),
+                                            color: Color.fromARGB(
+                                                255, 4, 228, 86)),
                                       ),
                                       SizedBox(width: screenWidth * 0.08),
                                     ],

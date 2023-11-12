@@ -14,6 +14,7 @@ class _CardStackPageState extends State<CardStackPage>
     with WidgetsBindingObserver {
   String newQuestionName = "";
   String newAnswerName = "";
+  String checkAnswerName = "o";
 
   late FoldersData foldersData;
 
@@ -165,7 +166,7 @@ class _CardStackPageState extends State<CardStackPage>
                             key: Key('$index'),
                             margin: EdgeInsets.fromLTRB(screenWidth * 0.05,
                                 screenHeight * 0.025, screenWidth * 0.05, 0),
-                            height: screenHeight * 0.7,
+                            height: screenHeight * 0.8,
                             decoration: BoxDecoration(
                                 border: Border.all(
                                     color: isDarkMode(context)
@@ -173,9 +174,9 @@ class _CardStackPageState extends State<CardStackPage>
                                         : Colors.black54,
                                     width: 1),
                                 color: !isDarkMode(context)
-                                    ? Color.fromARGB(255, 128, 141, 254)
+                                    ? Color.fromARGB(173, 128, 141, 254)
                                     //Color.fromARGB(255, 100, 109, 227)
-                                    : Color.fromARGB(255, 72, 80, 197),
+                                    : Color.fromARGB(172, 36, 42, 124),
                                 borderRadius: BorderRadius.circular(12)),
                             child: Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -227,17 +228,19 @@ class _CardStackPageState extends State<CardStackPage>
                                     height: screenHeight * 0.025,
                                   ),
                                   Container(
-                                    height: (screenHeight * 0.165) *
+                                    height: (screenHeight * 0.145) *
                                         pageCardStack
                                             .cards[index].answers.length,
                                     child: ListView.builder(
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
                                         itemCount: pageCardStack
                                             .cards[index].answers.length,
                                         itemBuilder: (context, answerIndex) {
                                           final answerText = pageCardStack
                                               .cards[index].answers.keys
                                               .elementAt(answerIndex);
-                                          final answerValue = pageCardStack
+                                          bool answerValue = pageCardStack
                                               .cards[index].answers.values
                                               .elementAt(answerIndex);
                                           if (answerText.isNotEmpty) {
@@ -248,13 +251,13 @@ class _CardStackPageState extends State<CardStackPage>
                                                   screenHeight * 0.025,
                                                   screenWidth * 0.05,
                                                   0),
-                                              height: screenHeight * 0.14,
+                                              height: screenHeight * 0.12,
                                               decoration: BoxDecoration(
                                                   border: Border.all(
-                                                      color: isDarkMode(context)
-                                                          ? Colors.white
-                                                          : Colors.black54,
-                                                      width: 1),
+                                                      color: answerValue
+                                                          ? Colors.green
+                                                          : Colors.red,
+                                                      width: 2),
                                                   color: !isDarkMode(context)
                                                       ? Color.fromARGB(
                                                           255, 128, 141, 254)
@@ -272,8 +275,7 @@ class _CardStackPageState extends State<CardStackPage>
                                                       children: [
                                                         SizedBox(
                                                             width: screenWidth *
-                                                                0.08),
-                                                        Spacer(),
+                                                                0.04),
                                                         GestureDetector(
                                                           onTap: () {
                                                             foldersData.nameAnswer(
@@ -284,30 +286,53 @@ class _CardStackPageState extends State<CardStackPage>
 
                                                             // add editAnswerView and "add answer" container which disappears when lenght>=4
                                                           },
-                                                          child: Text(answerText,
-                                                              style: TextStyle(
-                                                                  color: !isDarkMode(
-                                                                          context)
-                                                                      ? const Color
-                                                                          .fromARGB(
-                                                                          255,
-                                                                          7,
-                                                                          12,
-                                                                          59)
-                                                                      : Color.fromARGB(
-                                                                          255,
-                                                                          227,
-                                                                          230,
-                                                                          255),
-                                                                  fontSize: 15,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600)),
+                                                          child: Container(
+                                                            width: screenWidth *
+                                                                0.5,
+                                                            child: Text(
+                                                                answerText,
+                                                                maxLines: 2,
+                                                                softWrap: true,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                style: TextStyle(
+                                                                    color: !isDarkMode(
+                                                                            context)
+                                                                        ? const Color
+                                                                            .fromARGB(
+                                                                            255,
+                                                                            7,
+                                                                            12,
+                                                                            59)
+                                                                        : Color.fromARGB(
+                                                                            255,
+                                                                            227,
+                                                                            230,
+                                                                            255),
+                                                                    fontSize:
+                                                                        15,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600)),
+                                                          ),
                                                         ),
                                                         Spacer(),
                                                         IconButton(
-                                                          onPressed: () {},
-                                                          icon: Icon(Icons.edit,
+                                                          onPressed: () {
+                                                            foldersData
+                                                                .switchAnswer(
+                                                                    pageCardStack,
+                                                                    index,
+                                                                    answerIndex);
+                                                          },
+                                                          icon: Icon(
+                                                              answerValue
+                                                                  ? Icons
+                                                                      .check_circle_outline_rounded
+                                                                  : Icons
+                                                                      .unpublished_outlined,
+                                                              size: 30,
                                                               color: !isDarkMode(
                                                                       context)
                                                                   ? const Color
@@ -325,7 +350,7 @@ class _CardStackPageState extends State<CardStackPage>
                                                         ),
                                                         SizedBox(
                                                             width: screenWidth *
-                                                                0.08),
+                                                                0.03),
                                                       ],
                                                     )
                                                   ]),
@@ -338,7 +363,7 @@ class _CardStackPageState extends State<CardStackPage>
                                                   screenHeight * 0.025,
                                                   screenWidth * 0.05,
                                                   0),
-                                              height: screenHeight * 0.14,
+                                              height: screenHeight * 0.12,
                                               decoration: BoxDecoration(
                                                   border: Border.all(
                                                       color: isDarkMode(context)
@@ -363,10 +388,8 @@ class _CardStackPageState extends State<CardStackPage>
                                                         SizedBox(
                                                             width: screenWidth *
                                                                 0.08),
-                                                        Spacer(),
                                                         Expanded(
                                                             child: TextField(
-                                                          maxLength: 20,
                                                           decoration:
                                                               InputDecoration(
                                                             counterStyle:
@@ -409,30 +432,35 @@ class _CardStackPageState extends State<CardStackPage>
                                                                 value;
                                                           },
                                                         )),
-                                                        Spacer(),
+                                                        SizedBox(
+                                                            width: screenWidth *
+                                                                0.05),
                                                         IconButton(
                                                           onPressed: () {
-                                                            foldersData.nameAnswer(
-                                                                pageCardStack,
-                                                                newAnswerName,
-                                                                index,
-                                                                answerIndex);
+                                                            if (newAnswerName !=
+                                                                checkAnswerName) {
+                                                              foldersData.nameAnswer(
+                                                                  pageCardStack,
+                                                                  newAnswerName,
+                                                                  index,
+                                                                  answerIndex);
+                                                              setState(() {
+                                                                checkAnswerName =
+                                                                    newAnswerName;
+                                                              });
+                                                            }
                                                           },
-                                                          icon: Icon(Icons.edit,
-                                                              color: !isDarkMode(
-                                                                      context)
-                                                                  ? const Color
-                                                                      .fromARGB(
-                                                                      255,
-                                                                      7,
-                                                                      12,
-                                                                      59)
-                                                                  : Color
+                                                          icon: Icon(Icons.done,
+                                                              color: newAnswerName !=
+                                                                      checkAnswerName
+                                                                  ? Color
                                                                       .fromARGB(
                                                                           255,
-                                                                          227,
-                                                                          230,
-                                                                          255)),
+                                                                          4,
+                                                                          228,
+                                                                          86)
+                                                                  : Colors
+                                                                      .grey),
                                                         ),
                                                         SizedBox(
                                                             width: screenWidth *
@@ -444,78 +472,90 @@ class _CardStackPageState extends State<CardStackPage>
                                           }
                                         }),
                                   ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      foldersData.addAnswer(
-                                          pageCardStack, index);
-                                    },
-                                    child: Container(
-                                      margin: EdgeInsets.fromLTRB(
-                                          screenWidth * 0.05,
-                                          screenHeight * 0.025,
-                                          screenWidth * 0.05,
-                                          0),
-                                      height: screenHeight * 0.14,
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: isDarkMode(context)
-                                                  ? Colors.white
-                                                  : Colors.black54,
-                                              width: 1),
-                                          color: !isDarkMode(context)
-                                              ? Color.fromARGB(
-                                                  255, 128, 141, 254)
-                                              //Color.fromARGB(255, 100, 109, 227)
-                                              : Color.fromARGB(
-                                                  255, 72, 80, 197),
-                                          borderRadius:
-                                              BorderRadius.circular(12)),
-                                      child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                SizedBox(
-                                                    width: screenWidth * 0.08),
-                                                GestureDetector(
-                                                  child: Text("Add Answer",
-                                                      style: TextStyle(
-                                                          color: !isDarkMode(
-                                                                  context)
-                                                              ? const Color
-                                                                  .fromARGB(255,
-                                                                  7, 12, 59)
-                                                              : Color.fromARGB(
-                                                                  255,
-                                                                  227,
-                                                                  230,
-                                                                  255),
-                                                          fontSize: 15,
-                                                          fontWeight:
-                                                              FontWeight.w700)),
-                                                ),
-                                                IconButton(
-                                                  onPressed: () {},
-                                                  icon: Icon(Icons.add,
-                                                      color:
-                                                          !isDarkMode(context)
-                                                              ? const Color
-                                                                  .fromARGB(255,
-                                                                  7, 12, 59)
-                                                              : Color.fromARGB(
-                                                                  255,
-                                                                  227,
-                                                                  230,
-                                                                  255)),
-                                                ),
-                                                SizedBox(
-                                                    width: screenWidth * 0.08),
-                                              ],
-                                            )
-                                          ]),
+                                  Visibility(
+                                    visible: pageCardStack
+                                            .cards[index].answers.length <
+                                        4,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        foldersData.addAnswer(
+                                            pageCardStack, index);
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.fromLTRB(
+                                            screenWidth * 0.05,
+                                            screenHeight * 0.025,
+                                            screenWidth * 0.05,
+                                            0),
+                                        height: screenHeight * 0.12,
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: isDarkMode(context)
+                                                    ? Colors.white
+                                                    : Colors.black54,
+                                                width: 1),
+                                            color: !isDarkMode(context)
+                                                ? Color.fromARGB(
+                                                    255, 128, 141, 254)
+                                                //Color.fromARGB(255, 100, 109, 227)
+                                                : Color.fromARGB(
+                                                    255, 72, 80, 197),
+                                            borderRadius:
+                                                BorderRadius.circular(12)),
+                                        child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  SizedBox(
+                                                      width:
+                                                          screenWidth * 0.08),
+                                                  GestureDetector(
+                                                    child: Text("Add Answer",
+                                                        style: TextStyle(
+                                                            color: !isDarkMode(
+                                                                    context)
+                                                                ? const Color
+                                                                    .fromARGB(
+                                                                    255,
+                                                                    7,
+                                                                    12,
+                                                                    59)
+                                                                : Color
+                                                                    .fromARGB(
+                                                                        255,
+                                                                        227,
+                                                                        230,
+                                                                        255),
+                                                            fontSize: 15,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w700)),
+                                                  ),
+                                                  IconButton(
+                                                    onPressed: () {},
+                                                    icon: Icon(Icons.add,
+                                                        color: !isDarkMode(
+                                                                context)
+                                                            ? const Color
+                                                                .fromARGB(
+                                                                255, 7, 12, 59)
+                                                            : Color.fromARGB(
+                                                                255,
+                                                                227,
+                                                                230,
+                                                                255)),
+                                                  ),
+                                                  SizedBox(
+                                                      width:
+                                                          screenWidth * 0.08),
+                                                ],
+                                              )
+                                            ]),
+                                      ),
                                     ),
                                   ),
                                 ]),
@@ -543,7 +583,7 @@ class _CardStackPageState extends State<CardStackPage>
                                   Row(
                                     children: [
                                       SizedBox(width: screenWidth * 0.08),
-                                      Icon(Icons.copy,
+                                      Icon(Icons.rectangle_outlined,
                                           color: !isDarkMode(context)
                                               ? const Color.fromARGB(
                                                   255, 7, 12, 59)
@@ -574,7 +614,9 @@ class _CardStackPageState extends State<CardStackPage>
                                                           255, 227, 230, 255))),
                                         ),
                                         onChanged: (value) {
-                                          newQuestionName = value.trim();
+                                          setState(() {
+                                            newQuestionName = value.trim();
+                                          });
                                         },
                                       )),
                                       SizedBox(

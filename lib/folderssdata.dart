@@ -108,6 +108,32 @@ except for the key-value pair that is being renamed, key of which is replaced wi
 by deleting and adding a new pair (such process was previously used as a way to "change" the key string)*/
   }
 
+  void switchAnswer(
+      CardStack parentCardStack, int indexOfCard, int indexToSwitch) {
+    String keyToSwitchValue = parentCardStack.cards[indexOfCard].answers.keys
+        .elementAt(indexToSwitch);
+    bool? valueToSwitch =
+        parentCardStack.cards[indexOfCard].answers[keyToSwitchValue];
+
+/* "valueToSwitch = !valueToSwitch" wasn't working because 
+In Dart, when you get a value from a map, you're getting a copy of that value, 
+not a reference to the value in the map. So that code was only changing the copy.
+*/
+
+    Map<String, bool> newAnswers = {};
+
+    parentCardStack.cards[indexOfCard].answers.forEach((key, value) {
+      if (key == keyToSwitchValue) {
+        newAnswers[key] = !(valueToSwitch ?? false);
+      } else {
+        newAnswers[key] = value;
+      }
+    });
+// this new code, however, creates a new map
+    parentCardStack.cards[indexOfCard].answers = newAnswers;
+    notifyListeners();
+  }
+
   void deleteAnswer(
       CardStack parentCardStack, int indexOfCard, int indexToDelete) {
     String oldKey = parentCardStack.cards[indexOfCard].answers.keys

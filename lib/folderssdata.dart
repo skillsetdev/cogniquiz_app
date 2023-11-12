@@ -60,8 +60,9 @@ class FoldersData extends ChangeNotifier {
   }
 
   void addCard(CardStack parentCardStack) {
-    final Card newCard = Card("", {"": false});
+    final Card newCard = Card("", {});
     parentCardStack.cards.add(newCard);
+    notifyListeners();
   }
 
   void deleteCard(CardStack parentCardStack, int indexToDelete) {
@@ -72,21 +73,39 @@ class FoldersData extends ChangeNotifier {
   void nameQuestion(
       CardStack parentCardStack, String newQuestion, int indexToRename) {
     parentCardStack.cards[indexToRename].questionText = newQuestion;
+    notifyListeners();
   }
 
   void addAnswer(CardStack parentCardStack, int indexOfCard) {
-    parentCardStack.cards[indexOfCard].answers[""] = false;
+    parentCardStack.cards[indexOfCard].answers.addEntries([
+      MapEntry("", false),
+    ]);
+    notifyListeners();
   }
 
   void nameAnswer(CardStack parentCardStack, String newAnswerText,
       int indexOfCard, int indexToRename) {
-    String oldKey = parentCardStack.cards[indexOfCard].answers.keys
+    String keyToRename = parentCardStack.cards[indexOfCard].answers.keys
         .elementAt(indexToRename);
+    bool? valueToCopy = parentCardStack.cards[indexOfCard].answers[keyToRename];
 
-    parentCardStack.cards[indexOfCard].answers
-        .remove(oldKey); // Remove old key-value pair
-    parentCardStack.cards[indexOfCard].answers[newAnswerText] =
-        false; // Add new key-value pair
+    Map<String, bool> newAnswers = {};
+    parentCardStack.cards[indexOfCard].answers.forEach((key, value) {
+      if (key == keyToRename) {
+        newAnswers[newAnswerText] = valueToCopy ?? false;
+      } else {
+        newAnswers[key] = value;
+      }
+/*for each key-value pair in the 'answers' map creates an aquivalent key-value pair in the newAnswers map, 
+except for the key-value pair that is being renamed, key of which is replaced with a new key(so the new name)*/
+    });
+
+    parentCardStack.cards[indexOfCard].answers = newAnswers;
+    //replaces the answers map with the newAnswers map
+
+    notifyListeners();
+/*the whole process is done to avoid the reordering of the key-value pairs
+by deleting and adding a new pair (such process was previously used as a way to "change" the key string)*/
   }
 
   void deleteAnswer(

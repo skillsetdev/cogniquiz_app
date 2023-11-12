@@ -110,7 +110,6 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
         body: SingleChildScrollView(
           child: SafeArea(
               child: Container(
-            height: screenHeight * 2,
             width: screenWidth,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

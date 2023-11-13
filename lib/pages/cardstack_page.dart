@@ -2,7 +2,7 @@ import 'package:flashcards/folderssdata.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-// Next Task: create card view with question and answers; ; create an empty card view that will be displayed as soon as previous one was named
+// Next Task:  create an add Card button which looks like a card and edit the editing card to look like an edited card
 class CardStackPage extends StatefulWidget {
   const CardStackPage({required this.selectedCardStack, super.key});
   final CardStack selectedCardStack;
@@ -80,7 +80,7 @@ class _CardStackPageState extends State<CardStackPage>
                   ),
                 ),
                 Container(
-                  height: (screenHeight) * pageCardStack.cards.length,
+                  height: (screenHeight * 0.825) * pageCardStack.cards.length,
                   child: Theme(
                     data: ThemeData(
                       canvasColor: Colors.transparent,
@@ -114,8 +114,11 @@ class _CardStackPageState extends State<CardStackPage>
                                     : Color.fromARGB(255, 72, 80, 197),
                                 borderRadius: BorderRadius.circular(12)),
                             child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
+                                  SizedBox(
+                                    height: screenHeight * 0.025,
+                                  ),
                                   Row(
                                     children: [
                                       SizedBox(width: screenWidth * 0.08),
@@ -164,6 +167,7 @@ class _CardStackPageState extends State<CardStackPage>
                             .cards[index].questionText.isNotEmpty) {
                           return Container(
                             key: Key('$index'),
+                            //here
                             margin: EdgeInsets.fromLTRB(screenWidth * 0.05,
                                 screenHeight * 0.025, screenWidth * 0.05, 0),
                             height: screenHeight * 0.8,
@@ -186,42 +190,38 @@ class _CardStackPageState extends State<CardStackPage>
                                   ),
                                   Row(
                                     children: [
-                                      SizedBox(width: screenWidth * 0.08),
-                                      Icon(Icons.rectangle_outlined,
+                                      SizedBox(width: screenWidth * 0.04),
+                                      Icon(Icons.help_center_outlined,
                                           color: !isDarkMode(context)
                                               ? const Color.fromARGB(
                                                   255, 7, 12, 59)
                                               : Color.fromARGB(
                                                   255, 227, 230, 255)),
-                                      Spacer(),
-                                      GestureDetector(
-                                        onTap: () {
-                                          foldersData.nameQuestion(
-                                              pageCardStack, "", index);
-                                        },
-                                        child: Text(
-                                            pageCardStack
-                                                .cards[index].questionText,
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w600,
-                                                color: !isDarkMode(context)
-                                                    ? const Color.fromARGB(
-                                                        255, 7, 12, 59)
-                                                    : Color.fromARGB(
-                                                        255, 227, 230, 255))),
+                                      SizedBox(width: screenWidth * 0.02),
+                                      Container(
+                                        width: screenWidth * 0.65,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            foldersData.nameQuestion(
+                                                pageCardStack, "", index);
+                                          },
+                                          child: Text(
+                                              pageCardStack
+                                                  .cards[index].questionText,
+                                              maxLines: 2,
+                                              softWrap: true,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: !isDarkMode(context)
+                                                      ? const Color.fromARGB(
+                                                          255, 7, 12, 59)
+                                                      : Color.fromARGB(
+                                                          255, 227, 230, 255))),
+                                        ),
                                       ),
-                                      Spacer(),
-                                      IconButton(
-                                        onPressed: () {},
-                                        icon: Icon(Icons.arrow_forward_ios,
-                                            color: !isDarkMode(context)
-                                                ? const Color.fromARGB(
-                                                    255, 7, 12, 59)
-                                                : Color.fromARGB(
-                                                    255, 227, 230, 255)),
-                                      ),
-                                      SizedBox(width: screenWidth * 0.08),
+                                      SizedBox(width: screenWidth * 0.06),
                                     ],
                                   ),
                                   SizedBox(
@@ -288,7 +288,7 @@ class _CardStackPageState extends State<CardStackPage>
                                                           },
                                                           child: Container(
                                                             width: screenWidth *
-                                                                0.5,
+                                                                0.55,
                                                             child: Text(
                                                                 answerText,
                                                                 maxLines: 2,
@@ -565,7 +565,7 @@ class _CardStackPageState extends State<CardStackPage>
                             key: Key('$index'),
                             margin: EdgeInsets.fromLTRB(screenWidth * 0.05,
                                 screenHeight * 0.025, screenWidth * 0.05, 0),
-                            height: screenHeight * 0.15,
+                            height: screenHeight * 0.8,
                             decoration: BoxDecoration(
                                 border: Border.all(
                                     color: isDarkMode(context)
@@ -578,12 +578,15 @@ class _CardStackPageState extends State<CardStackPage>
                                     : Color.fromARGB(255, 72, 80, 197),
                                 borderRadius: BorderRadius.circular(12)),
                             child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
+                                  SizedBox(
+                                    height: screenHeight * 0.025,
+                                  ),
                                   Row(
                                     children: [
                                       SizedBox(width: screenWidth * 0.08),
-                                      Icon(Icons.rectangle_outlined,
+                                      Icon(Icons.help_center_outlined,
                                           color: !isDarkMode(context)
                                               ? const Color.fromARGB(
                                                   255, 7, 12, 59)
@@ -594,7 +597,6 @@ class _CardStackPageState extends State<CardStackPage>
                                       ),
                                       Expanded(
                                           child: TextField(
-                                        maxLength: 20,
                                         decoration: InputDecoration(
                                           counterStyle: TextStyle(
                                             fontSize: 0,
@@ -646,11 +648,56 @@ class _CardStackPageState extends State<CardStackPage>
                     ),
                   ),
                 ),
-                Container(
-                  height: 50,
-                  width: 50,
-                  color: Colors.red,
-                )
+                GestureDetector(
+                  onTap: () {
+                    foldersData.addCard(pageCardStack);
+                  },
+                  child: Container(
+                    margin: EdgeInsets.fromLTRB(screenWidth * 0.05,
+                        screenHeight * 0.025, screenWidth * 0.05, 0),
+                    height: screenHeight * 0.12,
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                            color: isDarkMode(context)
+                                ? Colors.white
+                                : Colors.black54,
+                            width: 1),
+                        color: !isDarkMode(context)
+                            ? Color.fromARGB(255, 128, 141, 254)
+                            //Color.fromARGB(255, 100, 109, 227)
+                            : Color.fromARGB(255, 72, 80, 197),
+                        borderRadius: BorderRadius.circular(12)),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(width: screenWidth * 0.08),
+                              GestureDetector(
+                                child: Text("Add Card",
+                                    style: TextStyle(
+                                        color: !isDarkMode(context)
+                                            ? const Color.fromARGB(
+                                                255, 7, 12, 59)
+                                            : Color.fromARGB(
+                                                255, 227, 230, 255),
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w700)),
+                              ),
+                              IconButton(
+                                onPressed: () {},
+                                icon: Icon(Icons.add,
+                                    color: !isDarkMode(context)
+                                        ? const Color.fromARGB(255, 7, 12, 59)
+                                        : Color.fromARGB(255, 227, 230, 255)),
+                              ),
+                              SizedBox(width: screenWidth * 0.08),
+                            ],
+                          )
+                        ]),
+                  ),
+                ),
               ],
             ),
           )),

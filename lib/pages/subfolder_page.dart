@@ -99,7 +99,7 @@ class _SubfolderPageState extends State<SubfolderPage>
               onLongPress: () => print('FIRST CHILD LONG PRESS'),
             ),
             SpeedDialChild(
-              child: Icon(Icons.copy),
+              child: Icon(Icons.quiz_outlined),
               backgroundColor: !isDarkMode(context)
                   ? Color.fromARGB(255, 128, 141, 254)
                   : Color.fromARGB(255, 72, 80, 197),
@@ -458,7 +458,7 @@ class _SubfolderPageState extends State<SubfolderPage>
                                   Row(
                                     children: [
                                       SizedBox(width: screenWidth * 0.08),
-                                      Icon(Icons.copy),
+                                      Icon(Icons.quiz_outlined),
                                       Spacer(),
                                       GestureDetector(
                                         onTap: () {
@@ -529,7 +529,7 @@ class _SubfolderPageState extends State<SubfolderPage>
                                   Row(
                                     children: [
                                       SizedBox(width: screenWidth * 0.08),
-                                      Icon(Icons.copy,
+                                      Icon(Icons.quiz_outlined,
                                           color: !isDarkMode(context)
                                               ? const Color.fromARGB(
                                                   255, 7, 12, 59)
@@ -600,7 +600,7 @@ class _SubfolderPageState extends State<SubfolderPage>
                                   Row(
                                     children: [
                                       SizedBox(width: screenWidth * 0.08),
-                                      Icon(Icons.copy,
+                                      Icon(Icons.quiz_outlined,
                                           color: !isDarkMode(context)
                                               ? const Color.fromARGB(
                                                   255, 7, 12, 59)

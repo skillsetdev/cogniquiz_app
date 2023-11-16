@@ -655,6 +655,9 @@ class _SubfolderPageState extends State<SubfolderPage>
                       },
                     ),
                   ),
+                ),
+                SizedBox(
+                  height: screenHeight * 0.025,
                 )
               ],
             ),

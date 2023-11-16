@@ -141,5 +141,6 @@ not a reference to the value in the map. So that code was only changing the copy
 
     parentCardStack.cards[indexOfCard].answers
         .remove(oldKey); // Remove old key-value pair
+    notifyListeners();
   }
 }

@@ -17,7 +17,9 @@ class CardReview extends StatefulWidget {
 
 class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
   String newFolderName = "";
+  String checkFolderName = "o";
   String newCardStackName = "";
+  String checkCardStackName = "o";
   late FoldersData foldersData;
 
   bool isDarkMode(BuildContext context) {
@@ -247,75 +249,107 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                       },
                       itemBuilder: (context, index) {
                         if (!pageFolder.subfolders[index].name.isEmpty) {
-                          return Container(
-                            key: Key('$index'),
-                            margin: EdgeInsets.fromLTRB(screenWidth * 0.05,
-                                screenHeight * 0.025, screenWidth * 0.05, 0),
-                            height: screenHeight * 0.15,
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: isDarkMode(context)
-                                        ? Colors.white
-                                        : Colors.black54,
-                                    width: 1),
-                                color: !isDarkMode(context)
-                                    ? Color.fromARGB(255, 128, 141, 254)
-                                    //Color.fromARGB(255, 100, 109, 227)
-                                    : Color.fromARGB(255, 72, 80, 197),
-                                borderRadius: BorderRadius.circular(12)),
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Row(
-                                    children: [
-                                      SizedBox(width: screenWidth * 0.08),
-                                      Icon(Icons.folder_outlined,
-                                          color: !isDarkMode(context)
-                                              ? const Color.fromARGB(
-                                                  255, 7, 12, 59)
-                                              : Color.fromARGB(
-                                                  255, 227, 230, 255)),
-                                      Spacer(),
-                                      GestureDetector(
-                                        onTap: () {
-                                          foldersData.nameFolder(
-                                              pageFolder, "", index);
-                                        },
-                                        child: Text(
-                                            pageFolder.subfolders[index].name,
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w600,
-                                                color: !isDarkMode(context)
-                                                    ? const Color.fromARGB(
-                                                        255, 7, 12, 59)
-                                                    : Color.fromARGB(
-                                                        255, 227, 230, 255))),
-                                      ),
-                                      Spacer(),
-                                      IconButton(
-                                        onPressed: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      SubfolderPage(
-                                                          selectedFolder:
-                                                              pageFolder
-                                                                      .subfolders[
-                                                                  index])));
-                                        },
-                                        icon: Icon(Icons.arrow_forward_ios,
+                          return Dismissible(
+                            key: Key(
+                                '$index${pageFolder.subfolders[index].name}'),
+                            direction: DismissDirection.endToStart,
+                            onDismissed: (direction) {
+                              foldersData.deleteFolder(pageFolder, index);
+                            },
+                            background: Container(
+                              margin: EdgeInsets.fromLTRB(0,
+                                  screenHeight * 0.025, screenWidth * 0.05, 0),
+                              height: screenHeight * 0.15,
+                              decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(12),
+                                      bottomRight: Radius.circular(12))),
+                              child: Padding(
+                                padding: const EdgeInsets.all(15),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: const [
+                                    Icon(Icons.delete, color: Colors.white),
+                                    SizedBox(
+                                      width: 8.0,
+                                    ),
+                                    Text('Delete',
+                                        style: TextStyle(color: Colors.white)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            child: Container(
+                              key: Key('$index'),
+                              margin: EdgeInsets.fromLTRB(screenWidth * 0.05,
+                                  screenHeight * 0.025, screenWidth * 0.05, 0),
+                              height: screenHeight * 0.15,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: isDarkMode(context)
+                                          ? Colors.white
+                                          : Colors.black54,
+                                      width: 1),
+                                  color: !isDarkMode(context)
+                                      ? Color.fromARGB(255, 128, 141, 254)
+                                      //Color.fromARGB(255, 100, 109, 227)
+                                      : Color.fromARGB(255, 72, 80, 197),
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        SizedBox(width: screenWidth * 0.08),
+                                        Icon(Icons.folder_outlined,
                                             color: !isDarkMode(context)
                                                 ? const Color.fromARGB(
                                                     255, 7, 12, 59)
                                                 : Color.fromARGB(
                                                     255, 227, 230, 255)),
-                                      ),
-                                      SizedBox(width: screenWidth * 0.08),
-                                    ],
-                                  )
-                                ]),
+                                        Spacer(),
+                                        GestureDetector(
+                                          onTap: () {
+                                            foldersData.nameFolder(
+                                                pageFolder, "", index);
+                                          },
+                                          child: Text(
+                                              pageFolder.subfolders[index].name,
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: !isDarkMode(context)
+                                                      ? const Color.fromARGB(
+                                                          255, 7, 12, 59)
+                                                      : Color.fromARGB(
+                                                          255, 227, 230, 255))),
+                                        ),
+                                        Spacer(),
+                                        IconButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        SubfolderPage(
+                                                            selectedFolder:
+                                                                pageFolder
+                                                                        .subfolders[
+                                                                    index])));
+                                          },
+                                          icon: Icon(Icons.arrow_forward_ios,
+                                              color: !isDarkMode(context)
+                                                  ? const Color.fromARGB(
+                                                      255, 7, 12, 59)
+                                                  : Color.fromARGB(
+                                                      255, 227, 230, 255)),
+                                        ),
+                                        SizedBox(width: screenWidth * 0.08),
+                                      ],
+                                    )
+                                  ]),
+                            ),
                           );
                         } else {
                           return Container(
@@ -371,7 +405,9 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                                           255, 227, 230, 255))),
                                         ),
                                         onChanged: (value) {
-                                          newFolderName = value.trim();
+                                          setState(() {
+                                            newFolderName = value.trim();
+                                          });
                                         },
                                       )),
                                       SizedBox(
@@ -379,12 +415,22 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                       ),
                                       IconButton(
                                         onPressed: () {
-                                          foldersData.nameFolder(
-                                              pageFolder, newFolderName, index);
+                                          if (newFolderName !=
+                                              checkCardStackName) {
+                                            foldersData.nameFolder(pageFolder,
+                                                newFolderName, index);
+                                            setState(() {
+                                              checkCardStackName =
+                                                  newFolderName;
+                                            });
+                                          }
                                         },
                                         icon: Icon(Icons.done,
-                                            color: Color.fromARGB(
-                                                255, 4, 228, 86)),
+                                            color: newFolderName !=
+                                                    checkCardStackName
+                                                ? Color.fromARGB(
+                                                    255, 4, 228, 86)
+                                                : Colors.grey),
                                       ),
                                       SizedBox(width: screenWidth * 0.08),
                                     ],
@@ -498,75 +544,107 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                       },
                       itemBuilder: (context, index) {
                         if (!pageFolder.cardstacks[index].name.isEmpty) {
-                          return Container(
-                            key: Key('$index'),
-                            margin: EdgeInsets.fromLTRB(screenWidth * 0.05,
-                                screenHeight * 0.025, screenWidth * 0.05, 0),
-                            height: screenHeight * 0.15,
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: isDarkMode(context)
-                                        ? Colors.white
-                                        : Colors.black54,
-                                    width: 1),
-                                color: !isDarkMode(context)
-                                    ? Color.fromARGB(255, 128, 141, 254)
-                                    //Color.fromARGB(255, 100, 109, 227)
-                                    : Color.fromARGB(255, 72, 80, 197),
-                                borderRadius: BorderRadius.circular(12)),
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Row(
-                                    children: [
-                                      SizedBox(width: screenWidth * 0.08),
-                                      Icon(Icons.quiz_outlined,
-                                          color: !isDarkMode(context)
-                                              ? const Color.fromARGB(
-                                                  255, 7, 12, 59)
-                                              : Color.fromARGB(
-                                                  255, 227, 230, 255)),
-                                      Spacer(),
-                                      GestureDetector(
-                                        onTap: () {
-                                          foldersData.nameCardStack(
-                                              pageFolder, "", index);
-                                        },
-                                        child: Text(
-                                            pageFolder.cardstacks[index].name,
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w600,
-                                                color: !isDarkMode(context)
-                                                    ? const Color.fromARGB(
-                                                        255, 7, 12, 59)
-                                                    : Color.fromARGB(
-                                                        255, 227, 230, 255))),
-                                      ),
-                                      Spacer(),
-                                      IconButton(
-                                        onPressed: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      CardStackPage(
-                                                          selectedCardStack:
-                                                              pageFolder
-                                                                      .cardstacks[
-                                                                  index])));
-                                        },
-                                        icon: Icon(Icons.arrow_forward_ios,
+                          return Dismissible(
+                            key: Key(
+                                '$index${pageFolder.cardstacks[index].name}'),
+                            direction: DismissDirection.endToStart,
+                            onDismissed: (direction) {
+                              foldersData.deleteCardStack(pageFolder, index);
+                            },
+                            background: Container(
+                              margin: EdgeInsets.fromLTRB(0,
+                                  screenHeight * 0.025, screenWidth * 0.05, 0),
+                              height: screenHeight * 0.15,
+                              decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(12),
+                                      bottomRight: Radius.circular(12))),
+                              child: Padding(
+                                padding: const EdgeInsets.all(15),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: const [
+                                    Icon(Icons.delete, color: Colors.white),
+                                    SizedBox(
+                                      width: 8.0,
+                                    ),
+                                    Text('Delete',
+                                        style: TextStyle(color: Colors.white)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            child: Container(
+                              key: Key('$index'),
+                              margin: EdgeInsets.fromLTRB(screenWidth * 0.05,
+                                  screenHeight * 0.025, screenWidth * 0.05, 0),
+                              height: screenHeight * 0.15,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: isDarkMode(context)
+                                          ? Colors.white
+                                          : Colors.black54,
+                                      width: 1),
+                                  color: !isDarkMode(context)
+                                      ? Color.fromARGB(255, 128, 141, 254)
+                                      //Color.fromARGB(255, 100, 109, 227)
+                                      : Color.fromARGB(255, 72, 80, 197),
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        SizedBox(width: screenWidth * 0.08),
+                                        Icon(Icons.quiz_outlined,
                                             color: !isDarkMode(context)
                                                 ? const Color.fromARGB(
                                                     255, 7, 12, 59)
                                                 : Color.fromARGB(
                                                     255, 227, 230, 255)),
-                                      ),
-                                      SizedBox(width: screenWidth * 0.08),
-                                    ],
-                                  )
-                                ]),
+                                        Spacer(),
+                                        GestureDetector(
+                                          onTap: () {
+                                            foldersData.nameCardStack(
+                                                pageFolder, "", index);
+                                          },
+                                          child: Text(
+                                              pageFolder.cardstacks[index].name,
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: !isDarkMode(context)
+                                                      ? const Color.fromARGB(
+                                                          255, 7, 12, 59)
+                                                      : Color.fromARGB(
+                                                          255, 227, 230, 255))),
+                                        ),
+                                        Spacer(),
+                                        IconButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        CardStackPage(
+                                                            selectedCardStack:
+                                                                pageFolder
+                                                                        .cardstacks[
+                                                                    index])));
+                                          },
+                                          icon: Icon(Icons.arrow_forward_ios,
+                                              color: !isDarkMode(context)
+                                                  ? const Color.fromARGB(
+                                                      255, 7, 12, 59)
+                                                  : Color.fromARGB(
+                                                      255, 227, 230, 255)),
+                                        ),
+                                        SizedBox(width: screenWidth * 0.08),
+                                      ],
+                                    )
+                                  ]),
+                            ),
                           );
                         } else {
                           return Container(
@@ -622,7 +700,9 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                                           255, 227, 230, 255))),
                                         ),
                                         onChanged: (value) {
-                                          newCardStackName = value.trim();
+                                          setState(() {
+                                            newCardStackName = value.trim();
+                                          });
                                         },
                                       )),
                                       SizedBox(
@@ -630,12 +710,20 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                       ),
                                       IconButton(
                                         onPressed: () {
-                                          foldersData.nameCardStack(pageFolder,
-                                              newCardStackName, index);
+                                          if (newCardStackName !=
+                                              checkCardStackName) {
+                                            foldersData.nameCardStack(
+                                                pageFolder,
+                                                newCardStackName,
+                                                index);
+                                          }
                                         },
                                         icon: Icon(Icons.done,
-                                            color: Color.fromARGB(
-                                                255, 4, 228, 86)),
+                                            color: newCardStackName !=
+                                                    checkCardStackName
+                                                ? Color.fromARGB(
+                                                    255, 4, 228, 86)
+                                                : Colors.grey),
                                       ),
                                       SizedBox(width: screenWidth * 0.08),
                                     ],
@@ -646,6 +734,9 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                       },
                     ),
                   ),
+                ),
+                SizedBox(
+                  height: screenHeight * 0.025,
                 )
               ],
             ),

@@ -11,15 +11,17 @@ class Folder {
   );
 }
 
-class Card {
+abstract class SuperCard {}
+
+class QuizCard extends SuperCard {
   String questionText;
   Map<String, bool> answers;
-  Card(this.questionText, this.answers);
+  QuizCard(this.questionText, this.answers);
 }
 
 class CardStack {
   String name;
-  List<Card> cards;
+  List<SuperCard> cards;
   CardStack(this.name, this.cards);
 }
 
@@ -60,7 +62,7 @@ class FoldersData extends ChangeNotifier {
   }
 
   void addCard(CardStack parentCardStack) {
-    final Card newCard = Card("", {});
+    final QuizCard newCard = QuizCard("", {});
     parentCardStack.cards.add(newCard);
     notifyListeners();
   }
@@ -70,77 +72,100 @@ class FoldersData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void nameQuestion(
+  void nameQuizQuestion(
       CardStack parentCardStack, String newQuestion, int indexToRename) {
-    parentCardStack.cards[indexToRename].questionText = newQuestion;
-    notifyListeners();
+    if (parentCardStack.cards[indexToRename] is QuizCard) {
+      (parentCardStack.cards[indexToRename] as QuizCard).questionText =
+          newQuestion;
+      notifyListeners();
+    }
   }
 
   void addAnswer(CardStack parentCardStack, int indexOfCard) {
-    parentCardStack.cards[indexOfCard].answers.addEntries([
-      MapEntry("", false),
-    ]);
-    notifyListeners();
+    if (parentCardStack.cards[indexOfCard] is QuizCard) {
+      (parentCardStack.cards[indexOfCard] as QuizCard).answers.addEntries([
+        MapEntry("", false),
+      ]);
+      notifyListeners();
+    }
   }
 
-  void nameAnswer(CardStack parentCardStack, String newAnswerText,
+  void nameQuizAnswer(CardStack parentCardStack, String newAnswerText,
       int indexOfCard, int indexToRename) {
-    String keyToRename = parentCardStack.cards[indexOfCard].answers.keys
-        .elementAt(indexToRename);
-    bool? valueToCopy = parentCardStack.cards[indexOfCard].answers[keyToRename];
+    if (parentCardStack.cards[indexOfCard] is QuizCard) {
+      String keyToRename = (parentCardStack.cards[indexOfCard] as QuizCard)
+          .answers
+          .keys
+          .elementAt(indexToRename);
+      bool? valueToCopy =
+          (parentCardStack.cards[indexOfCard] as QuizCard).answers[keyToRename];
 
-    Map<String, bool> newAnswers = {};
-    parentCardStack.cards[indexOfCard].answers.forEach((key, value) {
-      if (key == keyToRename) {
-        newAnswers[newAnswerText] = valueToCopy ?? false;
-      } else {
-        newAnswers[key] = value;
-      }
+      Map<String, bool> newAnswers = {};
+      (parentCardStack.cards[indexOfCard] as QuizCard)
+          .answers
+          .forEach((key, value) {
+        if (key == keyToRename) {
+          newAnswers[newAnswerText] = valueToCopy ?? false;
+        } else {
+          newAnswers[key] = value;
+        }
 /*for each key-value pair in the 'answers' map creates an aquivalent key-value pair in the newAnswers map, 
 except for the key-value pair that is being renamed, key of which is replaced with a new key(so the new name)*/
-    });
+      });
 
-    parentCardStack.cards[indexOfCard].answers = newAnswers;
-    //replaces the answers map with the newAnswers map
+      (parentCardStack.cards[indexOfCard] as QuizCard).answers = newAnswers;
+      //replaces the answers map with the newAnswers map
 
-    notifyListeners();
+      notifyListeners();
 /*the whole process is done to avoid the reordering of the key-value pairs
 by deleting and adding a new pair (such process was previously used as a way to "change" the key string)*/
+    }
   }
 
   void switchAnswer(
       CardStack parentCardStack, int indexOfCard, int indexToSwitch) {
-    String keyToSwitchValue = parentCardStack.cards[indexOfCard].answers.keys
-        .elementAt(indexToSwitch);
-    bool? valueToSwitch =
-        parentCardStack.cards[indexOfCard].answers[keyToSwitchValue];
+    if (parentCardStack.cards[indexOfCard] is QuizCard) {
+      String keyToSwitchValue = (parentCardStack.cards[indexOfCard] as QuizCard)
+          .answers
+          .keys
+          .elementAt(indexToSwitch);
+      bool? valueToSwitch = (parentCardStack.cards[indexOfCard] as QuizCard)
+          .answers[keyToSwitchValue];
 
 /* "valueToSwitch = !valueToSwitch" wasn't working because 
 In Dart, when you get a value from a map, you're getting a copy of that value, 
 not a reference to the value in the map. So that code was only changing the copy.
 */
 
-    Map<String, bool> newAnswers = {};
+      Map<String, bool> newAnswers = {};
 
-    parentCardStack.cards[indexOfCard].answers.forEach((key, value) {
-      if (key == keyToSwitchValue) {
-        newAnswers[key] = !(valueToSwitch ?? false);
-      } else {
-        newAnswers[key] = value;
-      }
-    });
+      (parentCardStack.cards[indexOfCard] as QuizCard)
+          .answers
+          .forEach((key, value) {
+        if (key == keyToSwitchValue) {
+          newAnswers[key] = !(valueToSwitch ?? false);
+        } else {
+          newAnswers[key] = value;
+        }
+      });
 // this new code, however, creates a new map
-    parentCardStack.cards[indexOfCard].answers = newAnswers;
-    notifyListeners();
+      (parentCardStack.cards[indexOfCard] as QuizCard).answers = newAnswers;
+      notifyListeners();
+    }
   }
 
   void deleteAnswer(
       CardStack parentCardStack, int indexOfCard, int indexToDelete) {
-    String oldKey = parentCardStack.cards[indexOfCard].answers.keys
-        .elementAt(indexToDelete);
+    if (parentCardStack.cards[indexOfCard] is QuizCard) {
+      String oldKey = (parentCardStack.cards[indexOfCard] as QuizCard)
+          .answers
+          .keys
+          .elementAt(indexToDelete);
 
-    parentCardStack.cards[indexOfCard].answers
-        .remove(oldKey); // Remove old key-value pair
-    notifyListeners();
+      (parentCardStack.cards[indexOfCard] as QuizCard)
+          .answers
+          .remove(oldKey); // Remove old key-value pair
+      notifyListeners();
+    }
   }
 }

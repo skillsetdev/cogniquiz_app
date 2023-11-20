@@ -1,10 +1,8 @@
 // ignore_for_file: prefer_const_constructors
-//Next Task: disptay add+ when no items in the list; when add card or folder pressed make nawCarStackName=""
 import 'package:flashcards/folderssdata.dart';
 import 'package:flashcards/pages/cardstack_page.dart';
 import 'package:flashcards/pages/subfolder_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 

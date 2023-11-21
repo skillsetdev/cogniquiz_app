@@ -178,8 +178,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                             fontSize: 15,
                                             color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255))),
                                     SizedBox(width: screenWidth * 0.02),
-                                    Container(
-                                      width: screenWidth * 0.65,
+                                    Expanded(
                                       child: GestureDetector(
                                         onTap: () {
                                           foldersData.nameQuizQuestion(pageCardStack, "", index);
@@ -445,28 +444,32 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                               return Container(
                                 key: Key('$index'),
                                 margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
-                                height: screenHeight * 0.8,
                                 decoration: BoxDecoration(
                                     border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
                                     color: !isDarkMode(context)
-                                        ? Color.fromARGB(255, 128, 141, 254)
+                                        ? Color.fromARGB(173, 128, 141, 254)
                                         //Color.fromARGB(255, 100, 109, 227)
-                                        : Color.fromARGB(255, 72, 80, 197),
+                                        : Color.fromARGB(172, 36, 42, 124),
                                     borderRadius: BorderRadius.circular(12)),
-                                child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                                child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                                   SizedBox(
                                     height: screenHeight * 0.025,
                                   ),
                                   Row(
                                     children: [
-                                      SizedBox(width: screenWidth * 0.08),
-                                      Icon(Icons.help_center_outlined,
-                                          color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
-                                      SizedBox(
-                                        width: screenWidth * 0.05,
-                                      ),
+                                      SizedBox(width: screenWidth * 0.04),
+                                      Text('${index + 1}.',
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w600,
+                                              color:
+                                                  !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255))),
+                                      SizedBox(width: screenWidth * 0.02),
                                       Expanded(
                                           child: TextField(
+                                        style: TextStyle(
+                                          color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
+                                        ),
                                         decoration: InputDecoration(
                                           counterStyle: TextStyle(
                                             fontSize: 0,
@@ -497,7 +500,10 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                       ),
                                       SizedBox(width: screenWidth * 0.08),
                                     ],
-                                  )
+                                  ),
+                                  SizedBox(
+                                    height: screenHeight * 0.025,
+                                  ),
                                 ]),
                               );
                             }

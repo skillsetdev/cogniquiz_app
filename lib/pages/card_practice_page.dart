@@ -105,21 +105,16 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                                           children: [
                                             SizedBox(width: screenWidth * 0.04),
                                             Expanded(
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  foldersData.nameQuizAnswer(pageCardStack, "", index, answerIndex);
-                                                },
-                                                child: Text(answerText,
-                                                    maxLines: 3,
-                                                    softWrap: true,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: TextStyle(
-                                                        color: !isDarkMode(context)
-                                                            ? const Color.fromARGB(255, 7, 12, 59)
-                                                            : Color.fromARGB(255, 227, 230, 255),
-                                                        fontSize: 15,
-                                                        fontWeight: FontWeight.w600)),
-                                              ),
+                                              child: Text(answerText,
+                                                  maxLines: 3,
+                                                  softWrap: true,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                      color: !isDarkMode(context)
+                                                          ? const Color.fromARGB(255, 7, 12, 59)
+                                                          : Color.fromARGB(255, 227, 230, 255),
+                                                      fontSize: 15,
+                                                      fontWeight: FontWeight.w600)),
                                             ),
                                             SizedBox(width: screenWidth * 0.02),
                                           ],

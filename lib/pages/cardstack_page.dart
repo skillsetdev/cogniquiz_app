@@ -346,9 +346,10 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                                       SizedBox(width: screenWidth * 0.04),
                                                       Expanded(
                                                           child: TextField(
+                                                        minLines: 2,
                                                         maxLines: 2,
-                                                        // figure out how to cutout empty lines
                                                         decoration: InputDecoration(
+                                                          contentPadding: EdgeInsets.all(10),
                                                           border: OutlineInputBorder(),
                                                           counterStyle: TextStyle(
                                                             fontSize: 0,
@@ -364,7 +365,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                                                       : Color.fromARGB(255, 227, 230, 255))),
                                                         ),
                                                         onChanged: (value) {
-                                                          newAnswerName = value;
+                                                          newAnswerName = value.trim();
                                                         },
                                                       )),
                                                       IconButton(
@@ -397,7 +398,10 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                             4,*/
                                     child: GestureDetector(
                                       onTap: () {
-                                        foldersData.addAnswer(pageCardStack, index);
+                                        if ((pageCardStack.cards[index] as QuizCard).answers.length < 6) {
+                                          foldersData.addAnswer(pageCardStack, index);
+                                          foldersData.addAnswer(pageCardStack, index);
+                                        }
                                       },
                                       child: Container(
                                         margin: EdgeInsets.fromLTRB(
@@ -421,15 +425,21 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                               SizedBox(width: screenWidth * 0.08),
                                               Text("Add Answer",
                                                   style: TextStyle(
-                                                      color: !isDarkMode(context)
-                                                          ? const Color.fromARGB(255, 7, 12, 59)
-                                                          : Color.fromARGB(255, 227, 230, 255),
+                                                      color: (pageCardStack.cards[index] as QuizCard).answers.length < 6
+                                                          ? !isDarkMode(context)
+                                                              ? const Color.fromARGB(255, 7, 12, 59)
+                                                              : Color.fromARGB(255, 227, 230, 255)
+                                                          : Colors.grey,
                                                       fontSize: 15,
                                                       fontWeight: FontWeight.w700)),
-                                              Icon(Icons.add,
-                                                  color: !isDarkMode(context)
-                                                      ? const Color.fromARGB(255, 7, 12, 59)
-                                                      : Color.fromARGB(255, 227, 230, 255)),
+                                              Icon(
+                                                Icons.add,
+                                                color: (pageCardStack.cards[index] as QuizCard).answers.length < 6
+                                                    ? !isDarkMode(context)
+                                                        ? const Color.fromARGB(255, 7, 12, 59)
+                                                        : Color.fromARGB(255, 227, 230, 255)
+                                                    : Colors.grey,
+                                              ),
                                               SizedBox(width: screenWidth * 0.08),
                                             ],
                                           ),

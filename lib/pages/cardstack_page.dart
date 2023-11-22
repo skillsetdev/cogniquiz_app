@@ -13,6 +13,7 @@ class CardStackPage extends StatefulWidget {
 }
 
 class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserver {
+  bool editing = false;
   bool reordering = false;
   String newQuestionName = "";
   String newAnswerName = "";
@@ -40,10 +41,16 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
               onPressed: () {},
               icon: Icon(Icons.search),
             ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.more_vert),
-            )
+            TextButton(
+                onPressed: () {
+                  setState(() {
+                    editing = !editing;
+                  });
+                },
+                child: Text(
+                  editing ? "Done" : "Edit",
+                  style: TextStyle(color: isDarkMode(context) ? Colors.white : Colors.black),
+                ))
           ],
         ),
         backgroundColor: isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
@@ -59,6 +66,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                 ),
                 GestureDetector(
                   onTap: () {
+                    foldersData.shuffleCards(pageCardStack);
                     Navigator.push(context, MaterialPageRoute(builder: (context) {
                       return CardPracticePage(selectedCardStack: pageCardStack);
                     }));
@@ -155,6 +163,240 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                       },
                       itemBuilder: (context, index) {
                         if (pageCardStack.cards[index] is QuizCard) {
+                          if (editing) {
+                            return Container(
+                              key: Key('$index'),
+                              margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
+                                  color: !isDarkMode(context)
+                                      ? Color.fromARGB(173, 128, 141, 254)
+                                      //Color.fromARGB(255, 100, 109, 227)
+                                      : Color.fromARGB(172, 36, 42, 124),
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                                SizedBox(
+                                  height: screenHeight * 0.025,
+                                ),
+                                Row(
+                                  children: [
+                                    SizedBox(width: screenWidth * 0.04),
+                                    Text('${index + 1}.',
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                            color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255))),
+                                    SizedBox(width: screenWidth * 0.02),
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          foldersData.nameQuizQuestion(pageCardStack, "", index);
+                                        },
+                                        child: Text((pageCardStack.cards[index] as QuizCard).questionText,
+                                            maxLines: 3,
+                                            softWrap: true,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w600,
+                                                color: !isDarkMode(context)
+                                                    ? const Color.fromARGB(255, 7, 12, 59)
+                                                    : Color.fromARGB(255, 227, 230, 255))),
+                                      ),
+                                    ),
+                                    SizedBox(width: screenWidth * 0.04),
+                                    Padding(
+                                      padding: EdgeInsets.only(right: screenWidth * 0.02),
+                                      child: GestureDetector(
+                                          onTap: () {
+                                            foldersData.deleteCard(pageCardStack, index);
+                                          },
+                                          child: Icon(
+                                            Icons.delete_outlined,
+                                            size: 30,
+                                            color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
+                                          )),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: screenHeight * 0.025,
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.symmetric(
+                                          horizontal: BorderSide(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1)),
+                                      color: isDarkMode(context) ? Color.fromARGB(150, 7, 12, 59) : Color.fromARGB(173, 128, 141, 254)),
+                                  child: ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      itemCount: (pageCardStack.cards[index] as QuizCard).answers.length,
+                                      itemBuilder: (context, answerIndex) {
+                                        final answerText = (pageCardStack.cards[index] as QuizCard).answers.keys.elementAt(answerIndex);
+                                        bool answerValue = (pageCardStack.cards[index] as QuizCard).answers.values.elementAt(answerIndex);
+                                        if (answerText.isNotEmpty) {
+                                          return Container(
+                                            key: Key('$answerIndex'),
+                                            margin: EdgeInsets.fromLTRB(
+                                              screenWidth * 0.03,
+                                              screenHeight * 0.015,
+                                              screenWidth * 0.03,
+                                              answerIndex == ((pageCardStack.cards[index] as QuizCard).answers.length - 1) ? screenHeight * 0.015 : 0,
+                                            ),
+                                            decoration: BoxDecoration(
+                                                border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black, width: 1),
+                                                color: !isDarkMode(context)
+                                                    ? Color.fromARGB(255, 128, 141, 254)
+                                                    //Color.fromARGB(255, 100, 109, 227)
+                                                    : Color.fromARGB(255, 72, 80, 197),
+                                                borderRadius: BorderRadius.circular(12)),
+                                            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                              SizedBox(height: screenHeight * 0.015),
+                                              Row(
+                                                children: [
+                                                  SizedBox(width: screenWidth * 0.04),
+                                                  Expanded(
+                                                    child: GestureDetector(
+                                                      onTap: () {
+                                                        foldersData.nameQuizAnswer(pageCardStack, "", index, answerIndex);
+                                                      },
+                                                      child: Text(answerText,
+                                                          maxLines: 3,
+                                                          softWrap: true,
+                                                          overflow: TextOverflow.ellipsis,
+                                                          style: TextStyle(
+                                                              color: !isDarkMode(context)
+                                                                  ? const Color.fromARGB(255, 7, 12, 59)
+                                                                  : Color.fromARGB(255, 227, 230, 255),
+                                                              fontSize: 15,
+                                                              fontWeight: FontWeight.w600)),
+                                                    ),
+                                                  ),
+                                                  IconButton(
+                                                    onPressed: () {
+                                                      foldersData.deleteAnswer(pageCardStack, index, answerIndex);
+                                                    },
+                                                    icon: Icon(Icons.delete_outlined,
+                                                        size: 30,
+                                                        color: !isDarkMode(context)
+                                                            ? const Color.fromARGB(255, 7, 12, 59)
+                                                            : Color.fromARGB(255, 227, 230, 255)),
+                                                  ),
+                                                  SizedBox(width: screenWidth * 0.02),
+                                                ],
+                                              ),
+                                              SizedBox(height: screenHeight * 0.015),
+                                            ]),
+                                          );
+                                        } else {
+                                          return Container(
+                                            key: Key('$answerIndex'),
+                                            margin: EdgeInsets.fromLTRB(
+                                                screenWidth * 0.03,
+                                                screenHeight * 0.015,
+                                                screenWidth * 0.03,
+                                                answerIndex == ((pageCardStack.cards[index] as QuizCard).answers.length - 1)
+                                                    ? screenHeight * 0.015
+                                                    : 0),
+                                            height: screenHeight * 0.12,
+                                            decoration: BoxDecoration(
+                                                border: Border.all(color: isDarkMode(context) ? Colors.white54 : Colors.black38, width: 2),
+                                                color: !isDarkMode(context)
+                                                    ? Color.fromARGB(255, 128, 141, 254)
+                                                    //Color.fromARGB(255, 100, 109, 227)
+                                                    : Color.fromARGB(255, 72, 80, 197),
+                                                borderRadius: BorderRadius.circular(12)),
+                                            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                              Container(
+                                                height: screenHeight * 0.1,
+                                                child: Row(
+                                                  children: [
+                                                    SizedBox(width: screenWidth * 0.04),
+                                                    Expanded(
+                                                        child: TextField(
+                                                      minLines: 2,
+                                                      maxLines: 2,
+                                                      decoration: InputDecoration(
+                                                        contentPadding: EdgeInsets.all(10),
+                                                        border: OutlineInputBorder(),
+                                                        counterStyle: TextStyle(
+                                                          fontSize: 0,
+                                                          color: !isDarkMode(context)
+                                                              ? const Color.fromARGB(255, 7, 12, 59)
+                                                              : Color.fromARGB(255, 227, 230, 255),
+                                                        ),
+                                                        focusedBorder: OutlineInputBorder(
+                                                            borderSide: BorderSide(
+                                                                width: 1,
+                                                                color: !isDarkMode(context)
+                                                                    ? const Color.fromARGB(255, 7, 12, 59)
+                                                                    : Color.fromARGB(255, 227, 230, 255))),
+                                                      ),
+                                                      onChanged: (value) {
+                                                        newAnswerName = value.trim();
+                                                      },
+                                                    )),
+                                                    IconButton(
+                                                      onPressed: () {
+                                                        if (newAnswerName != checkAnswerName) {
+                                                          foldersData.nameQuizAnswer(pageCardStack, newAnswerName, index, answerIndex);
+                                                          setState(() {
+                                                            checkAnswerName = newAnswerName;
+                                                          });
+                                                        }
+                                                      },
+                                                      icon: Icon(Icons.done,
+                                                          color: newAnswerName != checkAnswerName ? Color.fromARGB(255, 4, 228, 86) : Colors.grey),
+                                                    ),
+                                                    SizedBox(width: screenWidth * 0.02),
+                                                  ],
+                                                ),
+                                              )
+                                            ]),
+                                          );
+                                        }
+                                      }),
+                                ),
+                                Visibility(
+                                  visible: true,
+                                  child: GestureDetector(
+                                    onTap: () {},
+                                    child: Container(
+                                      margin: EdgeInsets.fromLTRB(
+                                        screenWidth * 0.05,
+                                        screenHeight * 0.025,
+                                        screenWidth * 0.05,
+                                        screenHeight * 0.025,
+                                      ),
+                                      decoration: BoxDecoration(
+                                          border: Border.all(color: Colors.grey, width: 1),
+                                          color: !isDarkMode(context)
+                                              ? Color.fromARGB(255, 128, 141, 254)
+                                              //Color.fromARGB(255, 100, 109, 227)
+                                              : Color.fromARGB(255, 72, 80, 197),
+                                          borderRadius: BorderRadius.circular(12)),
+                                      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                        SizedBox(height: screenHeight * 0.015),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            SizedBox(width: screenWidth * 0.08),
+                                            Text("Add Answer", style: TextStyle(color: Colors.grey, fontSize: 15, fontWeight: FontWeight.w700)),
+                                            Icon(
+                                              Icons.add,
+                                              color: Colors.grey,
+                                            ),
+                                            SizedBox(width: screenWidth * 0.08),
+                                          ],
+                                        ),
+                                        SizedBox(height: screenHeight * 0.015),
+                                      ]),
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                            );
+                          }
                           if (reordering) {
                             return Container(
                               key: Key('$index'),
@@ -400,7 +642,6 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                       onTap: () {
                                         if ((pageCardStack.cards[index] as QuizCard).answers.length < 6) {
                                           foldersData.addAnswer(pageCardStack, index);
-                                          foldersData.addAnswer(pageCardStack, index);
                                         }
                                       },
                                       child: Container(
@@ -527,13 +768,21 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                 ),
                 GestureDetector(
                   onTap: () {
-                    foldersData.addCard(pageCardStack);
+                    if (!editing) {
+                      foldersData.addCard(pageCardStack);
+                    }
                   },
                   child: Container(
                     margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
                     height: screenHeight * 0.12,
                     decoration: BoxDecoration(
-                        border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
+                        border: Border.all(
+                            color: !editing
+                                ? isDarkMode(context)
+                                    ? Colors.white
+                                    : Colors.black54
+                                : Colors.grey,
+                            width: 1),
                         color: !isDarkMode(context)
                             ? Color.fromARGB(255, 128, 141, 254)
                             //Color.fromARGB(255, 100, 109, 227)
@@ -546,10 +795,19 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                           SizedBox(width: screenWidth * 0.08),
                           Text("Add Card",
                               style: TextStyle(
-                                  color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
+                                  color: !editing
+                                      ? !isDarkMode(context)
+                                          ? const Color.fromARGB(255, 7, 12, 59)
+                                          : Color.fromARGB(255, 227, 230, 255)
+                                      : Colors.grey,
                                   fontSize: 15,
                                   fontWeight: FontWeight.w700)),
-                          Icon(Icons.add, color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
+                          Icon(Icons.add,
+                              color: !editing
+                                  ? !isDarkMode(context)
+                                      ? const Color.fromARGB(255, 7, 12, 59)
+                                      : Color.fromARGB(255, 227, 230, 255)
+                                  : Colors.grey),
                           SizedBox(width: screenWidth * 0.08),
                         ],
                       )

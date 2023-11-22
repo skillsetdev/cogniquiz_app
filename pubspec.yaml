@@ -44,6 +44,7 @@ dependencies:
   flutter_speed_dial: ^7.0.0
   scaled_list: ^2.0.0
   appinio_swiper: ^2.0.3
+  uuid: ^4.2.1
 
 dev_dependencies:
   flutter_test:

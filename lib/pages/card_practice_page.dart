@@ -35,9 +35,9 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
             width: screenWidth * 0.95,
             child: AppinioSwiper(
               padding: EdgeInsets.all(0),
-              cardsCount: pageCardStack.cards.length,
+              cardsCount: pageCardStack.cardsInPractice.length,
               cardsBuilder: (BuildContext context, int index) {
-                final card = pageCardStack.cards[index];
+                final card = pageCardStack.cardsInPractice[index];
                 if (card is QuizCard) {
                   return Container(
                       margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
@@ -90,7 +90,9 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                                         screenWidth * 0.03,
                                         screenHeight * 0.015,
                                         screenWidth * 0.03,
-                                        answerIndex == ((pageCardStack.cards[index] as QuizCard).answers.length - 1) ? screenHeight * 0.015 : 0,
+                                        answerIndex == ((pageCardStack.cardsInPractice[index] as QuizCard).answers.length - 1)
+                                            ? screenHeight * 0.015
+                                            : 0,
                                       ),
                                       decoration: BoxDecoration(
                                           border: Border.all(color: answerValue ? Colors.green : Colors.red, width: 2),

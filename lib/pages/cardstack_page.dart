@@ -66,16 +66,24 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                 ),
                 GestureDetector(
                   onTap: () {
-                    foldersData.shuffleCards(pageCardStack);
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return CardPracticePage(selectedCardStack: pageCardStack);
-                    }));
+                    if (pageCardStack.cards.isNotEmpty) {
+                      foldersData.shuffleCards(pageCardStack);
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return CardPracticePage(selectedCardStack: pageCardStack);
+                      }));
+                    }
                   },
                   child: Container(
                     margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
                     height: screenHeight * 0.12,
                     decoration: BoxDecoration(
-                        border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
+                        border: Border.all(
+                            color: pageCardStack.cards.isNotEmpty
+                                ? !isDarkMode(context)
+                                    ? const Color.fromARGB(255, 7, 12, 59)
+                                    : Color.fromARGB(255, 227, 230, 255)
+                                : Colors.grey,
+                            width: 1),
                         color: !isDarkMode(context)
                             ? Color.fromARGB(255, 128, 141, 254)
                             //Color.fromARGB(255, 100, 109, 227)
@@ -89,14 +97,22 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                           GestureDetector(
                             child: Text("Practice Cards",
                                 style: TextStyle(
-                                    color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
+                                    color: pageCardStack.cards.isNotEmpty
+                                        ? !isDarkMode(context)
+                                            ? const Color.fromARGB(255, 7, 12, 59)
+                                            : Color.fromARGB(255, 227, 230, 255)
+                                        : Colors.grey,
                                     fontSize: 15,
                                     fontWeight: FontWeight.w700)),
                           ),
                           IconButton(
                             onPressed: () {},
                             icon: Icon(Icons.style_outlined,
-                                color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
+                                color: pageCardStack.cards.isNotEmpty
+                                    ? !isDarkMode(context)
+                                        ? const Color.fromARGB(255, 7, 12, 59)
+                                        : Color.fromARGB(255, 227, 230, 255)
+                                    : Colors.grey),
                           ),
                           SizedBox(width: screenWidth * 0.08),
                         ],

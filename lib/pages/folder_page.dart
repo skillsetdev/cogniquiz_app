@@ -136,7 +136,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                   ),
                 ),
                 Container(
-                  height: (screenHeight * 0.175) * pageFolder.subfolders.length,
+                  height: (screenHeight * 0.145) * pageFolder.subfolders.length,
                   child: Theme(
                     data: ThemeData(
                       canvasColor: Colors.transparent,
@@ -156,7 +156,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                           },
                           child: Container(
                             margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
-                            height: screenHeight * 0.15,
+                            height: screenHeight * 0.12,
                             decoration: BoxDecoration(
                                 border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
                                 color: !isDarkMode(context)
@@ -212,7 +212,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                             },
                             background: Container(
                               margin: EdgeInsets.fromLTRB(0, screenHeight * 0.025, screenWidth * 0.05, 0),
-                              height: screenHeight * 0.15,
+                              height: screenHeight * 0.12,
                               decoration: BoxDecoration(
                                   color: Colors.red,
                                   borderRadius: BorderRadius.only(topRight: Radius.circular(12), bottomRight: Radius.circular(12))),
@@ -233,7 +233,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                             child: Container(
                               key: Key('$index'),
                               margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
-                              height: screenHeight * 0.15,
+                              height: screenHeight * 0.12,
                               decoration: BoxDecoration(
                                   border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
                                   color: !isDarkMode(context)
@@ -278,7 +278,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                           return Container(
                             key: Key('$index'),
                             margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
-                            height: screenHeight * 0.15,
+                            height: screenHeight * 0.12,
                             decoration: BoxDecoration(
                                 border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
                                 color: !isDarkMode(context)
@@ -355,7 +355,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                   ),
                 ),
                 Container(
-                  height: (screenHeight * 0.175) * pageFolder.cardstacks.length,
+                  height: (screenHeight * 0.145) * pageFolder.cardstacks.length,
                   child: Theme(
                     data: ThemeData(
                       canvasColor: Colors.transparent,
@@ -375,7 +375,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                           },
                           child: Container(
                             margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
-                            height: screenHeight * 0.15,
+                            height: screenHeight * 0.12,
                             decoration: BoxDecoration(
                                 border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
                                 color: !isDarkMode(context)
@@ -431,7 +431,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                             },
                             background: Container(
                               margin: EdgeInsets.fromLTRB(0, screenHeight * 0.025, screenWidth * 0.05, 0),
-                              height: screenHeight * 0.15,
+                              height: screenHeight * 0.12,
                               decoration: BoxDecoration(
                                   color: Colors.red,
                                   borderRadius: BorderRadius.only(topRight: Radius.circular(12), bottomRight: Radius.circular(12))),
@@ -452,7 +452,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                             child: Container(
                               key: Key('$index'),
                               margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
-                              height: screenHeight * 0.15,
+                              height: screenHeight * 0.12,
                               decoration: BoxDecoration(
                                   border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
                                   color: !isDarkMode(context)
@@ -497,7 +497,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                           return Container(
                             key: Key('$index'),
                             margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
-                            height: screenHeight * 0.15,
+                            height: screenHeight * 0.12,
                             decoration: BoxDecoration(
                                 border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
                                 color: !isDarkMode(context)

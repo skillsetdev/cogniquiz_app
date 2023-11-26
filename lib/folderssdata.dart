@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -17,6 +19,10 @@ class Folder {
 
 abstract class SuperCard {
   String cardId = Uuid().v4();
+  int goodPresses = 0;
+  int okPresses = 0;
+  int badPresses = 0;
+  int lastPress = 0;
 }
 
 class QuizCard extends SuperCard {
@@ -102,11 +108,57 @@ class FoldersData extends ChangeNotifier {
     }
   }
 
-/*  void resetPracticeStack(CardStack initialCardStack, CardStack cardStackToUpdate) {
+// spaced repetition algorithm
+  void badPress(CardStack parentCardStack, int indexOfCardInPractice) {
+    SuperCard card = parentCardStack.cardsInPractice[indexOfCardInPractice];
+    card.badPresses++;
+    card.lastPress = 1;
+    notifyListeners();
+  }
+
+  void okPress(CardStack parentCardStack, int indexOfCardInPractice) {
+    SuperCard card = parentCardStack.cardsInPractice[indexOfCardInPractice];
+    card.okPresses++;
+    card.lastPress = 2;
+    notifyListeners();
+  }
+
+  void goodPress(CardStack parentCardStack, int indexOfCardInPractice) {
+    SuperCard card = parentCardStack.cardsInPractice[indexOfCardInPractice];
+    card.goodPresses++;
+    card.lastPress = 3;
+    notifyListeners();
+  }
+
+  int calculateNewPositionIndex(int currentIndex, SuperCard card, int maxIndex) {
+    int newPositionIndex = currentIndex + 3 + 3 * card.goodPresses - card.okPresses - 2 * card.badPresses;
+    if (newPositionIndex < currentIndex + 3) {
+      newPositionIndex = currentIndex + 3;
+    }
+    if (newPositionIndex > maxIndex) {
+      newPositionIndex = maxIndex;
+    }
+    return newPositionIndex;
+  }
+
+  void moveCard(CardStack parentCardStack, int indexOfCardInPractice) {
+    SuperCard card = parentCardStack.cardsInPractice[indexOfCardInPractice];
+    SuperCard lastCard = parentCardStack.cardsInPractice.last;
+    int newPositionIndex = calculateNewPositionIndex(indexOfCardInPractice, card, parentCardStack.cardsInPractice.length);
+
+    parentCardStack.cardsInPractice.removeAt(indexOfCardInPractice);
+    parentCardStack.cardsInPractice.removeLast();
+    parentCardStack.cardsInPractice.insert(0, lastCard);
+    parentCardStack.cardsInPractice.insert(newPositionIndex, card);
+
+    notifyListeners();
+  }
+
+  void resetPracticeStack(CardStack initialCardStack, CardStack cardStackToUpdate) {
     cardStackToUpdate.cards.clear();
     cardStackToUpdate.cards.addAll(initialCardStack.cards);
     notifyListeners();
-  }*/
+  }
 
 // Functions for the answers
 

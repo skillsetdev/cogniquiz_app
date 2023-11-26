@@ -13,6 +13,7 @@ class CardStackPage extends StatefulWidget {
 }
 
 class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserver {
+  bool isShuffled = false;
   bool editing = false;
   bool reordering = false;
   String newQuestionName = "";
@@ -34,7 +35,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
     return Consumer(
       builder: (context, value, child) => Scaffold(
         appBar: AppBar(
-          backgroundColor: isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
+          backgroundColor: isDarkMode(context) ? Color.fromARGB(255, 3, 5, 27) : Color.fromARGB(255, 227, 230, 255),
           title: Text(pageCardStack.name),
           actions: [
             IconButton(
@@ -53,7 +54,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                 ))
           ],
         ),
-        backgroundColor: isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
+        backgroundColor: isDarkMode(context) ? Color.fromARGB(255, 3, 5, 27) : Color.fromARGB(255, 227, 230, 255),
         body: SingleChildScrollView(
           child: SafeArea(
               child: Container(
@@ -67,7 +68,12 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                 GestureDetector(
                   onTap: () {
                     if (pageCardStack.cards.isNotEmpty) {
-                      foldersData.shuffleCards(pageCardStack);
+                      if (!isShuffled) {
+                        foldersData.shuffleCards(pageCardStack);
+                        setState(() {
+                          isShuffled = true;
+                        });
+                      }
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return CardPracticePage(selectedCardStack: pageCardStack);
                       }));

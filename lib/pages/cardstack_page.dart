@@ -13,7 +13,6 @@ class CardStackPage extends StatefulWidget {
 }
 
 class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserver {
-  bool isShuffled = false;
   bool editing = false;
   bool reordering = false;
   String newQuestionName = "";
@@ -68,12 +67,9 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                 GestureDetector(
                   onTap: () {
                     if (pageCardStack.cards.isNotEmpty) {
-                      if (!isShuffled) {
-                        foldersData.shuffleCards(pageCardStack);
-                        setState(() {
-                          isShuffled = true;
-                        });
-                      }
+                      foldersData.shuffleCards(pageCardStack); //shuffle cards on the first open
+                      foldersData.putCardsBack(pageCardStack); //put the moved from the end cards back to the beginning
+                      foldersData.zeroMovedCards(pageCardStack); // set moved cards to 0
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return CardPracticePage(selectedCardStack: pageCardStack);
                       }));

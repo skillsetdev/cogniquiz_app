@@ -32,6 +32,8 @@ class QuizCard extends SuperCard {
 }
 
 class CardStack {
+  bool isShuffled = false;
+  int movedCards = 0;
   String cardStackId = Uuid().v4();
   String name;
   List<SuperCard> cards;
@@ -81,7 +83,11 @@ class FoldersData extends ChangeNotifier {
   // Functions for the cards
 
   void shuffleCards(CardStack parentCardStack) {
-    parentCardStack.cardsInPractice.shuffle();
+    if (!parentCardStack.isShuffled) {
+      parentCardStack.cardsInPractice.shuffle();
+      parentCardStack.isShuffled = true;
+    }
+
     notifyListeners();
   }
 
@@ -144,13 +150,35 @@ class FoldersData extends ChangeNotifier {
   void moveCard(CardStack parentCardStack, int indexOfCardInPractice) {
     SuperCard card = parentCardStack.cardsInPractice[indexOfCardInPractice];
     SuperCard lastCard = parentCardStack.cardsInPractice.last;
+
+    // Remove the card from its current position first
+    parentCardStack.cardsInPractice.removeAt(indexOfCardInPractice);
+
+    // Calculate the new position after the card has been removed
     int newPositionIndex = calculateNewPositionIndex(indexOfCardInPractice, card, parentCardStack.cardsInPractice.length);
 
-    parentCardStack.cardsInPractice.removeAt(indexOfCardInPractice);
-    parentCardStack.cardsInPractice.removeLast();
-    parentCardStack.cardsInPractice.insert(0, lastCard);
+    // Insert the card at its new position
     parentCardStack.cardsInPractice.insert(newPositionIndex, card);
 
+    // Remove the last card
+    parentCardStack.cardsInPractice.removeLast();
+
+    // Insert the last card at the beginning
+    parentCardStack.cardsInPractice.insert(0, lastCard);
+
+    parentCardStack.movedCards++;
+    notifyListeners();
+  }
+
+  void putCardsBack(CardStack parentCardStack) {
+    List<SuperCard> cardsToMove = parentCardStack.cardsInPractice.getRange(0, parentCardStack.movedCards).toList();
+    parentCardStack.cardsInPractice.removeRange(0, parentCardStack.movedCards);
+    parentCardStack.cardsInPractice.addAll(cardsToMove);
+    notifyListeners();
+  }
+
+  void zeroMovedCards(CardStack parentCardStack) {
+    parentCardStack.movedCards = 0;
     notifyListeners();
   }
 

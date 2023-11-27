@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:appinio_swiper/appinio_swiper.dart';
 
-//Next Task: current card stays on the same position in the bar, other cards come closer with an animation
+// fix the issue with overjumping the last card (move cards before the end, unending loop)
 class CardPracticePage extends StatefulWidget {
   const CardPracticePage({required this.selectedCardStack, super.key});
   final CardStack selectedCardStack;
@@ -49,7 +49,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                   height: 15,
                   child: Row(
                     children: [
-                      for (int i = 0; i < min(pageCardStack.cardsInPractice.length, 20); i++)
+                      for (int i = indexOfCurrentCard; i < min(pageCardStack.cardsInPractice.length, indexOfCurrentCard + 10); i++)
                         Expanded(
                           child: Container(
                             margin: EdgeInsets.symmetric(horizontal: 1.5),
@@ -84,6 +84,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                     cardsSpacing: 30,
                     padding: EdgeInsets.all(0),
                     cardsCount: pageCardStack.cardsInPractice.length,
+                    isDisabled: true,
                     onSwipe: (indexAfterSwipe, direction) {
                       if (indexAfterSwipe >= 0 && indexAfterSwipe < pageCardStack.cardsInPractice.length) {
                         setState(() {
@@ -96,102 +97,109 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                     cardsBuilder: (BuildContext context, int index) {
                       final card = pageCardStack.cardsInPractice[index];
                       if (card is QuizCard) {
-                        return Container(
-                            margin: EdgeInsets.fromLTRB(screenWidth * 0.05, 0, screenWidth * 0.05, 0),
-                            decoration: BoxDecoration(
-                                border: Border.all(color: isDarkMode(context) ? Colors.white70 : Colors.black54, width: 1),
-                                color: !isDarkMode(context)
-                                    ? Color.fromARGB(173, 128, 141, 254)
-                                    //Color.fromARGB(255, 100, 109, 227)
-                                    : Color.fromARGB(172, 36, 42, 124),
-                                borderRadius: BorderRadius.circular(12)),
-                            child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-                              SizedBox(
-                                height: screenHeight * 0.025,
-                              ),
-                              Row(
-                                children: [
-                                  SizedBox(width: screenWidth * 0.04),
-                                  Container(
-                                    width: screenWidth * 0.65,
-                                    child: Text((card as QuizCard).questionText,
-                                        maxLines: 3,
-                                        softWrap: true,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w600,
-                                            color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255))),
-                                  ),
-                                  SizedBox(width: screenWidth * 0.06),
-                                ],
-                              ),
-                              SizedBox(
-                                height: screenHeight * 0.025,
-                              ),
-                              Expanded(
-                                child: Container(
-                                    decoration: BoxDecoration(
-                                        border: Border(top: BorderSide(color: isDarkMode(context) ? Colors.white70 : Colors.black54, width: 1)),
-                                        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(12), bottomRight: Radius.circular(12)),
-                                        color: isDarkMode(context) ? Color.fromARGB(230, 7, 12, 59) : Color.fromARGB(173, 128, 141, 254)),
-                                    child: ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: (card as QuizCard).answers.length,
-                                        itemBuilder: (context, answerIndex) {
-                                          final answerText = (card as QuizCard).answers.keys.elementAt(answerIndex);
-                                          bool answerValue = (card as QuizCard).answers.values.elementAt(answerIndex);
-                                          return Container(
-                                            key: Key('$answerIndex'),
-                                            margin: EdgeInsets.fromLTRB(
-                                              screenWidth * 0.03,
-                                              screenHeight * 0.015,
-                                              screenWidth * 0.03,
-                                              answerIndex == ((pageCardStack.cardsInPractice[index] as QuizCard).answers.length - 1)
-                                                  ? screenHeight * 0.015
-                                                  : 0,
-                                            ),
-                                            decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: isAnswered[index]
-                                                        ? answerValue
-                                                            ? Colors.green
-                                                            : Colors.red
-                                                        : isDarkMode(context)
-                                                            ? Colors.white70
-                                                            : Colors.black54,
-                                                    width: isAnswered[index] ? 2 : 1),
-                                                color: !isDarkMode(context)
-                                                    ? Color.fromARGB(255, 128, 141, 254)
-                                                    //Color.fromARGB(255, 100, 109, 227)
-                                                    : Color.fromARGB(255, 72, 80, 197),
-                                                borderRadius: BorderRadius.circular(12)),
-                                            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                              SizedBox(height: screenHeight * 0.015),
-                                              Row(
-                                                children: [
-                                                  SizedBox(width: screenWidth * 0.04),
-                                                  Expanded(
-                                                    child: Text(answerText,
-                                                        maxLines: 3,
-                                                        softWrap: true,
-                                                        overflow: TextOverflow.ellipsis,
-                                                        style: TextStyle(
-                                                            color: !isDarkMode(context)
-                                                                ? const Color.fromARGB(255, 7, 12, 59)
-                                                                : Color.fromARGB(255, 227, 230, 255),
-                                                            fontSize: 15,
-                                                            fontWeight: FontWeight.w600)),
-                                                  ),
-                                                  SizedBox(width: screenWidth * 0.02),
-                                                ],
+                        return GestureDetector(
+                          onTap: () {
+                            print("actual index:${index.toString()}");
+                            print("estimated index:${indexOfCurrentCard.toString()}");
+                          },
+                          child: Container(
+                              margin: EdgeInsets.fromLTRB(screenWidth * 0.05, 0, screenWidth * 0.05, 0),
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: isDarkMode(context) ? Colors.white70 : Colors.black54, width: 1),
+                                  color: !isDarkMode(context)
+                                      ? Color.fromARGB(173, 128, 141, 254)
+                                      //Color.fromARGB(255, 100, 109, 227)
+                                      : Color.fromARGB(172, 36, 42, 124),
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                                SizedBox(
+                                  height: screenHeight * 0.025,
+                                ),
+                                Row(
+                                  children: [
+                                    SizedBox(width: screenWidth * 0.04),
+                                    Container(
+                                      width: screenWidth * 0.65,
+                                      child: Text((card as QuizCard).questionText,
+                                          maxLines: 3,
+                                          softWrap: true,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w600,
+                                              color:
+                                                  !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255))),
+                                    ),
+                                    SizedBox(width: screenWidth * 0.06),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: screenHeight * 0.025,
+                                ),
+                                Expanded(
+                                  child: Container(
+                                      decoration: BoxDecoration(
+                                          border: Border(top: BorderSide(color: isDarkMode(context) ? Colors.white70 : Colors.black54, width: 1)),
+                                          borderRadius: BorderRadius.only(bottomLeft: Radius.circular(12), bottomRight: Radius.circular(12)),
+                                          color: isDarkMode(context) ? Color.fromARGB(230, 7, 12, 59) : Color.fromARGB(173, 128, 141, 254)),
+                                      child: ListView.builder(
+                                          shrinkWrap: true,
+                                          itemCount: (card as QuizCard).answers.length,
+                                          itemBuilder: (context, answerIndex) {
+                                            final answerText = (card as QuizCard).answers.keys.elementAt(answerIndex);
+                                            bool answerValue = (card as QuizCard).answers.values.elementAt(answerIndex);
+                                            return Container(
+                                              key: Key('$answerIndex'),
+                                              margin: EdgeInsets.fromLTRB(
+                                                screenWidth * 0.03,
+                                                screenHeight * 0.015,
+                                                screenWidth * 0.03,
+                                                answerIndex == ((pageCardStack.cardsInPractice[index] as QuizCard).answers.length - 1)
+                                                    ? screenHeight * 0.015
+                                                    : 0,
                                               ),
-                                              SizedBox(height: screenHeight * 0.015),
-                                            ]),
-                                          );
-                                        })),
-                              )
-                            ]));
+                                              decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      color: isAnswered[index]
+                                                          ? answerValue
+                                                              ? Colors.green
+                                                              : Colors.red
+                                                          : isDarkMode(context)
+                                                              ? Colors.white70
+                                                              : Colors.black54,
+                                                      width: isAnswered[index] ? 2 : 1),
+                                                  color: !isDarkMode(context)
+                                                      ? Color.fromARGB(255, 128, 141, 254)
+                                                      //Color.fromARGB(255, 100, 109, 227)
+                                                      : Color.fromARGB(255, 72, 80, 197),
+                                                  borderRadius: BorderRadius.circular(12)),
+                                              child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                                SizedBox(height: screenHeight * 0.015),
+                                                Row(
+                                                  children: [
+                                                    SizedBox(width: screenWidth * 0.04),
+                                                    Expanded(
+                                                      child: Text(answerText,
+                                                          maxLines: 3,
+                                                          softWrap: true,
+                                                          overflow: TextOverflow.ellipsis,
+                                                          style: TextStyle(
+                                                              color: !isDarkMode(context)
+                                                                  ? const Color.fromARGB(255, 7, 12, 59)
+                                                                  : Color.fromARGB(255, 227, 230, 255),
+                                                              fontSize: 15,
+                                                              fontWeight: FontWeight.w600)),
+                                                    ),
+                                                    SizedBox(width: screenWidth * 0.02),
+                                                  ],
+                                                ),
+                                                SizedBox(height: screenHeight * 0.015),
+                                              ]),
+                                            );
+                                          })),
+                                )
+                              ])),
+                        );
                       } else {
                         return Container();
                       }
@@ -232,6 +240,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                               GestureDetector(
                                 onTap: () {
                                   foldersData.badPress(pageCardStack, indexOfCurrentCard);
+                                  swiperController.swipeLeft();
                                 },
                                 child: Container(
                                   margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
@@ -254,6 +263,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                               GestureDetector(
                                 onTap: () {
                                   foldersData.okPress(pageCardStack, indexOfCurrentCard);
+                                  swiperController.swipeUp();
                                 },
                                 child: Container(
                                   margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
@@ -276,6 +286,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                               GestureDetector(
                                 onTap: () {
                                   foldersData.goodPress(pageCardStack, indexOfCurrentCard);
+                                  swiperController.swipeRight();
                                 },
                                 child: Container(
                                   margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),

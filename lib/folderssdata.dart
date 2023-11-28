@@ -1,5 +1,5 @@
-import 'dart:math';
-
+//Next Task: add moveCardOverTheStack() by adding them to a separate list if their index exceeds the maxIndex and them adding them on the loor adfre the putCardsBack()
+//Next Task: add other types of cards
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -136,6 +136,7 @@ class FoldersData extends ChangeNotifier {
     notifyListeners();
   }
 
+  //spaced repetition logic
   int calculateNewPositionIndex(int currentIndex, SuperCard card, int maxIndex) {
     int newPositionIndex = currentIndex + 3 + 3 * card.goodPresses - card.okPresses - 2 * card.badPresses;
     if (newPositionIndex < currentIndex + 3) {
@@ -168,6 +169,7 @@ class FoldersData extends ChangeNotifier {
     // Insert the last card at the beginning
     parentCardStack.cardsInPractice.insert(0, lastCard);
 
+    // this function first moves the card, then removes the last one, if the card is the same - the card will be put behind as the last card and then moved on putCardsBack wiht other lastCards, needs to be fixed with moveCardsOverTheStack, which is the next task
     parentCardStack.movedCards++;
     notifyListeners();
   }
@@ -184,9 +186,9 @@ class FoldersData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void resetPracticeStack(CardStack initialCardStack, CardStack cardStackToUpdate) {
-    cardStackToUpdate.cards.clear();
-    cardStackToUpdate.cards.addAll(initialCardStack.cards);
+  void resetPracticeStack(CardStack parentCardStack) {
+    parentCardStack.cardsInPractice.clear();
+    parentCardStack.cardsInPractice.addAll(parentCardStack.cards);
     notifyListeners();
   }
 
@@ -215,16 +217,16 @@ class FoldersData extends ChangeNotifier {
         } else {
           newAnswers[key] = value;
         }
-/*for each key-value pair in the 'answers' map creates an aquivalent key-value pair in the newAnswers map, 
-except for the key-value pair that is being renamed, key of which is replaced with a new key(so the new name)*/
+        /*for each key-value pair in the 'answers' map creates an aquivalent key-value pair in the newAnswers map, 
+        except for the key-value pair that is being renamed, key of which is replaced with a new key(so the new name)*/
       });
       (parentCardStack.cards[indexOfCard] as QuizCard).answers = newAnswers;
       // (parentCardStack.cardsInPractice.firstWhere((card) => card.cardId == idOfCard) as QuizCard).answers = newAnswers;
       //replaces the answers map with the newAnswers map
 
       notifyListeners();
-/*the whole process is done to avoid the reordering of the key-value pairs
-by deleting and adding a new pair (such process was previously used as a way to "change" the key string)*/
+      /*the whole process is done to avoid the reordering of the key-value pairs
+        by deleting and adding a new pair (such process was previously used as a way to "change" the key string)*/
     }
   }
 
@@ -233,10 +235,10 @@ by deleting and adding a new pair (such process was previously used as a way to 
     bool? valueToSwitch = (parentCardStack.cards[indexOfCard] as QuizCard).answers[keyToSwitchValue];
     //  String idOfCard = parentCardStack.cards[indexOfCard].cardId;
     if (parentCardStack.cards[indexOfCard] is QuizCard) {
-/* "valueToSwitch = !valueToSwitch" wasn't working because 
-In Dart, when you get a value from a map, you're getting a copy of that value, 
-not a reference to the value in the map. So that code was only changing the copy.
-*/
+      /* "valueToSwitch = !valueToSwitch" wasn't working because 
+      In Dart, when you get a value from a map, you're getting a copy of that value, 
+      not a reference to the value in the map. So that code was only changing the copy.
+      */
 
       Map<String, bool> newAnswers = {};
 
@@ -247,7 +249,7 @@ not a reference to the value in the map. So that code was only changing the copy
           newAnswers[key] = value;
         }
       });
-// this new code, however, creates a new map
+      // this new code, however, creates a new map
       (parentCardStack.cards[indexOfCard] as QuizCard).answers = newAnswers;
       //  (parentCardStack.cardsInPractice.firstWhere((card) => card.cardId == idOfCard) as QuizCard).answers = newAnswers;
       notifyListeners();

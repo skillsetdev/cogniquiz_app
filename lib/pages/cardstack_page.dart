@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // Next Task:  create limit to the amount of cards(limit the add function)
-//"add Card" expands to options: quiz card, flip card etc.
+//Next Task: "add Card" expands to options: quiz card, flip card etc.
 class CardStackPage extends StatefulWidget {
   const CardStackPage({required this.selectedCardStack, super.key});
   final CardStack selectedCardStack;

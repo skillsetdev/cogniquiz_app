@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:appinio_swiper/appinio_swiper.dart';
 
-// fix the issue with overjumping the last card (move cards before the end, unending loop)
+//
+//Next Task: fix the flashing the answers (isAnswered = true) in the card after swipe
+
 class CardPracticePage extends StatefulWidget {
   const CardPracticePage({required this.selectedCardStack, super.key});
   final CardStack selectedCardStack;
@@ -79,6 +81,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                 child: Container(
                   width: screenWidth * 1,
                   child: AppinioSwiper(
+                    loop: true,
                     controller: swiperController,
                     backgroundCardsCount: 2,
                     cardsSpacing: 30,
@@ -86,12 +89,19 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                     cardsCount: pageCardStack.cardsInPractice.length,
                     isDisabled: true,
                     onSwipe: (indexAfterSwipe, direction) {
-                      if (indexAfterSwipe >= 0 && indexAfterSwipe < pageCardStack.cardsInPractice.length) {
+                      if (indexAfterSwipe > 0 && indexAfterSwipe < pageCardStack.cardsInPractice.length) {
                         setState(() {
                           indexOfCurrentCard = indexAfterSwipe;
                           isAnswered[indexAfterSwipe] = false;
                         });
                         foldersData.moveCard(pageCardStack, indexAfterSwipe - 1);
+                      } else if (indexAfterSwipe == 0) {
+                        setState(() {
+                          indexOfCurrentCard = indexAfterSwipe;
+                          isAnswered[indexAfterSwipe] = false;
+                        });
+                        foldersData.putCardsBack(pageCardStack); //refresh the cards when the count starts over again
+                        foldersData.zeroMovedCards(pageCardStack);
                       }
                     },
                     cardsBuilder: (BuildContext context, int index) {
@@ -101,6 +111,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                           onTap: () {
                             print("actual index:${index.toString()}");
                             print("estimated index:${indexOfCurrentCard.toString()}");
+                            print("length of the stack:${pageCardStack.cardsInPractice.length}");
                           },
                           child: Container(
                               margin: EdgeInsets.fromLTRB(screenWidth * 0.05, 0, screenWidth * 0.05, 0),

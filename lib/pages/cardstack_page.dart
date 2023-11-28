@@ -67,7 +67,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                 GestureDetector(
                   onTap: () {
                     if (pageCardStack.cards.isNotEmpty) {
-                      foldersData.shuffleCards(pageCardStack); //shuffle cards on the first open
+                      //foldersData.shuffleCards(pageCardStack); //shuffle cards on the first open
                       foldersData.putCardsBack(pageCardStack); //put the moved from the end cards back to the beginning
                       foldersData.zeroMovedCards(pageCardStack); // set moved cards to 0
                       Navigator.push(context, MaterialPageRoute(builder: (context) {

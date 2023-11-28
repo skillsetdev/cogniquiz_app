@@ -148,8 +148,7 @@ class FoldersData extends ChangeNotifier {
   }
 
   void moveCard(CardStack parentCardStack, int indexOfCardInPractice) {
-    SuperCard card = parentCardStack.cardsInPractice[indexOfCardInPractice];
-    SuperCard lastCard = parentCardStack.cardsInPractice.last;
+    SuperCard card = parentCardStack.cardsInPractice[indexOfCardInPractice]; //assigning the value outside the loop makes it a final
 
     // Remove the card from its current position first
     parentCardStack.cardsInPractice.removeAt(indexOfCardInPractice);
@@ -159,6 +158,9 @@ class FoldersData extends ChangeNotifier {
 
     // Insert the card at its new position
     parentCardStack.cardsInPractice.insert(newPositionIndex, card);
+
+    // Get the last card after removing and inserting the other cards
+    SuperCard lastCard = parentCardStack.cardsInPractice.last;
 
     // Remove the last card
     parentCardStack.cardsInPractice.removeLast();

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:appinio_swiper/appinio_swiper.dart';
 
-//
 //Next Task: fix the flashing the answers (isAnswered = true) in the card after swipe
 
 class CardPracticePage extends StatefulWidget {
@@ -93,6 +92,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                         setState(() {
                           indexOfCurrentCard = indexAfterSwipe;
                           isAnswered[indexAfterSwipe] = false;
+                          isAnswered[indexAfterSwipe - 1] = false;
                         });
                         foldersData.moveCard(pageCardStack, indexAfterSwipe - 1);
                       } else if (indexAfterSwipe == 0) {

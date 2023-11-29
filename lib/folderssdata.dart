@@ -31,6 +31,12 @@ class QuizCard extends SuperCard {
   QuizCard(this.questionText, this.answers);
 }
 
+class FlipCard extends SuperCard {
+  String frontText;
+  String backText;
+  FlipCard(this.frontText, this.backText);
+}
+
 class CardStack {
   bool isShuffled = false;
   int movedCards = 0;

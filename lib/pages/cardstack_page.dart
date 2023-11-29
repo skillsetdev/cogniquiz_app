@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // Next Task:  create limit to the amount of cards(limit the add function)
-//Next Task: "add Card" expands to options: quiz card, flip card etc.
+//Next Task: "add Card" expands to options: quiz card, flip card etc. (OverlayPortal)
 class CardStackPage extends StatefulWidget {
   const CardStackPage({required this.selectedCardStack, super.key});
   final CardStack selectedCardStack;
@@ -83,7 +83,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                             color: pageCardStack.cards.isNotEmpty
                                 ? !isDarkMode(context)
                                     ? const Color.fromARGB(255, 7, 12, 59)
-                                    : Color.fromARGB(255, 227, 230, 255)
+                                    : Colors.white70
                                 : Colors.grey,
                             width: 1),
                         color: !isDarkMode(context)
@@ -107,15 +107,13 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                     fontSize: 15,
                                     fontWeight: FontWeight.w700)),
                           ),
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.style_outlined,
-                                color: pageCardStack.cards.isNotEmpty
-                                    ? !isDarkMode(context)
-                                        ? const Color.fromARGB(255, 7, 12, 59)
-                                        : Color.fromARGB(255, 227, 230, 255)
-                                    : Colors.grey),
-                          ),
+                          SizedBox(width: 10),
+                          Icon(Icons.style_outlined,
+                              color: pageCardStack.cards.isNotEmpty
+                                  ? !isDarkMode(context)
+                                      ? const Color.fromARGB(255, 7, 12, 59)
+                                      : Color.fromARGB(255, 227, 230, 255)
+                                  : Colors.grey),
                           SizedBox(width: screenWidth * 0.08),
                         ],
                       )
@@ -186,7 +184,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                               key: Key('$index'),
                               margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
                               decoration: BoxDecoration(
-                                  border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
+                                  border: Border.all(color: isDarkMode(context) ? Colors.white70 : Colors.black54, width: 1),
                                   color: !isDarkMode(context)
                                       ? Color.fromARGB(173, 128, 141, 254)
                                       //Color.fromARGB(255, 100, 109, 227)
@@ -243,7 +241,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                 Container(
                                   decoration: BoxDecoration(
                                       border: Border.symmetric(
-                                          horizontal: BorderSide(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1)),
+                                          horizontal: BorderSide(color: isDarkMode(context) ? Colors.white70 : Colors.black54, width: 1)),
                                       color: isDarkMode(context) ? Color.fromARGB(150, 7, 12, 59) : Color.fromARGB(173, 128, 141, 254)),
                                   child: ListView.builder(
                                       shrinkWrap: true,
@@ -262,7 +260,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                               answerIndex == ((pageCardStack.cards[index] as QuizCard).answers.length - 1) ? screenHeight * 0.015 : 0,
                                             ),
                                             decoration: BoxDecoration(
-                                                border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black, width: 1),
+                                                border: Border.all(color: isDarkMode(context) ? Colors.white70 : Colors.black, width: 1),
                                                 color: !isDarkMode(context)
                                                     ? Color.fromARGB(255, 128, 141, 254)
                                                     //Color.fromARGB(255, 100, 109, 227)
@@ -339,9 +337,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                                         border: OutlineInputBorder(),
                                                         counterStyle: TextStyle(
                                                           fontSize: 0,
-                                                          color: !isDarkMode(context)
-                                                              ? const Color.fromARGB(255, 7, 12, 59)
-                                                              : Color.fromARGB(255, 227, 230, 255),
+                                                          color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Colors.white70,
                                                         ),
                                                         focusedBorder: OutlineInputBorder(
                                                             borderSide: BorderSide(
@@ -420,7 +416,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                               key: Key('$index'),
                               margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
                               decoration: BoxDecoration(
-                                  border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
+                                  border: Border.all(color: isDarkMode(context) ? Colors.white70 : Colors.black54, width: 1),
                                   color: !isDarkMode(context)
                                       ? Color.fromARGB(255, 128, 141, 254)
                                       //Color.fromARGB(255, 100, 109, 227)
@@ -469,7 +465,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                 key: Key('$index'),
                                 margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
                                 decoration: BoxDecoration(
-                                    border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
+                                    border: Border.all(color: isDarkMode(context) ? Colors.white70 : Colors.black54, width: 1),
                                     color: !isDarkMode(context)
                                         ? Color.fromARGB(173, 128, 141, 254)
                                         //Color.fromARGB(255, 100, 109, 227)
@@ -515,7 +511,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                   Container(
                                     decoration: BoxDecoration(
                                         border: Border.symmetric(
-                                            horizontal: BorderSide(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1)),
+                                            horizontal: BorderSide(color: isDarkMode(context) ? Colors.white70 : Colors.black54, width: 1)),
                                         color: isDarkMode(context) ? Color.fromARGB(150, 7, 12, 59) : Color.fromARGB(173, 128, 141, 254)),
                                     child: ListView.builder(
                                         shrinkWrap: true,
@@ -613,9 +609,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                                           border: OutlineInputBorder(),
                                                           counterStyle: TextStyle(
                                                             fontSize: 0,
-                                                            color: !isDarkMode(context)
-                                                                ? const Color.fromARGB(255, 7, 12, 59)
-                                                                : Color.fromARGB(255, 227, 230, 255),
+                                                            color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Colors.white54,
                                                           ),
                                                           focusedBorder: OutlineInputBorder(
                                                               borderSide: BorderSide(
@@ -670,7 +664,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                           screenHeight * 0.025,
                                         ),
                                         decoration: BoxDecoration(
-                                            border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
+                                            border: Border.all(color: isDarkMode(context) ? Colors.white70 : Colors.black54, width: 1),
                                             color: !isDarkMode(context)
                                                 ? Color.fromARGB(255, 128, 141, 254)
                                                 //Color.fromARGB(255, 100, 109, 227)
@@ -714,7 +708,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                 key: Key('$index'),
                                 margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
                                 decoration: BoxDecoration(
-                                    border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
+                                    border: Border.all(color: isDarkMode(context) ? Colors.white70 : Colors.black54, width: 1),
                                     color: !isDarkMode(context)
                                         ? Color.fromARGB(173, 128, 141, 254)
                                         //Color.fromARGB(255, 100, 109, 227)
@@ -797,7 +791,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                         border: Border.all(
                             color: !editing
                                 ? isDarkMode(context)
-                                    ? Colors.white
+                                    ? Colors.white70
                                     : Colors.black54
                                 : Colors.grey,
                             width: 1),
@@ -833,7 +827,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                   ),
                 ),
                 SizedBox(
-                  height: screenHeight * 0.025,
+                  height: screenHeight * 0.1,
                 ),
               ],
             ),

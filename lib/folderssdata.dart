@@ -32,9 +32,16 @@ class QuizCard extends SuperCard {
 }
 
 class FlipCard extends SuperCard {
+  bool renamingQuestion = true;
+  bool renamingAnswer = true;
   String frontText;
   String backText;
-  FlipCard(this.frontText, this.backText);
+  TextEditingController frontTextController = TextEditingController();
+  TextEditingController backTextController = TextEditingController();
+  FlipCard(this.frontText, this.backText) {
+    frontTextController = TextEditingController(text: frontText);
+    backTextController = TextEditingController(text: backText);
+  }
 }
 
 class CardStack {
@@ -48,7 +55,7 @@ class CardStack {
 }
 
 class FoldersData extends ChangeNotifier {
-// Functions for the folders
+// Functions for the folders /////////////////////////////////////////////////////////////////////////////////////////////////
 
   Folder rootFolders = Folder("Root", [], []);
 
@@ -68,7 +75,7 @@ class FoldersData extends ChangeNotifier {
     notifyListeners();
   }
 
-// Functions for the cardstacks
+// Functions for the cardstacks /////////////////////////////////////////////////////////////////////////////////////////////////
 
   void addCardStack(Folder parentFolder) {
     final newCardStack = CardStack("", [], []);
@@ -86,7 +93,7 @@ class FoldersData extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Functions for the cards
+  // Functions for the cards /////////////////////////////////////////////////////////////////////////////////////////////////
 
   void shuffleCards(CardStack parentCardStack) {
     if (!parentCardStack.isShuffled) {
@@ -104,23 +111,49 @@ class FoldersData extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addFlipCard(CardStack parentCardStack) {
+    final FlipCard newCard = FlipCard("", "");
+    parentCardStack.cards.add(newCard);
+    parentCardStack.cardsInPractice.add(newCard);
+    notifyListeners();
+  }
+
   void deleteCard(CardStack parentCardStack, int indexToDelete) {
-    // String idToDelete = parentCardStack.cards[indexToDelete].cardId;
+    String idToDelete = parentCardStack.cards[indexToDelete].cardId;
     parentCardStack.cards.removeAt(indexToDelete);
-    // parentCardStack.cardsInPractice.removeWhere((card) => card.cardId == idToDelete);
+    parentCardStack.cardsInPractice.removeWhere((card) => card.cardId == idToDelete);
     notifyListeners();
   }
 
   void nameQuizQuestion(CardStack parentCardStack, String newQuestion, int indexToRename) {
-    String idToRename = parentCardStack.cards[indexToRename].cardId;
     if (parentCardStack.cards[indexToRename] is QuizCard) {
       (parentCardStack.cards[indexToRename] as QuizCard).questionText = newQuestion;
-      (parentCardStack.cardsInPractice.firstWhere((card) => card.cardId == idToRename) as QuizCard).questionText = newQuestion;
       notifyListeners();
     }
   }
 
-// spaced repetition algorithm
+  void startNamingFlipQuestion(CardStack parentCardStack, int indexToRename) {
+    if (parentCardStack.cards[indexToRename] is FlipCard) {
+      (parentCardStack.cards[indexToRename] as FlipCard).renamingQuestion = true;
+      notifyListeners();
+    }
+  }
+
+  void nameFlipQuestion(CardStack parentCardStack, String newQuestion, int indexToRename) {
+    if (parentCardStack.cards[indexToRename] is FlipCard) {
+      (parentCardStack.cards[indexToRename] as FlipCard).frontText = newQuestion;
+      notifyListeners();
+    }
+  }
+
+  void finishNamingFlipQuestion(CardStack parentCardStack, int indexToRename) {
+    if (parentCardStack.cards[indexToRename] is FlipCard) {
+      (parentCardStack.cards[indexToRename] as FlipCard).renamingQuestion = false;
+      notifyListeners();
+    }
+  }
+
+// spaced repetition algorithm /////////////////////////////////////////////////////////////////////////////////
   void badPress(CardStack parentCardStack, int indexOfCardInPractice) {
     SuperCard card = parentCardStack.cardsInPractice[indexOfCardInPractice];
     card.badPresses++;
@@ -142,7 +175,7 @@ class FoldersData extends ChangeNotifier {
     notifyListeners();
   }
 
-  //spaced repetition logic
+  //spaced repetition logic ////////////////////////////////////////////////////////////////////////////////////////////////////
   int calculateNewPositionIndex(int currentIndex, SuperCard card, int maxIndex) {
     int newPositionIndex = currentIndex + 3 + 3 * card.goodPresses - card.okPresses - 2 * card.badPresses;
     if (newPositionIndex < currentIndex + 3) {
@@ -198,15 +231,13 @@ class FoldersData extends ChangeNotifier {
     notifyListeners();
   }
 
-// Functions for the answers
-
+// Functions for the answers ////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Quiz Card Answers //////////////////////////////////////////////////////////////////////////////////////////////////////
   void addAnswer(CardStack parentCardStack, int indexOfCard) {
     if (parentCardStack.cards[indexOfCard] is QuizCard) {
-      // String idOfCard = parentCardStack.cards[indexOfCard].cardId;
       (parentCardStack.cards[indexOfCard] as QuizCard).answers.addEntries([
         MapEntry("", false),
       ]);
-      // (parentCardStack.cardsInPractice.firstWhere((card) => card.cardId == idOfCard) as QuizCard).answers.addEntries([   MapEntry("", false),  ]);
       notifyListeners();
     }
   }
@@ -214,7 +245,6 @@ class FoldersData extends ChangeNotifier {
   void nameQuizAnswer(CardStack parentCardStack, String newAnswerText, int indexOfCard, int indexToRename) {
     String keyToRename = (parentCardStack.cards[indexOfCard] as QuizCard).answers.keys.elementAt(indexToRename);
     bool? valueToCopy = (parentCardStack.cards[indexOfCard] as QuizCard).answers[keyToRename];
-    // String idOfCard = parentCardStack.cards[indexOfCard].cardId;
     if (parentCardStack.cards[indexOfCard] is QuizCard) {
       Map<String, bool> newAnswers = {};
       (parentCardStack.cards[indexOfCard] as QuizCard).answers.forEach((key, value) {
@@ -227,7 +257,6 @@ class FoldersData extends ChangeNotifier {
         except for the key-value pair that is being renamed, key of which is replaced with a new key(so the new name)*/
       });
       (parentCardStack.cards[indexOfCard] as QuizCard).answers = newAnswers;
-      // (parentCardStack.cardsInPractice.firstWhere((card) => card.cardId == idOfCard) as QuizCard).answers = newAnswers;
       //replaces the answers map with the newAnswers map
 
       notifyListeners();
@@ -239,7 +268,6 @@ class FoldersData extends ChangeNotifier {
   void switchAnswer(CardStack parentCardStack, int indexOfCard, int indexToSwitch) {
     String keyToSwitchValue = (parentCardStack.cards[indexOfCard] as QuizCard).answers.keys.elementAt(indexToSwitch);
     bool? valueToSwitch = (parentCardStack.cards[indexOfCard] as QuizCard).answers[keyToSwitchValue];
-    //  String idOfCard = parentCardStack.cards[indexOfCard].cardId;
     if (parentCardStack.cards[indexOfCard] is QuizCard) {
       /* "valueToSwitch = !valueToSwitch" wasn't working because 
       In Dart, when you get a value from a map, you're getting a copy of that value, 
@@ -257,19 +285,38 @@ class FoldersData extends ChangeNotifier {
       });
       // this new code, however, creates a new map
       (parentCardStack.cards[indexOfCard] as QuizCard).answers = newAnswers;
-      //  (parentCardStack.cardsInPractice.firstWhere((card) => card.cardId == idOfCard) as QuizCard).answers = newAnswers;
       notifyListeners();
     }
   }
 
   void deleteAnswer(CardStack parentCardStack, int indexOfCard, int indexToDelete) {
-    String idOfCard = parentCardStack.cards[indexOfCard].cardId;
     if (parentCardStack.cards[indexOfCard] is QuizCard) {
       String oldKey = (parentCardStack.cards[indexOfCard] as QuizCard).answers.keys.elementAt(indexToDelete);
 
       (parentCardStack.cards[indexOfCard] as QuizCard).answers.remove(oldKey); // Remove old key-value pair
-      (parentCardStack.cardsInPractice.firstWhere((card) => card.cardId == idOfCard) as QuizCard).answers.remove(oldKey);
       notifyListeners();
     }
+  }
+
+  // Flip Card Answers //////////////////////////////////////////////////////////////////////////////////////////////////////
+  void startNamingFlipAnswer(CardStack parentCardStack, int indexOfCard) {
+    if (parentCardStack.cards[indexOfCard] is FlipCard) {
+      (parentCardStack.cards[indexOfCard] as FlipCard).renamingAnswer = true;
+    }
+    notifyListeners();
+  }
+
+  void nameFlipAnswer(String answerText, CardStack parentCardStack, int indexOfCard) {
+    if (parentCardStack.cards[indexOfCard] is FlipCard) {
+      (parentCardStack.cards[indexOfCard] as FlipCard).backText = answerText;
+    }
+    notifyListeners();
+  }
+
+  void finishNamingFlipAnswer(CardStack parentCardStack, int indexOfCard) {
+    if (parentCardStack.cards[indexOfCard] is FlipCard) {
+      (parentCardStack.cards[indexOfCard] as FlipCard).renamingAnswer = false;
+    }
+    notifyListeners();
   }
 }

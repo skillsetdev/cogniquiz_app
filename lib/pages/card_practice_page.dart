@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:appinio_swiper/appinio_swiper.dart';
 
-//Next Task: fix the flashing the answers (isAnswered = true) in the card after swipe
+//Next Task: add flip cards view
 
 class CardPracticePage extends StatefulWidget {
   const CardPracticePage({required this.selectedCardStack, super.key});

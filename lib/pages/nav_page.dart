@@ -38,29 +38,22 @@ class _NavPageState extends State<NavPage> {
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
           child: Container(
             decoration: BoxDecoration(
-              color: !isDarkMode(context)
-                  ? Color.fromARGB(100, 7, 12, 59)
-                  : Color.fromARGB(100, 227, 230, 255),
+              color: !isDarkMode(context) ? Color.fromARGB(100, 7, 12, 59) : Color.fromARGB(100, 227, 230, 255),
             ),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               child: GNav(
                   tabBackgroundGradient: RadialGradient(
                       colors: isDarkMode(context)
-                          ? [
-                              Color.fromARGB(255, 128, 141, 254),
-                              Color.fromARGB(255, 72, 80, 197)
-                            ]
-                          : [
-                              Color.fromARGB(255, 161, 166, 241),
-                              Color.fromARGB(255, 128, 141, 254)
-                            ],
+                          ? [Color.fromARGB(255, 128, 141, 254), Color.fromARGB(255, 72, 80, 197)]
+                          : [Color.fromARGB(255, 161, 166, 241), Color.fromARGB(255, 128, 141, 254)],
                       center: Alignment(-0.5, 0.0)),
                   color: Colors.white,
                   gap: 8,
                   tabBorderRadius: 100,
-                  tabBorder: Border.all(color: Colors.white, width: 1),
+                  tabBorder: Border.all(color: Colors.white54, width: 1.2),
                   padding: EdgeInsets.all(16),
+                  curve: Curves.easeOutExpo,
                   tabs: [
                     GButton(
                       icon: Icons.home,

@@ -38,7 +38,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
             height: 60,
             width: 60,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100), border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1)),
+                borderRadius: BorderRadius.circular(100), border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1)),
             child: Icon(Icons.add, color: isDarkMode(context) ? Colors.white : Colors.black54, size: 35),
           ),
           switchLabelPosition: true,
@@ -117,7 +117,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                   margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
                   height: screenHeight * 0.2,
                   decoration: BoxDecoration(
-                      border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
+                      border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
                       color: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
                       borderRadius: BorderRadius.circular(12)),
                 ),
@@ -158,7 +158,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                             margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
                             height: screenHeight * 0.12,
                             decoration: BoxDecoration(
-                                border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
+                                border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
                                 color: !isDarkMode(context)
                                     ? Color.fromARGB(255, 128, 141, 254)
                                     //Color.fromARGB(255, 100, 109, 227)
@@ -235,7 +235,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                               margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
                               height: screenHeight * 0.12,
                               decoration: BoxDecoration(
-                                  border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
+                                  border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
                                   color: !isDarkMode(context)
                                       ? Color.fromARGB(255, 128, 141, 254)
                                       //Color.fromARGB(255, 100, 109, 227)
@@ -280,7 +280,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                             margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
                             height: screenHeight * 0.12,
                             decoration: BoxDecoration(
-                                border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
+                                border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
                                 color: !isDarkMode(context)
                                     ? Color.fromARGB(255, 128, 141, 254)
                                     //Color.fromARGB(255, 100, 109, 227)
@@ -377,7 +377,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                             margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
                             height: screenHeight * 0.12,
                             decoration: BoxDecoration(
-                                border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
+                                border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
                                 color: !isDarkMode(context)
                                     ? Color.fromARGB(255, 128, 141, 254)
                                     //Color.fromARGB(255, 100, 109, 227)
@@ -454,7 +454,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                               margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
                               height: screenHeight * 0.12,
                               decoration: BoxDecoration(
-                                  border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
+                                  border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
                                   color: !isDarkMode(context)
                                       ? Color.fromARGB(255, 128, 141, 254)
                                       //Color.fromARGB(255, 100, 109, 227)
@@ -499,7 +499,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                             margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
                             height: screenHeight * 0.12,
                             decoration: BoxDecoration(
-                                border: Border.all(color: isDarkMode(context) ? Colors.white : Colors.black54, width: 1),
+                                border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
                                 color: !isDarkMode(context)
                                     ? Color.fromARGB(255, 128, 141, 254)
                                     //Color.fromARGB(255, 100, 109, 227)

@@ -1,11 +1,13 @@
+import 'dart:math';
+
 import 'package:flashcards/folderssdata.dart';
 import 'package:flashcards/pages/card_practice_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:ui';
 
-//Next Task: Wrap epanded with gesturedetector instead of text for good pressability
 // Next Task:  create limit to the amount of cards(limit the add function)
-//Next Task: "add Card" expands to options: quiz card, flip card etc. (OverlayPortal)
+
 class CardStackPage extends StatefulWidget {
   const CardStackPage({required this.selectedCardStack, super.key});
   final CardStack selectedCardStack;
@@ -13,7 +15,7 @@ class CardStackPage extends StatefulWidget {
   State<CardStackPage> createState() => _CardStackPageState();
 }
 
-class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserver {
+class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserver, TickerProviderStateMixin {
   bool editing = false;
   bool reordering = false;
   String newQuestionName = "";
@@ -24,6 +26,27 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
 
   bool isDarkMode(BuildContext context) {
     return MediaQuery.of(context).platformBrightness == Brightness.dark;
+  }
+
+  bool optionsOpened = false;
+  late AnimationController _slideDownController;
+  late Animation<double> _slideDownAnimation;
+  late Animation<double> _buttonRotationAnimation;
+  double defaultValue = 0.0;
+
+  void reInitialiseAnimation() {
+    _slideDownAnimation = Tween(begin: 0.0, end: defaultValue).animate(CurvedAnimation(parent: _slideDownController, curve: Curves.easeInOut));
+  }
+
+  @override
+  void initState() {
+    _slideDownController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    _buttonRotationAnimation = Tween(begin: 0.0, end: 225 * pi / 180).animate(CurvedAnimation(parent: _slideDownController, curve: Curves.easeInOut));
+    _slideDownAnimation = Tween(begin: 0.0, end: defaultValue).animate(CurvedAnimation(parent: _slideDownController, curve: Curves.easeInOut));
+    _slideDownController.addListener(() {
+      setState(() {});
+    });
+    super.initState();
   }
 
   @override
@@ -186,9 +209,9 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                             decoration: BoxDecoration(
                                 border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
                                 color: !isDarkMode(context)
-                                    ? Color.fromARGB(255, 128, 141, 254)
+                                    ? Color.fromARGB(173, 128, 141, 254)
                                     //Color.fromARGB(255, 100, 109, 227)
-                                    : Color.fromARGB(255, 72, 80, 197),
+                                    : Color.fromARGB(172, 36, 42, 124),
                                 borderRadius: BorderRadius.circular(12)),
                             child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
                               SizedBox(
@@ -204,10 +227,11 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                   SizedBox(width: screenWidth * 0.02),
                                   Expanded(
                                     child: GestureDetector(
-                                      onTap: () {
-                                        foldersData.nameQuizQuestion(pageCardStack, "", index);
-                                      },
-                                      child: Text((pageCardStack.cards[index] as QuizCard).questionText,
+                                      onTap: () {},
+                                      child: Text(
+                                          (pageCardStack.cards[index] is QuizCard)
+                                              ? (pageCardStack.cards[index] as QuizCard).questionText
+                                              : (pageCardStack.cards[index] as FlipCard).frontText,
                                           maxLines: 3,
                                           softWrap: true,
                                           overflow: TextOverflow.ellipsis,
@@ -870,9 +894,6 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                             );
                           }
                           if ((pageCardStack.cards[index] as FlipCard).renamingQuestion == false) {
-                            String newFlipAnswerName = "";
-                            String checkFlipQuestionName = (pageCardStack.cards[index] as FlipCard).frontText;
-                            String checkFlipAnswerName = (pageCardStack.cards[index] as FlipCard).backText;
                             return Container(
                               key: Key('$index'),
                               margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
@@ -984,8 +1005,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                           onPressed: () {
                                             foldersData.finishNamingFlipAnswer(pageCardStack, index);
                                           },
-                                          icon: Icon(Icons.done,
-                                              color: newFlipAnswerName != checkFlipAnswerName ? Color.fromARGB(255, 4, 228, 86) : Colors.grey),
+                                          icon: Icon(Icons.done, color: Color.fromARGB(255, 4, 228, 86)),
                                         ),
                                         SizedBox(width: screenWidth * 0.04),
                                       ],
@@ -1021,6 +1041,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                     SizedBox(width: screenWidth * 0.02),
                                     Expanded(
                                         child: TextField(
+                                      controller: (pageCardStack.cards[index] as FlipCard).frontTextController,
                                       style: TextStyle(
                                         color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
                                       ),
@@ -1049,8 +1070,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                       onPressed: () {
                                         foldersData.finishNamingFlipQuestion(pageCardStack, index);
                                       },
-                                      icon: Icon(Icons.done,
-                                          color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
+                                      icon: Icon(Icons.done, color: Colors.green),
                                     ),
                                     SizedBox(width: screenWidth * 0.08),
                                   ],
@@ -1068,101 +1088,183 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                     ),
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    if (!editing) {
-                      foldersData.addCard(pageCardStack);
-                    }
-                  },
-                  child: Container(
-                    margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
-                    height: screenHeight * 0.12,
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                            color: !editing
-                                ? isDarkMode(context)
-                                    ? Colors.white24
-                                    : Colors.black54
-                                : Colors.grey,
-                            width: 1),
-                        color: !isDarkMode(context)
-                            ? Color.fromARGB(255, 128, 141, 254)
-                            //Color.fromARGB(255, 100, 109, 227)
-                            : Color.fromARGB(255, 72, 80, 197),
-                        borderRadius: BorderRadius.circular(12)),
-                    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(width: screenWidth * 0.08),
-                          Text("Add Card",
-                              style: TextStyle(
+                Stack(
+                  children: [
+                    Visibility(
+                      visible: optionsOpened,
+                      child: Container(height: (screenHeight * 0.12) * 3 + screenHeight * 0.025 * 3),
+                    ),
+                    Transform.translate(
+                      offset: Offset(0, _slideDownAnimation.value * 2),
+                      child: GestureDetector(
+                        onTap: () {
+                          if (!editing) {
+                            foldersData.addFlipCard(pageCardStack);
+                          }
+                        },
+                        child: Container(
+                          margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
+                          height: screenHeight * 0.12,
+                          decoration: BoxDecoration(
+                              border: Border.all(
                                   color: !editing
-                                      ? !isDarkMode(context)
-                                          ? const Color.fromARGB(255, 7, 12, 59)
-                                          : Color.fromARGB(255, 227, 230, 255)
+                                      ? isDarkMode(context)
+                                          ? Colors.white24
+                                          : Colors.black54
                                       : Colors.grey,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700)),
-                          Icon(Icons.add,
-                              color: !editing
-                                  ? !isDarkMode(context)
-                                      ? const Color.fromARGB(255, 7, 12, 59)
-                                      : Color.fromARGB(255, 227, 230, 255)
-                                  : Colors.grey),
-                          SizedBox(width: screenWidth * 0.08),
-                        ],
-                      )
-                    ]),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    if (!editing) {
-                      foldersData.addFlipCard(pageCardStack);
-                    }
-                  },
-                  child: Container(
-                    margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
-                    height: screenHeight * 0.12,
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                            color: !editing
-                                ? isDarkMode(context)
-                                    ? Colors.white24
-                                    : Colors.black54
-                                : Colors.grey,
-                            width: 1),
-                        color: !isDarkMode(context)
-                            ? Color.fromARGB(255, 128, 141, 254)
-                            //Color.fromARGB(255, 100, 109, 227)
-                            : Color.fromARGB(255, 72, 80, 197),
-                        borderRadius: BorderRadius.circular(12)),
-                    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(width: screenWidth * 0.08),
-                          Text("Add Flip Card",
-                              style: TextStyle(
+                                  width: 1),
+                              color: !isDarkMode(context)
+                                  ? Color.fromARGB(255, 128, 141, 254)
+                                  //Color.fromARGB(255, 100, 109, 227)
+                                  : Color.fromARGB(255, 72, 80, 197),
+                              borderRadius: BorderRadius.circular(12)),
+                          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(width: screenWidth * 0.08),
+                                Text("Add Flip Card",
+                                    style: TextStyle(
+                                        color: !editing
+                                            ? !isDarkMode(context)
+                                                ? const Color.fromARGB(255, 7, 12, 59)
+                                                : Color.fromARGB(255, 227, 230, 255)
+                                            : Colors.grey,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w700)),
+                                Icon(Icons.flip,
+                                    color: !editing
+                                        ? !isDarkMode(context)
+                                            ? const Color.fromARGB(255, 7, 12, 59)
+                                            : Color.fromARGB(255, 227, 230, 255)
+                                        : Colors.grey),
+                                SizedBox(width: screenWidth * 0.08),
+                              ],
+                            )
+                          ]),
+                        ),
+                      ),
+                    ),
+                    Transform.translate(
+                      offset: Offset(0, _slideDownAnimation.value),
+                      child: GestureDetector(
+                        onTap: () {
+                          if (!editing) {
+                            foldersData.addCard(pageCardStack);
+                          }
+                        },
+                        child: Container(
+                          margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
+                          height: screenHeight * 0.12,
+                          decoration: BoxDecoration(
+                              border: Border.all(
                                   color: !editing
-                                      ? !isDarkMode(context)
-                                          ? const Color.fromARGB(255, 7, 12, 59)
-                                          : Color.fromARGB(255, 227, 230, 255)
+                                      ? isDarkMode(context)
+                                          ? Colors.white24
+                                          : Colors.black54
                                       : Colors.grey,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700)),
-                          Icon(Icons.add,
-                              color: !editing
-                                  ? !isDarkMode(context)
-                                      ? const Color.fromARGB(255, 7, 12, 59)
-                                      : Color.fromARGB(255, 227, 230, 255)
-                                  : Colors.grey),
-                          SizedBox(width: screenWidth * 0.08),
-                        ],
-                      )
-                    ]),
-                  ),
+                                  width: 1),
+                              color: !isDarkMode(context)
+                                  ? Color.fromARGB(255, 128, 141, 254)
+                                  //Color.fromARGB(255, 100, 109, 227)
+                                  : Color.fromARGB(255, 72, 80, 197),
+                              borderRadius: BorderRadius.circular(12)),
+                          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(width: screenWidth * 0.08),
+                                Text("Add Quiz Card",
+                                    style: TextStyle(
+                                        color: !editing
+                                            ? !isDarkMode(context)
+                                                ? const Color.fromARGB(255, 7, 12, 59)
+                                                : Color.fromARGB(255, 227, 230, 255)
+                                            : Colors.grey,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w700)),
+                                Icon(Icons.psychology_alt_outlined,
+                                    color: !editing
+                                        ? !isDarkMode(context)
+                                            ? const Color.fromARGB(255, 7, 12, 59)
+                                            : Color.fromARGB(255, 227, 230, 255)
+                                        : Colors.grey),
+                                SizedBox(width: screenWidth * 0.08),
+                              ],
+                            )
+                          ]),
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          defaultValue = screenHeight * 0.12 + screenHeight * 0.025;
+                        });
+                        reInitialiseAnimation();
+                        if (editing) {
+                          return;
+                        }
+                        if (!optionsOpened) {
+                          _slideDownController.forward();
+                          setState(() {
+                            optionsOpened = true;
+                          });
+                        } else {
+                          _slideDownController.reverse();
+                          setState(() {
+                            optionsOpened = false;
+                          });
+                        }
+                      },
+                      child: Container(
+                        margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
+                        height: screenHeight * 0.12,
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                                color: !editing
+                                    ? isDarkMode(context)
+                                        ? Colors.white24
+                                        : Colors.black54
+                                    : Colors.grey,
+                                width: 1),
+                            color: !isDarkMode(context)
+                                ? Color.fromARGB(255, 128, 141, 254)
+                                //Color.fromARGB(255, 100, 109, 227)
+                                : optionsOpened
+                                    ? Color.fromARGB(125, 72, 80, 197)
+                                    : Color.fromARGB(255, 72, 80, 197),
+                            borderRadius: BorderRadius.circular(12)),
+                        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(width: screenWidth * 0.08),
+                              Text("Add Card",
+                                  style: TextStyle(
+                                      color: !editing
+                                          ? !isDarkMode(context)
+                                              ? const Color.fromARGB(255, 7, 12, 59)
+                                              : Color.fromARGB(255, 227, 230, 255)
+                                          : Colors.grey,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700)),
+                              Transform.rotate(
+                                angle: _buttonRotationAnimation.value,
+                                child: Icon(Icons.add,
+                                    color: !editing
+                                        ? !isDarkMode(context)
+                                            ? const Color.fromARGB(255, 7, 12, 59)
+                                            : Color.fromARGB(255, 227, 230, 255)
+                                        : Colors.grey),
+                              ),
+                              SizedBox(width: screenWidth * 0.08),
+                            ],
+                          )
+                        ]),
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(
                   height: screenHeight * 0.1,

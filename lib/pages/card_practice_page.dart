@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:appinio_swiper/appinio_swiper.dart';
 
 //Next Task: add flip cards view
+// Next task add WillPopScope and add stats when the back button is pressed
 
 class CardPracticePage extends StatefulWidget {
   const CardPracticePage({required this.selectedCardStack, super.key});
@@ -99,6 +100,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                         setState(() {
                           indexOfCurrentCard = indexAfterSwipe;
                           isAnswered[indexAfterSwipe] = false;
+                          isAnswered = List.filled(widget.selectedCardStack.cardsInPractice.length, false);
                         });
                         foldersData.putCardsBack(pageCardStack); //refresh the cards when the count starts over again
                         foldersData.zeroMovedCards(pageCardStack);

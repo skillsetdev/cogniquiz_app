@@ -57,10 +57,9 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
           curve: Curves.bounceIn,
           overlayColor: !isDarkMode(context) ? Colors.black : Colors.black,
           overlayOpacity: 0.5,
-          onOpen: () => print('OPENING DIAL'), // action when menu opens
-          onClose: () => print('DIAL CLOSED'), //action when menu closes
-
-          elevation: 8.0, //shadow elevation of button
+          onOpen: () {},
+          onClose: () {},
+          elevation: 8.0,
           shape: CircleBorder(), //shape of button
 
           children: [
@@ -74,7 +73,6 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
               onTap: () {
                 foldersData.addFolder(pageFolder);
               },
-              onLongPress: () => print('FIRST CHILD LONG PRESS'),
             ),
             SpeedDialChild(
               child: Icon(Icons.quiz_outlined),
@@ -86,7 +84,6 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
               onTap: () {
                 foldersData.addCardStack(pageFolder);
               },
-              onLongPress: () => print('SECOND CHILD LONG PRESS'),
             ),
           ],
         ),

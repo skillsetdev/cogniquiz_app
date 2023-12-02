@@ -231,7 +231,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                       child: Text(
                                           (pageCardStack.cards[index] is QuizCard)
                                               ? (pageCardStack.cards[index] as QuizCard).questionText
-                                              : (pageCardStack.cards[index] as FlipCard).frontText,
+                                              : (pageCardStack.cards[index] as FlippyCard).frontText,
                                           maxLines: 3,
                                           softWrap: true,
                                           overflow: TextOverflow.ellipsis,
@@ -794,8 +794,8 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                               ]),
                             );
                           }
-                        } else if (pageCardStack.cards[index] is FlipCard) {
-                          //FlipCard
+                        } else if (pageCardStack.cards[index] is FlippyCard) {
+                          //FlippyCard
                           if (editing) {
                             return Container(
                               key: Key('$index'),
@@ -825,7 +825,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                         onTap: () {
                                           foldersData.nameQuizQuestion(pageCardStack, "", index);
                                         },
-                                        child: Text((pageCardStack.cards[index] as FlipCard).frontText,
+                                        child: Text((pageCardStack.cards[index] as FlippyCard).frontText,
                                             maxLines: 3,
                                             softWrap: true,
                                             overflow: TextOverflow.ellipsis,
@@ -869,10 +869,8 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                     SizedBox(width: screenWidth * 0.04),
                                     Expanded(
                                       child: GestureDetector(
-                                        onTap: () {
-                                          foldersData.nameFlipAnswer("", pageCardStack, index);
-                                        },
-                                        child: Text((pageCardStack.cards[index] as FlipCard).backText,
+                                        onTap: () {},
+                                        child: Text((pageCardStack.cards[index] as FlippyCard).backText,
                                             maxLines: 3,
                                             softWrap: true,
                                             overflow: TextOverflow.ellipsis,
@@ -893,7 +891,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                               ]),
                             );
                           }
-                          if ((pageCardStack.cards[index] as FlipCard).renamingQuestion == false) {
+                          if ((pageCardStack.cards[index] as FlippyCard).renamingQuestion == false) {
                             return Container(
                               key: Key('$index'),
                               margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
@@ -922,7 +920,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                         onTap: () {
                                           foldersData.startNamingFlipQuestion(pageCardStack, index);
                                         },
-                                        child: Text((pageCardStack.cards[index] as FlipCard).frontText,
+                                        child: Text((pageCardStack.cards[index] as FlippyCard).frontText,
                                             maxLines: 3,
                                             softWrap: true,
                                             overflow: TextOverflow.ellipsis,
@@ -950,7 +948,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                   height: screenHeight * 0.025,
                                 ),
                                 Visibility(
-                                  visible: !(pageCardStack.cards[index] as FlipCard).renamingAnswer,
+                                  visible: !(pageCardStack.cards[index] as FlippyCard).renamingAnswer,
                                   child: Row(
                                     children: [
                                       SizedBox(width: screenWidth * 0.04),
@@ -959,7 +957,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                             onTap: () {
                                               foldersData.startNamingFlipAnswer(pageCardStack, index);
                                             },
-                                            child: Text((pageCardStack.cards[index] as FlipCard).backText,
+                                            child: Text((pageCardStack.cards[index] as FlippyCard).backText,
                                                 maxLines: 3,
                                                 softWrap: true,
                                                 overflow: TextOverflow.ellipsis,
@@ -975,7 +973,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                   ),
                                 ),
                                 Visibility(
-                                    visible: (pageCardStack.cards[index] as FlipCard).renamingAnswer,
+                                    visible: (pageCardStack.cards[index] as FlippyCard).renamingAnswer,
                                     child: Row(
                                       children: [
                                         SizedBox(width: screenWidth * 0.04),
@@ -984,7 +982,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                           style: TextStyle(
                                             color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Colors.white70,
                                           ),
-                                          controller: (pageCardStack.cards[index] as FlipCard).backTextController,
+                                          controller: (pageCardStack.cards[index] as FlippyCard).backTextController,
                                           minLines: 2,
                                           maxLines: 2,
                                           decoration: InputDecoration(
@@ -1041,7 +1039,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                     SizedBox(width: screenWidth * 0.02),
                                     Expanded(
                                         child: TextField(
-                                      controller: (pageCardStack.cards[index] as FlipCard).frontTextController,
+                                      controller: (pageCardStack.cards[index] as FlippyCard).frontTextController,
                                       style: TextStyle(
                                         color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
                                       ),
@@ -1099,7 +1097,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                       child: GestureDetector(
                         onTap: () {
                           if (!editing) {
-                            foldersData.addFlipCard(pageCardStack);
+                            foldersData.addFlippyCard(pageCardStack);
                           }
                         },
                         child: Container(

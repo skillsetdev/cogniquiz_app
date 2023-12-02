@@ -1,5 +1,7 @@
 import 'dart:math';
 import 'package:flashcards/folderssdata.dart';
+import 'package:flip_card/flip_card.dart';
+import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:appinio_swiper/appinio_swiper.dart';
@@ -24,10 +26,15 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
 
   List<bool> isAnswered = [];
 
+  late List<FlipCardController> _controllerList;
+  late FlipCardController _controller;
+
   @override
   void initState() {
     super.initState();
     isAnswered = List.filled(widget.selectedCardStack.cardsInPractice.length, false);
+    _controller = FlipCardController();
+    _controllerList = List.filled(widget.selectedCardStack.cardsInPractice.length, _controller);
   }
 
   @override
@@ -94,6 +101,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                           indexOfCurrentCard = indexAfterSwipe;
                           isAnswered[indexAfterSwipe] = false;
                           isAnswered[indexAfterSwipe - 1] = false;
+                          _controllerList[indexAfterSwipe - 1].toggleCard();
                         });
                         foldersData.moveCard(pageCardStack, indexAfterSwipe - 1);
                       } else if (indexAfterSwipe == 0) {
@@ -101,6 +109,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                           indexOfCurrentCard = indexAfterSwipe;
                           isAnswered[indexAfterSwipe] = false;
                           isAnswered = List.filled(widget.selectedCardStack.cardsInPractice.length, false);
+                          _controllerList = List.filled(widget.selectedCardStack.cardsInPractice.length, _controller);
                         });
                         foldersData.putCardsBack(pageCardStack); //refresh the cards when the count starts over again
                         foldersData.zeroMovedCards(pageCardStack);
@@ -131,17 +140,19 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                                 Row(
                                   children: [
                                     SizedBox(width: screenWidth * 0.04),
-                                    Container(
-                                      width: screenWidth * 0.65,
-                                      child: Text((card as QuizCard).questionText,
-                                          maxLines: 3,
-                                          softWrap: true,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w600,
-                                              color:
-                                                  !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255))),
+                                    Expanded(
+                                      child: Container(
+                                        child: Text((card as QuizCard).questionText,
+                                            maxLines: 3,
+                                            softWrap: true,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w600,
+                                                color: !isDarkMode(context)
+                                                    ? const Color.fromARGB(255, 7, 12, 59)
+                                                    : Color.fromARGB(255, 227, 230, 255))),
+                                      ),
                                     ),
                                     SizedBox(width: screenWidth * 0.06),
                                   ],
@@ -214,7 +225,96 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                               ])),
                         );
                       } else {
-                        return Container();
+                        return FlipCard(
+                          controller: _controllerList[index],
+                          front: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                isAnswered[index] = true;
+                              });
+                            },
+                            child: Container(
+                                margin: EdgeInsets.fromLTRB(screenWidth * 0.05, 0, screenWidth * 0.05, 0),
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: isDarkMode(context) ? Colors.white70 : Colors.black54, width: 1),
+                                    color: !isDarkMode(context)
+                                        ? Color.fromARGB(255, 128, 141, 254)
+                                        //Color.fromARGB(255, 100, 109, 227)
+                                        : Color.fromARGB(255, 36, 42, 124),
+                                    borderRadius: BorderRadius.circular(12)),
+                                child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                  SizedBox(
+                                    height: screenHeight * 0.025,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(width: screenWidth * 0.04),
+                                      Expanded(
+                                        child: Container(
+                                          child: Text((card as FlippyCard).frontText,
+                                              maxLines: 5,
+                                              softWrap: true,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: !isDarkMode(context)
+                                                      ? const Color.fromARGB(255, 7, 12, 59)
+                                                      : Color.fromARGB(255, 227, 230, 255))),
+                                        ),
+                                      ),
+                                      SizedBox(width: screenWidth * 0.06),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: screenHeight * 0.025,
+                                  ),
+                                ])),
+                          ),
+                          back: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                isAnswered[index] = false;
+                              });
+                            },
+                            child: Container(
+                                margin: EdgeInsets.fromLTRB(screenWidth * 0.05, 0, screenWidth * 0.05, 0),
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: isDarkMode(context) ? Colors.white70 : Colors.black54, width: 1),
+                                    color: !isDarkMode(context) ? Color.fromARGB(240, 128, 141, 254) : Color.fromARGB(240, 36, 42, 124),
+                                    borderRadius: BorderRadius.circular(12)),
+                                child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                  SizedBox(
+                                    height: screenHeight * 0.025,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(width: screenWidth * 0.04),
+                                      Expanded(
+                                        child: Container(
+                                          child: Text((card as FlippyCard).backText,
+                                              maxLines: 5,
+                                              softWrap: true,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: !isDarkMode(context)
+                                                      ? const Color.fromARGB(255, 7, 12, 59)
+                                                      : Color.fromARGB(255, 227, 230, 255))),
+                                        ),
+                                      ),
+                                      SizedBox(width: screenWidth * 0.06),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: screenHeight * 0.025,
+                                  ),
+                                ])),
+                          ),
+                        );
                       }
                     },
                   ),
@@ -327,6 +427,10 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                               setState(() {
                                 isAnswered[indexOfCurrentCard] = true;
                               });
+
+                              if (pageCardStack.cards[indexOfCurrentCard] is FlippyCard) {
+                                _controllerList[indexOfCurrentCard].toggleCard();
+                              }
                             },
                             child: Container(
                               margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),

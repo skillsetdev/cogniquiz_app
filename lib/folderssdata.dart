@@ -31,14 +31,14 @@ class QuizCard extends SuperCard {
   QuizCard(this.questionText, this.answers);
 }
 
-class FlipCard extends SuperCard {
+class FlippyCard extends SuperCard {
   bool renamingQuestion = true;
   bool renamingAnswer = true;
   String frontText;
   String backText;
   TextEditingController frontTextController = TextEditingController();
   TextEditingController backTextController = TextEditingController();
-  FlipCard(this.frontText, this.backText) {
+  FlippyCard(this.frontText, this.backText) {
     frontTextController = TextEditingController(text: frontText);
     backTextController = TextEditingController(text: backText);
   }
@@ -111,8 +111,8 @@ class FoldersData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addFlipCard(CardStack parentCardStack) {
-    final FlipCard newCard = FlipCard("", "");
+  void addFlippyCard(CardStack parentCardStack) {
+    final FlippyCard newCard = FlippyCard("", "");
     parentCardStack.cards.add(newCard);
     parentCardStack.cardsInPractice.add(newCard);
     notifyListeners();
@@ -133,22 +133,22 @@ class FoldersData extends ChangeNotifier {
   }
 
   void startNamingFlipQuestion(CardStack parentCardStack, int indexToRename) {
-    if (parentCardStack.cards[indexToRename] is FlipCard) {
-      (parentCardStack.cards[indexToRename] as FlipCard).renamingQuestion = true;
+    if (parentCardStack.cards[indexToRename] is FlippyCard) {
+      (parentCardStack.cards[indexToRename] as FlippyCard).renamingQuestion = true;
       notifyListeners();
     }
   }
 
   void nameFlipQuestion(CardStack parentCardStack, String newQuestion, int indexToRename) {
-    if (parentCardStack.cards[indexToRename] is FlipCard) {
-      (parentCardStack.cards[indexToRename] as FlipCard).frontText = newQuestion;
+    if (parentCardStack.cards[indexToRename] is FlippyCard) {
+      (parentCardStack.cards[indexToRename] as FlippyCard).frontText = newQuestion;
       notifyListeners();
     }
   }
 
   void finishNamingFlipQuestion(CardStack parentCardStack, int indexToRename) {
-    if (parentCardStack.cards[indexToRename] is FlipCard) {
-      (parentCardStack.cards[indexToRename] as FlipCard).renamingQuestion = false;
+    if (parentCardStack.cards[indexToRename] is FlippyCard) {
+      (parentCardStack.cards[indexToRename] as FlippyCard).renamingQuestion = false;
       notifyListeners();
     }
   }
@@ -300,22 +300,22 @@ class FoldersData extends ChangeNotifier {
 
   // Flip Card Answers //////////////////////////////////////////////////////////////////////////////////////////////////////
   void startNamingFlipAnswer(CardStack parentCardStack, int indexOfCard) {
-    if (parentCardStack.cards[indexOfCard] is FlipCard) {
-      (parentCardStack.cards[indexOfCard] as FlipCard).renamingAnswer = true;
+    if (parentCardStack.cards[indexOfCard] is FlippyCard) {
+      (parentCardStack.cards[indexOfCard] as FlippyCard).renamingAnswer = true;
     }
     notifyListeners();
   }
 
   void nameFlipAnswer(String answerText, CardStack parentCardStack, int indexOfCard) {
-    if (parentCardStack.cards[indexOfCard] is FlipCard) {
-      (parentCardStack.cards[indexOfCard] as FlipCard).backText = answerText;
+    if (parentCardStack.cards[indexOfCard] is FlippyCard) {
+      (parentCardStack.cards[indexOfCard] as FlippyCard).backText = answerText;
     }
     notifyListeners();
   }
 
   void finishNamingFlipAnswer(CardStack parentCardStack, int indexOfCard) {
-    if (parentCardStack.cards[indexOfCard] is FlipCard) {
-      (parentCardStack.cards[indexOfCard] as FlipCard).renamingAnswer = false;
+    if (parentCardStack.cards[indexOfCard] is FlippyCard) {
+      (parentCardStack.cards[indexOfCard] as FlippyCard).renamingAnswer = false;
     }
     notifyListeners();
   }

@@ -438,13 +438,13 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                           visible: !isAnswered[indexOfCurrentCard],
                           child: GestureDetector(
                             onTap: () {
-                              if (pageCardStack.cards[indexOfCurrentCard] is FlippyCard) {
+                              if (pageCardStack.cardsInPractice[indexOfCurrentCard] is FlippyCard) {
                                 print("flippy card");
-                                //foldersData.flipTheCard(indexOfCurrentCard, pageCardStack);
+                                foldersData.flipTheCard(indexOfCurrentCard, pageCardStack);
                                 setState(() {
                                   isAnswered[indexOfCurrentCard] = !isAnswered[indexOfCurrentCard];
                                 });
-                              } else if (pageCardStack.cards[indexOfCurrentCard] is QuizCard) {
+                              } else {
                                 print("quiz card");
                                 setState(() {
                                   isAnswered[indexOfCurrentCard] = true;

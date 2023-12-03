@@ -1,5 +1,6 @@
 //Next Task: add moveCardOverTheStack() by adding them to a separate list if their index exceeds the maxIndex and them adding them on the loor adfre the putCardsBack()
 //Next Task: add other types of cards
+import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -32,6 +33,7 @@ class QuizCard extends SuperCard {
 }
 
 class FlippyCard extends SuperCard {
+  FlipCardController flipController = FlipCardController();
   bool renamingQuestion = true;
   bool renamingAnswer = true;
   String frontText;
@@ -111,13 +113,6 @@ class FoldersData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addFlippyCard(CardStack parentCardStack) {
-    final FlippyCard newCard = FlippyCard("", "");
-    parentCardStack.cards.add(newCard);
-    parentCardStack.cardsInPractice.add(newCard);
-    notifyListeners();
-  }
-
   void deleteCard(CardStack parentCardStack, int indexToDelete) {
     String idToDelete = parentCardStack.cards[indexToDelete].cardId;
     parentCardStack.cards.removeAt(indexToDelete);
@@ -125,11 +120,20 @@ class FoldersData extends ChangeNotifier {
     notifyListeners();
   }
 
+///////////Quiz
   void nameQuizQuestion(CardStack parentCardStack, String newQuestion, int indexToRename) {
     if (parentCardStack.cards[indexToRename] is QuizCard) {
       (parentCardStack.cards[indexToRename] as QuizCard).questionText = newQuestion;
       notifyListeners();
     }
+  }
+
+///////////Flippy
+  void addFlippyCard(CardStack parentCardStack) {
+    final FlippyCard newCard = FlippyCard("", "");
+    parentCardStack.cards.add(newCard);
+    parentCardStack.cardsInPractice.add(newCard);
+    notifyListeners();
   }
 
   void startNamingFlipQuestion(CardStack parentCardStack, int indexToRename) {
@@ -232,7 +236,7 @@ class FoldersData extends ChangeNotifier {
   }
 
 // Functions for the answers ////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Quiz Card Answers //////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////// Quiz Card Answers
   void addAnswer(CardStack parentCardStack, int indexOfCard) {
     if (parentCardStack.cards[indexOfCard] is QuizCard) {
       (parentCardStack.cards[indexOfCard] as QuizCard).answers.addEntries([
@@ -298,7 +302,7 @@ class FoldersData extends ChangeNotifier {
     }
   }
 
-  // Flip Card Answers //////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////// Flip Card Answers
   void startNamingFlipAnswer(CardStack parentCardStack, int indexOfCard) {
     if (parentCardStack.cards[indexOfCard] is FlippyCard) {
       (parentCardStack.cards[indexOfCard] as FlippyCard).renamingAnswer = true;
@@ -317,6 +321,14 @@ class FoldersData extends ChangeNotifier {
     if (parentCardStack.cards[indexOfCard] is FlippyCard) {
       (parentCardStack.cards[indexOfCard] as FlippyCard).renamingAnswer = false;
     }
+    notifyListeners();
+  }
+
+  void flipTheCard(int indexOfFlippyCard, CardStack parentCardStack) {
+    FlippyCard _card = (parentCardStack.cardsInPractice[indexOfFlippyCard] as FlippyCard);
+
+    _card.flipController.toggleCard();
+
     notifyListeners();
   }
 }

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:appinio_swiper/appinio_swiper.dart';
 
-//Next Task: add flip cards view
+//Next Task: FIX THE EXCEPTION: "type 'QuizCard' is not a subtype of type 'FlippyCard' in type cast" probable reason: idk
 // Next task add WillPopScope and add stats when the back button is pressed
 
 class CardPracticePage extends StatefulWidget {
@@ -26,15 +26,10 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
 
   List<bool> isAnswered = [];
 
-  late List<FlipCardController> _controllerList;
-  late FlipCardController _controller;
-
   @override
   void initState() {
     super.initState();
     isAnswered = List.filled(widget.selectedCardStack.cardsInPractice.length, false);
-    _controller = FlipCardController();
-    _controllerList = List.filled(widget.selectedCardStack.cardsInPractice.length, _controller);
   }
 
   @override
@@ -98,18 +93,28 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                     onSwipe: (indexAfterSwipe, direction) {
                       if (indexAfterSwipe > 0 && indexAfterSwipe < pageCardStack.cardsInPractice.length) {
                         setState(() {
+                          if (pageCardStack.cardsInPractice[indexOfCurrentCard] is FlippyCard) {
+                            if (isAnswered[indexOfCurrentCard]) {
+                              foldersData.flipTheCard(indexOfCurrentCard, pageCardStack);
+                            }
+                          }
+                          isAnswered[indexOfCurrentCard] = false;
                           indexOfCurrentCard = indexAfterSwipe;
+
                           isAnswered[indexAfterSwipe] = false;
-                          isAnswered[indexAfterSwipe - 1] = false;
-                          _controllerList[indexAfterSwipe - 1].toggleCard();
                         });
                         foldersData.moveCard(pageCardStack, indexAfterSwipe - 1);
                       } else if (indexAfterSwipe == 0) {
                         setState(() {
+                          if (pageCardStack.cardsInPractice[indexOfCurrentCard] is FlippyCard) {
+                            if (isAnswered[indexOfCurrentCard]) {
+                              foldersData.flipTheCard(indexOfCurrentCard, pageCardStack);
+                            }
+                          }
+                          isAnswered[indexOfCurrentCard] = false;
                           indexOfCurrentCard = indexAfterSwipe;
                           isAnswered[indexAfterSwipe] = false;
                           isAnswered = List.filled(widget.selectedCardStack.cardsInPractice.length, false);
-                          _controllerList = List.filled(widget.selectedCardStack.cardsInPractice.length, _controller);
                         });
                         foldersData.putCardsBack(pageCardStack); //refresh the cards when the count starts over again
                         foldersData.zeroMovedCards(pageCardStack);
@@ -226,12 +231,17 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                         );
                       } else {
                         return FlipCard(
-                          controller: _controllerList[index],
+                          flipOnTouch: false,
+                          controller: (card as FlippyCard).flipController,
                           front: GestureDetector(
                             onTap: () {
+                              foldersData.flipTheCard(index, pageCardStack);
                               setState(() {
-                                isAnswered[index] = true;
+                                isAnswered[index] = !isAnswered[index];
                               });
+                              print("actual index:${index.toString()}");
+                              print("estimated index:${indexOfCurrentCard.toString()}");
+                              print("length of the stack:${pageCardStack.cardsInPractice.length}");
                             },
                             child: Container(
                                 margin: EdgeInsets.fromLTRB(screenWidth * 0.05, 0, screenWidth * 0.05, 0),
@@ -274,9 +284,13 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                           ),
                           back: GestureDetector(
                             onTap: () {
+                              foldersData.flipTheCard(index, pageCardStack);
                               setState(() {
-                                isAnswered[index] = false;
+                                isAnswered[index] = !isAnswered[index];
                               });
+                              print("actual index:${index.toString()}");
+                              print("estimated index:${indexOfCurrentCard.toString()}");
+                              print("length of the stack:${pageCardStack.cardsInPractice.length}");
                             },
                             child: Container(
                                 margin: EdgeInsets.fromLTRB(screenWidth * 0.05, 0, screenWidth * 0.05, 0),
@@ -424,12 +438,17 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                           visible: !isAnswered[indexOfCurrentCard],
                           child: GestureDetector(
                             onTap: () {
-                              setState(() {
-                                isAnswered[indexOfCurrentCard] = true;
-                              });
-
                               if (pageCardStack.cards[indexOfCurrentCard] is FlippyCard) {
-                                _controllerList[indexOfCurrentCard].toggleCard();
+                                print("flippy card");
+                                //foldersData.flipTheCard(indexOfCurrentCard, pageCardStack);
+                                setState(() {
+                                  isAnswered[indexOfCurrentCard] = !isAnswered[indexOfCurrentCard];
+                                });
+                              } else if (pageCardStack.cards[indexOfCurrentCard] is QuizCard) {
+                                print("quiz card");
+                                setState(() {
+                                  isAnswered[indexOfCurrentCard] = true;
+                                });
                               }
                             },
                             child: Container(

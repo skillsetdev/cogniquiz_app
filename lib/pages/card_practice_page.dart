@@ -1,12 +1,10 @@
 import 'dart:math';
 import 'package:flashcards/folderssdata.dart';
 import 'package:flip_card/flip_card.dart';
-import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:appinio_swiper/appinio_swiper.dart';
 
-//Next Task: FIX THE EXCEPTION: "type 'QuizCard' is not a subtype of type 'FlippyCard' in type cast" probable reason: idk
 // Next task add WillPopScope and add stats when the back button is pressed
 
 class CardPracticePage extends StatefulWidget {

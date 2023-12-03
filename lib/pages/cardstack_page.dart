@@ -94,6 +94,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                       //foldersData.shuffleCards(pageCardStack); //shuffle cards on the first open
                       foldersData.putCardsBack(pageCardStack); //put the moved from the end cards back to the beginning
                       foldersData.zeroMovedCards(pageCardStack); // set moved cards to 0
+                      foldersData.addRecentCardStack(pageCardStack); //add to recent cardstacks
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return CardPracticePage(selectedCardStack: pageCardStack);
                       }));

@@ -200,7 +200,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                         });
                       },
                       itemBuilder: (context, index) {
-                        if (!pageFolder.subfolders[index].name.isEmpty) {
+                        if (pageFolder.subfolders[index].name.isNotEmpty) {
                           return Dismissible(
                             key: Key(foldersData.rootFolders.subfolders[index].folderId.toString()),
                             direction: DismissDirection.endToStart,
@@ -419,7 +419,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                         });
                       },
                       itemBuilder: (context, index) {
-                        if (!pageFolder.cardstacks[index].name.isEmpty) {
+                        if (pageFolder.cardstacks[index].name.isNotEmpty) {
                           return Dismissible(
                             key: Key(foldersData.rootFolders.cardstacks[index].cardStackId.toString()),
                             direction: DismissDirection.endToStart,

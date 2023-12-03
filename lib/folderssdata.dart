@@ -1,4 +1,4 @@
-//Next Task: add moveCardOverTheStack() by adding them to a separate list if their index exceeds the maxIndex and them adding them on the loor adfre the putCardsBack()
+//Next Task: add moveCardOverTheStack() by adding them to a separate list if their index exceeds the maxIndex (otherwise last card stay last) and them adding them on the loor adfre the putCardsBack()
 //Next Task: add other types of cards
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
@@ -95,6 +95,15 @@ class FoldersData extends ChangeNotifier {
     notifyListeners();
   }
 
+  List<CardStack> recentCardStacks = [];
+
+  void addRecentCardStack(CardStack cardStack) {
+    if (recentCardStacks.contains(cardStack)) {
+      recentCardStacks.remove(cardStack);
+    }
+    recentCardStacks.insert(0, cardStack);
+    notifyListeners();
+  }
   // Functions for the cards /////////////////////////////////////////////////////////////////////////////////////////////////
 
   void shuffleCards(CardStack parentCardStack) {

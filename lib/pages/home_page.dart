@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flashcards/folderssdata.dart';
+import 'package:flashcards/app_data.dart';
 import 'package:flashcards/pages/cardstack_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -15,7 +15,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late FoldersData foldersData;
+  late AppData appData;
 
   void signOut() {
     FirebaseAuth.instance.signOut();
@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    foldersData = Provider.of<FoldersData>(context);
+    appData = Provider.of<AppData>(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -129,10 +129,10 @@ class _HomePageState extends State<HomePage> {
                 height: screenHeight * 0.025,
               ),
               Container(
-                height: (screenHeight * 0.145) * min(foldersData.recentCardStacks.length, 5),
+                height: (screenHeight * 0.145) * min(appData.recentCardStacks.length, 5),
                 child: ListView.builder(
                   physics: NeverScrollableScrollPhysics(),
-                  itemCount: min(foldersData.recentCardStacks.length, 5),
+                  itemCount: min(appData.recentCardStacks.length, 5),
                   itemBuilder: (context, index) {
                     return Container(
                       key: Key('$index'),
@@ -154,7 +154,7 @@ class _HomePageState extends State<HomePage> {
                             Spacer(),
                             GestureDetector(
                               onTap: () {},
-                              child: Text(foldersData.recentCardStacks[index].name,
+                              child: Text(appData.recentCardStacks[index].name,
                                   style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
@@ -164,7 +164,7 @@ class _HomePageState extends State<HomePage> {
                             IconButton(
                               onPressed: () {
                                 Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) => CardStackPage(selectedCardStack: foldersData.recentCardStacks[index])));
+                                    MaterialPageRoute(builder: (context) => CardStackPage(selectedCardStack: appData.recentCardStacks[index])));
                               },
                               icon: Icon(Icons.arrow_forward_ios,
                                   color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),

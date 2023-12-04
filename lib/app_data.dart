@@ -1,5 +1,5 @@
 //Next Task: add moveCardOverTheStack() by adding them to a separate list if their index exceeds the maxIndex (otherwise last card stay last) and them adding them on the loor adfre the putCardsBack()
-//Next Task: add other types of cards
+//Next Task: Add community class and work with firebase
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
@@ -56,7 +56,7 @@ class CardStack {
   CardStack(this.name, this.cards, this.cardsInPractice);
 }
 
-class FoldersData extends ChangeNotifier {
+class AppData extends ChangeNotifier {
 // Functions for the folders /////////////////////////////////////////////////////////////////////////////////////////////////
 
   Folder rootFolders = Folder("Root", [], []);
@@ -338,6 +338,14 @@ class FoldersData extends ChangeNotifier {
 
     _card.flipController.toggleCard();
 
+    notifyListeners();
+  }
+
+// Calendar ////////////////////////////////////////////////////////////////////////////////////////////////////
+  Map<String, Color> daysProgress = {};
+
+  void addDaysProgress(DateTime day, Color color) {
+    daysProgress[day.toString()] = color;
     notifyListeners();
   }
 }

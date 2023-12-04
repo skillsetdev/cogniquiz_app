@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:flashcards/folderssdata.dart';
+import 'package:flashcards/app_data.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +17,7 @@ class CardPracticePage extends StatefulWidget {
 class _CardPracticePageState extends State<CardPracticePage> with WidgetsBindingObserver {
   AppinioSwiperController swiperController = AppinioSwiperController();
   int indexOfCurrentCard = 0;
-  late FoldersData foldersData;
+  late AppData appData;
   bool isDarkMode(BuildContext context) {
     return MediaQuery.of(context).platformBrightness == Brightness.dark;
   }
@@ -33,7 +33,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
   @override
   Widget build(BuildContext context) {
     CardStack pageCardStack = widget.selectedCardStack;
-    foldersData = Provider.of<FoldersData>(context);
+    appData = Provider.of<AppData>(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return Consumer(
@@ -93,7 +93,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                         setState(() {
                           if (pageCardStack.cardsInPractice[indexOfCurrentCard] is FlippyCard) {
                             if (isAnswered[indexOfCurrentCard]) {
-                              foldersData.flipTheCard(indexOfCurrentCard, pageCardStack);
+                              appData.flipTheCard(indexOfCurrentCard, pageCardStack);
                             }
                           }
                           isAnswered[indexOfCurrentCard] = false;
@@ -101,12 +101,12 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
 
                           isAnswered[indexAfterSwipe] = false;
                         });
-                        foldersData.moveCard(pageCardStack, indexAfterSwipe - 1);
+                        appData.moveCard(pageCardStack, indexAfterSwipe - 1);
                       } else if (indexAfterSwipe == 0) {
                         setState(() {
                           if (pageCardStack.cardsInPractice[indexOfCurrentCard] is FlippyCard) {
                             if (isAnswered[indexOfCurrentCard]) {
-                              foldersData.flipTheCard(indexOfCurrentCard, pageCardStack);
+                              appData.flipTheCard(indexOfCurrentCard, pageCardStack);
                             }
                           }
                           isAnswered[indexOfCurrentCard] = false;
@@ -114,8 +114,8 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                           isAnswered[indexAfterSwipe] = false;
                           isAnswered = List.filled(widget.selectedCardStack.cardsInPractice.length, false);
                         });
-                        foldersData.putCardsBack(pageCardStack); //refresh the cards when the count starts over again
-                        foldersData.zeroMovedCards(pageCardStack);
+                        appData.putCardsBack(pageCardStack); //refresh the cards when the count starts over again
+                        appData.zeroMovedCards(pageCardStack);
                       }
                     },
                     cardsBuilder: (BuildContext context, int index) {
@@ -233,7 +233,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                           controller: (card as FlippyCard).flipController,
                           front: GestureDetector(
                             onTap: () {
-                              foldersData.flipTheCard(index, pageCardStack);
+                              appData.flipTheCard(index, pageCardStack);
                               setState(() {
                                 isAnswered[index] = !isAnswered[index];
                               });
@@ -282,7 +282,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                           ),
                           back: GestureDetector(
                             onTap: () {
-                              foldersData.flipTheCard(index, pageCardStack);
+                              appData.flipTheCard(index, pageCardStack);
                               setState(() {
                                 isAnswered[index] = !isAnswered[index];
                               });
@@ -364,7 +364,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                             child: Row(children: [
                               GestureDetector(
                                 onTap: () {
-                                  foldersData.badPress(pageCardStack, indexOfCurrentCard);
+                                  appData.badPress(pageCardStack, indexOfCurrentCard);
                                   swiperController.swipeLeft();
                                 },
                                 child: Container(
@@ -387,7 +387,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  foldersData.okPress(pageCardStack, indexOfCurrentCard);
+                                  appData.okPress(pageCardStack, indexOfCurrentCard);
                                   swiperController.swipeUp();
                                 },
                                 child: Container(
@@ -410,7 +410,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  foldersData.goodPress(pageCardStack, indexOfCurrentCard);
+                                  appData.goodPress(pageCardStack, indexOfCurrentCard);
                                   swiperController.swipeRight();
                                 },
                                 child: Container(
@@ -438,7 +438,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                             onTap: () {
                               if (pageCardStack.cardsInPractice[indexOfCurrentCard] is FlippyCard) {
                                 print("flippy card");
-                                foldersData.flipTheCard(indexOfCurrentCard, pageCardStack);
+                                appData.flipTheCard(indexOfCurrentCard, pageCardStack);
                                 setState(() {
                                   isAnswered[indexOfCurrentCard] = !isAnswered[indexOfCurrentCard];
                                 });

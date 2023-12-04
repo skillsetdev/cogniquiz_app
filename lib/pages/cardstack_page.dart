@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:flashcards/folderssdata.dart';
+import 'package:flashcards/app_data.dart';
 import 'package:flashcards/pages/card_practice_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +22,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
   String newAnswerName = "";
   String checkAnswerName = "o";
 
-  late FoldersData foldersData;
+  late AppData appData;
 
   bool isDarkMode(BuildContext context) {
     return MediaQuery.of(context).platformBrightness == Brightness.dark;
@@ -52,7 +52,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
   @override
   Widget build(BuildContext context) {
     CardStack pageCardStack = widget.selectedCardStack;
-    foldersData = Provider.of<FoldersData>(context);
+    appData = Provider.of<AppData>(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return Consumer(
@@ -91,10 +91,10 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                 GestureDetector(
                   onTap: () {
                     if (pageCardStack.cards.isNotEmpty) {
-                      //foldersData.shuffleCards(pageCardStack); //shuffle cards on the first open
-                      foldersData.putCardsBack(pageCardStack); //put the moved from the end cards back to the beginning
-                      foldersData.zeroMovedCards(pageCardStack); // set moved cards to 0
-                      foldersData.addRecentCardStack(pageCardStack); //add to recent cardstacks
+                      //appData.shuffleCards(pageCardStack); //shuffle cards on the first open
+                      appData.putCardsBack(pageCardStack); //put the moved from the end cards back to the beginning
+                      appData.zeroMovedCards(pageCardStack); // set moved cards to 0
+                      appData.addRecentCardStack(pageCardStack); //add to recent cardstacks
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return CardPracticePage(selectedCardStack: pageCardStack);
                       }));
@@ -280,7 +280,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                     Expanded(
                                       child: GestureDetector(
                                         onTap: () {
-                                          foldersData.nameQuizQuestion(pageCardStack, "", index);
+                                          appData.nameQuizQuestion(pageCardStack, "", index);
                                         },
                                         child: Text((pageCardStack.cards[index] as QuizCard).questionText,
                                             maxLines: 3,
@@ -299,7 +299,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                       padding: EdgeInsets.only(right: screenWidth * 0.02),
                                       child: GestureDetector(
                                           onTap: () {
-                                            foldersData.deleteCard(pageCardStack, index);
+                                            appData.deleteCard(pageCardStack, index);
                                           },
                                           child: Icon(
                                             Icons.delete_outlined,
@@ -350,7 +350,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                                   Expanded(
                                                     child: GestureDetector(
                                                       onTap: () {
-                                                        foldersData.nameQuizAnswer(pageCardStack, "", index, answerIndex);
+                                                        appData.nameQuizAnswer(pageCardStack, "", index, answerIndex);
                                                       },
                                                       child: Text(answerText,
                                                           maxLines: 3,
@@ -366,7 +366,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                                   ),
                                                   IconButton(
                                                     onPressed: () {
-                                                      foldersData.deleteAnswer(pageCardStack, index, answerIndex);
+                                                      appData.deleteAnswer(pageCardStack, index, answerIndex);
                                                     },
                                                     icon: Icon(Icons.delete_outlined,
                                                         size: 30,
@@ -429,7 +429,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                                     IconButton(
                                                       onPressed: () {
                                                         if (newAnswerName != checkAnswerName) {
-                                                          foldersData.nameQuizAnswer(pageCardStack, newAnswerName, index, answerIndex);
+                                                          appData.nameQuizAnswer(pageCardStack, newAnswerName, index, answerIndex);
                                                           setState(() {
                                                             checkAnswerName = newAnswerName;
                                                           });
@@ -514,7 +514,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                     Expanded(
                                       child: GestureDetector(
                                         onTap: () {
-                                          foldersData.nameQuizQuestion(pageCardStack, "", index);
+                                          appData.nameQuizQuestion(pageCardStack, "", index);
                                         },
                                         child: Text((pageCardStack.cards[index] as QuizCard).questionText,
                                             maxLines: 3,
@@ -572,7 +572,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                                   Expanded(
                                                     child: GestureDetector(
                                                       onTap: () {
-                                                        foldersData.nameQuizAnswer(pageCardStack, "", index, answerIndex);
+                                                        appData.nameQuizAnswer(pageCardStack, "", index, answerIndex);
                                                       },
                                                       child: Text(answerText,
                                                           maxLines: 3,
@@ -588,7 +588,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                                   ),
                                                   IconButton(
                                                     onPressed: () {
-                                                      foldersData.switchAnswer(pageCardStack, index, answerIndex);
+                                                      appData.switchAnswer(pageCardStack, index, answerIndex);
                                                     },
                                                     icon: Icon(answerValue ? Icons.check_circle_outline_rounded : Icons.unpublished_outlined,
                                                         size: 30,
@@ -651,7 +651,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                                     IconButton(
                                                       onPressed: () {
                                                         if (newAnswerName != checkAnswerName) {
-                                                          foldersData.nameQuizAnswer(pageCardStack, newAnswerName, index, answerIndex);
+                                                          appData.nameQuizAnswer(pageCardStack, newAnswerName, index, answerIndex);
                                                           setState(() {
                                                             checkAnswerName = newAnswerName;
                                                           });
@@ -679,7 +679,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                   child: GestureDetector(
                                     onTap: () {
                                       if ((pageCardStack.cards[index] as QuizCard).answers.length < 6) {
-                                        foldersData.addAnswer(pageCardStack, index);
+                                        appData.addAnswer(pageCardStack, index);
                                       }
                                     },
                                     child: Container(
@@ -781,7 +781,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                     ),
                                     IconButton(
                                       onPressed: () {
-                                        foldersData.nameQuizQuestion(pageCardStack, newQuestionName, index);
+                                        appData.nameQuizQuestion(pageCardStack, newQuestionName, index);
                                       },
                                       icon: Icon(Icons.done,
                                           color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
@@ -824,7 +824,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                     Expanded(
                                       child: GestureDetector(
                                         onTap: () {
-                                          foldersData.nameQuizQuestion(pageCardStack, "", index);
+                                          appData.nameQuizQuestion(pageCardStack, "", index);
                                         },
                                         child: Text((pageCardStack.cards[index] as FlippyCard).frontText,
                                             maxLines: 3,
@@ -843,7 +843,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                       padding: EdgeInsets.only(right: screenWidth * 0.02),
                                       child: GestureDetector(
                                           onTap: () {
-                                            foldersData.deleteCard(pageCardStack, index);
+                                            appData.deleteCard(pageCardStack, index);
                                           },
                                           child: Icon(
                                             Icons.delete_outlined,
@@ -919,7 +919,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                     Expanded(
                                       child: GestureDetector(
                                         onTap: () {
-                                          foldersData.startNamingFlipQuestion(pageCardStack, index);
+                                          appData.startNamingFlipQuestion(pageCardStack, index);
                                         },
                                         child: Text((pageCardStack.cards[index] as FlippyCard).frontText,
                                             maxLines: 3,
@@ -956,7 +956,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                       Expanded(
                                         child: GestureDetector(
                                             onTap: () {
-                                              foldersData.startNamingFlipAnswer(pageCardStack, index);
+                                              appData.startNamingFlipAnswer(pageCardStack, index);
                                             },
                                             child: Text((pageCardStack.cards[index] as FlippyCard).backText,
                                                 maxLines: 3,
@@ -997,12 +997,12 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                                     width: 1, color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Colors.white24)),
                                           ),
                                           onChanged: (value) {
-                                            foldersData.nameFlipAnswer(value.trim(), pageCardStack, index);
+                                            appData.nameFlipAnswer(value.trim(), pageCardStack, index);
                                           },
                                         )),
                                         IconButton(
                                           onPressed: () {
-                                            foldersData.finishNamingFlipAnswer(pageCardStack, index);
+                                            appData.finishNamingFlipAnswer(pageCardStack, index);
                                           },
                                           icon: Icon(Icons.done, color: Color.fromARGB(255, 4, 228, 86)),
                                         ),
@@ -1058,7 +1058,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                       ),
                                       onChanged: (value) {
                                         setState(() {
-                                          foldersData.nameFlipQuestion(pageCardStack, value.trim(), index);
+                                          appData.nameFlipQuestion(pageCardStack, value.trim(), index);
                                         });
                                       },
                                     )),
@@ -1067,7 +1067,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                                     ),
                                     IconButton(
                                       onPressed: () {
-                                        foldersData.finishNamingFlipQuestion(pageCardStack, index);
+                                        appData.finishNamingFlipQuestion(pageCardStack, index);
                                       },
                                       icon: Icon(Icons.done, color: Colors.green),
                                     ),
@@ -1098,7 +1098,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                       child: GestureDetector(
                         onTap: () {
                           if (!editing) {
-                            foldersData.addFlippyCard(pageCardStack);
+                            appData.addFlippyCard(pageCardStack);
                           }
                         },
                         child: Container(
@@ -1149,7 +1149,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                       child: GestureDetector(
                         onTap: () {
                           if (!editing) {
-                            foldersData.addCard(pageCardStack);
+                            appData.addCard(pageCardStack);
                           }
                         },
                         child: Container(

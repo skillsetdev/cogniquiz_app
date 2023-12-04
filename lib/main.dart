@@ -1,4 +1,4 @@
-import 'package:flashcards/folderssdata.dart';
+import 'package:flashcards/app_data.dart';
 import 'package:flashcards/check_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -9,7 +9,7 @@ void main() async {
   await Firebase.initializeApp();
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (context) => FoldersData())
+      ChangeNotifierProvider(create: (context) => AppData())
       //1) creates an instance of a ChangeNotifier (FoldersData() here).
       //2) makes the ChangeNotifier available to all descendant widgets in the widget tree.
     ],

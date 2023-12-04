@@ -1,4 +1,4 @@
-import 'package:flashcards/folderssdata.dart';
+import 'package:flashcards/app_data.dart';
 import 'package:flashcards/pages/cardstack_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -14,7 +14,7 @@ class SubfolderPage extends StatefulWidget {
 class _SubfolderPageState extends State<SubfolderPage> with WidgetsBindingObserver {
   String newCardStackName = "";
   String newFolderName = "";
-  late FoldersData foldersData;
+  late AppData appData;
 
   bool isDarkMode(BuildContext context) {
     return MediaQuery.of(context).platformBrightness == Brightness.dark;
@@ -22,7 +22,7 @@ class _SubfolderPageState extends State<SubfolderPage> with WidgetsBindingObserv
 
   @override
   Widget build(BuildContext context) {
-    foldersData = Provider.of<FoldersData>(context);
+    appData = Provider.of<AppData>(context);
     Folder pageFolder = widget.selectedFolder;
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
@@ -81,7 +81,7 @@ class _SubfolderPageState extends State<SubfolderPage> with WidgetsBindingObserv
               labelStyle: TextStyle(fontSize: 18.0),
               labelBackgroundColor: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
               onTap: () {
-                foldersData.addFolder(pageFolder);
+                appData.addFolder(pageFolder);
               },
               onLongPress: () => print('FIRST CHILD LONG PRESS'),
             ),
@@ -92,7 +92,7 @@ class _SubfolderPageState extends State<SubfolderPage> with WidgetsBindingObserv
               label: 'Add a Card Stack',
               labelStyle: TextStyle(fontSize: 18.0),
               labelBackgroundColor: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
-              onTap: () => foldersData.addCardStack(pageFolder),
+              onTap: () => appData.addCardStack(pageFolder),
               onLongPress: () => print('SECOND CHILD LONG PRESS'),
             ),
           ],
@@ -179,7 +179,7 @@ class _SubfolderPageState extends State<SubfolderPage> with WidgetsBindingObserv
                                   Spacer(),
                                   GestureDetector(
                                     onLongPress: () {
-                                      foldersData.nameFolder(pageFolder, "", index);
+                                      appData.nameFolder(pageFolder, "", index);
                                     },
                                     child: Text(pageFolder.subfolders[index].name, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                                   ),
@@ -215,7 +215,7 @@ class _SubfolderPageState extends State<SubfolderPage> with WidgetsBindingObserv
                             key: Key(pageFolder.subfolders[index].folderId.toString()),
                             direction: DismissDirection.endToStart,
                             onDismissed: (direction) {
-                              foldersData.deleteFolder(pageFolder, index);
+                              appData.deleteFolder(pageFolder, index);
                             },
                             background: Container(
                               margin: EdgeInsets.fromLTRB(0, screenHeight * 0.025, screenWidth * 0.05, 0),
@@ -257,7 +257,7 @@ class _SubfolderPageState extends State<SubfolderPage> with WidgetsBindingObserv
                                     Spacer(),
                                     GestureDetector(
                                       onTap: () {
-                                        foldersData.nameFolder(pageFolder, "", index);
+                                        appData.nameFolder(pageFolder, "", index);
                                       },
                                       child: Text(pageFolder.subfolders[index].name,
                                           style: TextStyle(
@@ -325,7 +325,7 @@ class _SubfolderPageState extends State<SubfolderPage> with WidgetsBindingObserv
                                   ),
                                   IconButton(
                                     onPressed: () {
-                                      foldersData.nameFolder(pageFolder, newFolderName, index);
+                                      appData.nameFolder(pageFolder, newFolderName, index);
                                     },
                                     icon: Icon(Icons.done, color: Color.fromARGB(255, 4, 228, 86)),
                                   ),
@@ -387,7 +387,7 @@ class _SubfolderPageState extends State<SubfolderPage> with WidgetsBindingObserv
                                   Spacer(),
                                   GestureDetector(
                                     onTap: () {
-                                      foldersData.nameCardStack(pageFolder, newCardStackName, index);
+                                      appData.nameCardStack(pageFolder, newCardStackName, index);
                                     },
                                     child: Text(pageFolder.cardstacks[index].name, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                                   ),
@@ -423,7 +423,7 @@ class _SubfolderPageState extends State<SubfolderPage> with WidgetsBindingObserv
                             key: Key(pageFolder.cardstacks[index].cardStackId.toString()),
                             direction: DismissDirection.endToStart,
                             onDismissed: (direction) {
-                              foldersData.deleteCardStack(pageFolder, index);
+                              appData.deleteCardStack(pageFolder, index);
                             },
                             background: Container(
                               margin: EdgeInsets.fromLTRB(0, screenHeight * 0.025, screenWidth * 0.05, 0),
@@ -465,7 +465,7 @@ class _SubfolderPageState extends State<SubfolderPage> with WidgetsBindingObserv
                                     Spacer(),
                                     GestureDetector(
                                       onTap: () {
-                                        foldersData.nameCardStack(pageFolder, "", index);
+                                        appData.nameCardStack(pageFolder, "", index);
                                       },
                                       child: Text(pageFolder.cardstacks[index].name,
                                           style: TextStyle(
@@ -533,7 +533,7 @@ class _SubfolderPageState extends State<SubfolderPage> with WidgetsBindingObserv
                                   ),
                                   IconButton(
                                     onPressed: () {
-                                      foldersData.nameCardStack(pageFolder, newCardStackName, index);
+                                      appData.nameCardStack(pageFolder, newCardStackName, index);
                                     },
                                     icon: Icon(Icons.done, color: Color.fromARGB(255, 4, 228, 86)),
                                   ),

@@ -45,6 +45,7 @@ dependencies:
   scaled_list: ^2.0.0
   appinio_swiper: ^2.0.3
   uuid: ^4.2.1
+  table_calendar: ^3.0.9
 
 dev_dependencies:
   flutter_test:

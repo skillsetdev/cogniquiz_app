@@ -1,5 +1,5 @@
 // ignore_for_file: prefer_const_constructors
-import 'package:flashcards/folderssdata.dart';
+import 'package:flashcards/app_data.dart';
 import 'package:flashcards/pages/cardstack_page.dart';
 import 'package:flashcards/pages/subfolder_page.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +18,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
   String checkFolderName = "o";
   String newCardStackName = "";
   String checkCardStackName = "o";
-  late FoldersData foldersData;
+  late AppData appData;
 
   bool isDarkMode(BuildContext context) {
     return MediaQuery.of(context).platformBrightness == Brightness.dark;
@@ -26,8 +26,8 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    foldersData = Provider.of<FoldersData>(context);
-    Folder pageFolder = foldersData.rootFolders;
+    appData = Provider.of<AppData>(context);
+    Folder pageFolder = appData.rootFolders;
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return Consumer(
@@ -71,7 +71,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
               labelStyle: TextStyle(fontSize: 18.0),
               labelBackgroundColor: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
               onTap: () {
-                foldersData.addFolder(pageFolder);
+                appData.addFolder(pageFolder);
               },
             ),
             SpeedDialChild(
@@ -82,7 +82,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
               labelStyle: TextStyle(fontSize: 18.0),
               labelBackgroundColor: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
               onTap: () {
-                foldersData.addCardStack(pageFolder);
+                appData.addCardStack(pageFolder);
               },
             ),
           ],
@@ -169,7 +169,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                   Spacer(),
                                   GestureDetector(
                                     onTap: () {
-                                      foldersData.nameFolder(pageFolder, "", index);
+                                      appData.nameFolder(pageFolder, "", index);
                                     },
                                     child: Text(pageFolder.subfolders[index].name, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                                   ),
@@ -202,10 +202,10 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                       itemBuilder: (context, index) {
                         if (pageFolder.subfolders[index].name.isNotEmpty) {
                           return Dismissible(
-                            key: Key(foldersData.rootFolders.subfolders[index].folderId.toString()),
+                            key: Key(appData.rootFolders.subfolders[index].folderId.toString()),
                             direction: DismissDirection.endToStart,
                             onDismissed: (direction) {
-                              foldersData.deleteFolder(pageFolder, index);
+                              appData.deleteFolder(pageFolder, index);
                             },
                             background: Container(
                               margin: EdgeInsets.fromLTRB(0, screenHeight * 0.025, screenWidth * 0.05, 0),
@@ -247,7 +247,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                     Spacer(),
                                     GestureDetector(
                                       onTap: () {
-                                        foldersData.nameFolder(pageFolder, "", index);
+                                        appData.nameFolder(pageFolder, "", index);
                                       },
                                       child: Text(pageFolder.subfolders[index].name,
                                           style: TextStyle(
@@ -318,7 +318,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                   IconButton(
                                     onPressed: () {
                                       if (newFolderName != checkCardStackName) {
-                                        foldersData.nameFolder(pageFolder, newFolderName, index);
+                                        appData.nameFolder(pageFolder, newFolderName, index);
                                         setState(() {
                                           checkCardStackName = newFolderName;
                                         });
@@ -388,7 +388,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                   Spacer(),
                                   GestureDetector(
                                     onTap: () {
-                                      foldersData.nameCardStack(pageFolder, newCardStackName, index);
+                                      appData.nameCardStack(pageFolder, newCardStackName, index);
                                     },
                                     child: Text(pageFolder.cardstacks[index].name, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                                   ),
@@ -421,10 +421,10 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                       itemBuilder: (context, index) {
                         if (pageFolder.cardstacks[index].name.isNotEmpty) {
                           return Dismissible(
-                            key: Key(foldersData.rootFolders.cardstacks[index].cardStackId.toString()),
+                            key: Key(appData.rootFolders.cardstacks[index].cardStackId.toString()),
                             direction: DismissDirection.endToStart,
                             onDismissed: (direction) {
-                              foldersData.deleteCardStack(pageFolder, index);
+                              appData.deleteCardStack(pageFolder, index);
                             },
                             background: Container(
                               margin: EdgeInsets.fromLTRB(0, screenHeight * 0.025, screenWidth * 0.05, 0),
@@ -466,7 +466,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                     Spacer(),
                                     GestureDetector(
                                       onTap: () {
-                                        foldersData.nameCardStack(pageFolder, "", index);
+                                        appData.nameCardStack(pageFolder, "", index);
                                       },
                                       child: Text(pageFolder.cardstacks[index].name,
                                           style: TextStyle(
@@ -537,7 +537,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                   IconButton(
                                     onPressed: () {
                                       if (newCardStackName != checkCardStackName) {
-                                        foldersData.nameCardStack(pageFolder, newCardStackName, index);
+                                        appData.nameCardStack(pageFolder, newCardStackName, index);
                                       }
                                     },
                                     icon: Icon(Icons.done,

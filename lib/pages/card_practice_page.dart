@@ -366,6 +366,8 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                                 onTap: () {
                                   appData.badPress(pageCardStack, indexOfCurrentCard);
                                   swiperController.swipeLeft();
+                                  appData.addCompletedCard();
+                                  appData.addDaysProgress(DateTime.now());
                                 },
                                 child: Container(
                                   margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
@@ -389,6 +391,8 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                                 onTap: () {
                                   appData.okPress(pageCardStack, indexOfCurrentCard);
                                   swiperController.swipeUp();
+                                  appData.addCompletedCard();
+                                  appData.addDaysProgress(DateTime.now());
                                 },
                                 child: Container(
                                   margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
@@ -412,6 +416,8 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                                 onTap: () {
                                   appData.goodPress(pageCardStack, indexOfCurrentCard);
                                   swiperController.swipeRight();
+                                  appData.addCompletedCard();
+                                  appData.addDaysProgress(DateTime.now());
                                 },
                                 child: Container(
                                   margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),

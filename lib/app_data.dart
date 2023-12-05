@@ -3,6 +3,7 @@
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import 'package:intl/intl.dart';
 
 //Classes for the folders, cardstacks and cards
 
@@ -343,9 +344,36 @@ class AppData extends ChangeNotifier {
 
 // Calendar ////////////////////////////////////////////////////////////////////////////////////////////////////
   Map<String, Color> daysProgress = {};
+  double sliderValue = 20.0;
+  double completedCards = 0;
 
-  void addDaysProgress(DateTime day, Color color) {
-    daysProgress[day.toString()] = color;
+  void changeSliderValue(double newValue) {
+    sliderValue = newValue;
+    notifyListeners();
+    print(sliderValue);
+  }
+
+  void addDaysProgress(DateTime day) {
+    DateTime dayAtMidnightUtc = DateTime.utc(day.year, day.month, day.day);
+    String formattedDate = dayAtMidnightUtc.toString();
+    if (completedCards >= sliderValue) {
+      daysProgress[formattedDate] = Colors.green;
+      notifyListeners();
+    } else {
+      daysProgress[formattedDate] = Colors.yellow;
+      notifyListeners();
+    }
+    print(daysProgress.toString());
+  }
+
+  void addCompletedCard() {
+    completedCards++;
+    notifyListeners();
+    print(completedCards);
+  }
+
+  void resetCompletedCards() {
+    completedCards = 0;
     notifyListeners();
   }
 }

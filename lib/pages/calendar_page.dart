@@ -69,12 +69,11 @@ class _CalendarPageState extends State<CalendarPage> {
                               width: 42,
                               height: 42,
                               decoration: BoxDecoration(
-                                  border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
-                                  color: appData.daysProgress.containsKey(date.toString())
-                                      ? appData.daysProgress[date.toString()]
-                                      : !isDarkMode(context)
-                                          ? Color.fromARGB(255, 128, 141, 254)
-                                          : Color.fromARGB(255, 72, 80, 197),
+                                  border: Border.all(
+                                      color: appData.daysProgress[date.toString()] ?? (isDarkMode(context) ? Colors.white24 : Colors.black54),
+                                      width: appData.daysProgress.containsKey(date.toString()) ? 3 : 1),
+                                  color: //appData.daysProgress.containsKey(date.toString()) ? appData.daysProgress[date.toString()]:
+                                      !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
                                   borderRadius: BorderRadius.circular(12)),
                               child: Center(
                                 child: Text(
@@ -90,11 +89,10 @@ class _CalendarPageState extends State<CalendarPage> {
                               width: 42,
                               height: 42,
                               decoration: BoxDecoration(
-                                  border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
-                                  color: !isDarkMode(context)
-                                      ? Color.fromARGB(255, 128, 141, 254)
-                                      //Color.fromARGB(255, 100, 109, 227)
-                                      : Color.fromARGB(255, 72, 80, 197),
+                                  border: Border.all(
+                                      color: appData.daysProgress[date.toString()] ?? (isDarkMode(context) ? Colors.white24 : Colors.black54),
+                                      width: appData.daysProgress.containsKey(date.toString()) ? 3 : 1),
+                                  color: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
                                   borderRadius: BorderRadius.circular(12)),
                               child: Center(
                                 child: Text(

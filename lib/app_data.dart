@@ -19,6 +19,24 @@ class Folder {
   );
 }
 
+class CardStack {
+  bool isShuffled = false;
+  int movedCards = 0;
+  String cardStackId = Uuid().v4();
+  String name;
+  List<SuperCard> cards;
+  List<SuperCard> cardsInPractice;
+  CardStack(this.name, this.cards, this.cardsInPractice);
+  Map<String, dynamic> cardBase() {
+    return {
+      'isShuffled': isShuffled,
+      'movedCards': movedCards,
+      'cardStackId': cardStackId,
+      'name': name,
+    };
+  }
+}
+
 abstract class SuperCard {
   String cardId = Uuid().v4();
   int goodPresses = 0;
@@ -45,16 +63,6 @@ class FlippyCard extends SuperCard {
     frontTextController = TextEditingController(text: frontText);
     backTextController = TextEditingController(text: backText);
   }
-}
-
-class CardStack {
-  bool isShuffled = false;
-  int movedCards = 0;
-  String cardStackId = Uuid().v4();
-  String name;
-  List<SuperCard> cards;
-  List<SuperCard> cardsInPractice;
-  CardStack(this.name, this.cards, this.cardsInPractice);
 }
 
 class AppData extends ChangeNotifier {
@@ -376,4 +384,6 @@ class AppData extends ChangeNotifier {
     completedCards = 0;
     notifyListeners();
   }
+
+// backend connection ////////////////////////////////////////////////////////////////////////////////////////////////////
 }

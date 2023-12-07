@@ -175,10 +175,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                   ),
                                   Spacer(),
                                   IconButton(
-                                    onPressed: () {
-                                      Navigator.push(context,
-                                          MaterialPageRoute(builder: (context) => SubfolderPage(selectedFolder: pageFolder.subfolders[index])));
-                                    },
+                                    onPressed: () {},
                                     icon: Icon(Icons.arrow_forward_ios),
                                   ),
                                   SizedBox(width: screenWidth * 0.08),
@@ -394,10 +391,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                   ),
                                   Spacer(),
                                   IconButton(
-                                    onPressed: () {
-                                      Navigator.push(context,
-                                          MaterialPageRoute(builder: (context) => SubfolderPage(selectedFolder: pageFolder.subfolders[index])));
-                                    },
+                                    onPressed: () {},
                                     icon: Icon(Icons.arrow_forward_ios),
                                   ),
                                   SizedBox(width: screenWidth * 0.08),

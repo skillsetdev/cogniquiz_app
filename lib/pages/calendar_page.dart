@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-// Next Task: Create calendar and track the progress
+// Next Task: Add stats do days
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
 

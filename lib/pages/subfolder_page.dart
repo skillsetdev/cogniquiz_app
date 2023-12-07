@@ -73,7 +73,7 @@ class _SubfolderPageState extends State<SubfolderPage> with WidgetsBindingObserv
           shape: CircleBorder(), //shape of button
 
           children: [
-            SpeedDialChild(
+            /* SpeedDialChild(
               child: Icon(Icons.create_new_folder_outlined),
               backgroundColor: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
               foregroundColor: Colors.white,
@@ -84,7 +84,7 @@ class _SubfolderPageState extends State<SubfolderPage> with WidgetsBindingObserv
                 appData.addFolder(pageFolder);
               },
               onLongPress: () => print('FIRST CHILD LONG PRESS'),
-            ),
+            ), */
             SpeedDialChild(
               child: Icon(Icons.quiz_outlined),
               backgroundColor: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
@@ -106,7 +106,7 @@ class _SubfolderPageState extends State<SubfolderPage> with WidgetsBindingObserv
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                /*Row(
                   children: [
                     Padding(
                       padding: EdgeInsets.only(left: screenWidth * 0.05),
@@ -125,22 +125,6 @@ class _SubfolderPageState extends State<SubfolderPage> with WidgetsBindingObserv
                     )
                   ],
                 ),
-
-                /*Container(
-                  margin: EdgeInsets.fromLTRB(
-                      screenWidth * 0.05, 0, screenWidth * 0.05, 0),
-                  height: screenHeight * 0.12,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                          color:
-                              isDarkMode(context) ? Colors.white : Colors.black54,
-                          width: 1),
-                      color: !isDarkMode(context)
-                          ? Color.fromARGB(255, 128, 141, 254)
-                          //Color.fromARGB(255, 100, 109, 227)
-                          : Color.fromARGB(255, 72, 80, 197),
-                      borderRadius: BorderRadius.circular(12)),
-                ),*/
 
                 Theme(
                   data: ThemeData(
@@ -338,7 +322,7 @@ class _SubfolderPageState extends State<SubfolderPage> with WidgetsBindingObserv
                       },
                     ),
                   ),
-                ),
+                ),*/
                 SizedBox(
                   height: screenHeight * 0.025,
                 ),

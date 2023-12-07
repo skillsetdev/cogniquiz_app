@@ -1,10 +1,32 @@
-//Next Task: add moveCardOverTheStack() by adding them to a separate list if their index exceeds the maxIndex (otherwise last card stay last) and them adding them on the loor adfre the putCardsBack()
-//Next Task: Add community class and work with firebase
+// Next Important Tasks
+
+// 1. add functions like 'startNamingFolder' and 'finishNamingFolder' and name controller to the Folder and CardStack classes like in FlippyCard
+// where 'finishNamingFolder' or 'finishNamingCardStack' is invoked -> also invoke 'addOrOverwritePrivateFolderInFirestore' or 'addOrOverwritePrivateCardStackInFirestore'
+
+// 2.  if user adds, removes or reorders cards, the whole cardstack should be overwritten in the database
+// make pages not removable on swipe
+// add a boolean 'wasChanged' and if it was changed to true, then overwrite the whole cardstack in the database when 'back' button is pressed and set it to false
+
+//Later Task: add moveCardOverTheStack() by adding them to a separate list if their index exceeds the maxIndex (otherwise last card stay last) and them adding them on the loor adfre the putCardsBack()
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-import 'package:intl/intl.dart';
+
+class Community {
+  String communityId = Uuid().v4();
+  String name;
+  List<CardStack> cardstacks;
+  Community(this.name, this.cardstacks);
+  Map<String, dynamic> toMap() {
+    return {
+      'communityId': communityId,
+      'name': name,
+      'cardstacks': cardstacks.map((cardstack) => cardstack.toMap()).toList(),
+    };
+  }
+}
 
 //Classes for the folders, cardstacks and cards
 
@@ -18,6 +40,14 @@ class Folder {
     this.subfolders,
     this.cardstacks,
   );
+  Map<String, dynamic> toMap() {
+    return {
+      'folderId': folderId,
+      'name': name,
+      'subfolders': subfolders.map((folder) => folder.toMap()).toList(),
+      'cardstacks': cardstacks.map((cardstack) => cardstack.toMap()).toList(),
+    };
+  }
 }
 
 class CardStack {
@@ -418,54 +448,122 @@ class AppData extends ChangeNotifier {
   }
 
 // backend connection ////////////////////////////////////////////////////////////////////////////////////////////////////
-  Future<void> addCardStackToFirestore(CardStack cardStack) {
-    return FirebaseFirestore.instance.collection('cardStacks').doc(cardStack.cardStackId).set(cardStack.toMap());
+/////////////// private ////////////////////////////////////////////////////////////////////////////////////////////////////
+  String getUserId() {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      throw Exception('User is not signed in');
+    }
+    return user.uid;
   }
 
-  Future<CardStack> getCardStackFromDB(String cardStackId) async {
-    DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance.collection('cardStacks').doc(cardStackId).get();
+  Future<void> addOrOverwritePrivateFolderInFirestore(Folder folder, Folder parentFolder) {
+    String userId = getUserId();
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('folders')
+        .doc(parentFolder.folderId)
+        .collection('subfolders')
+        .doc(folder.folderId)
+        .set(folder.toMap());
+  }
 
-    Map<String, dynamic> data = snapshot.data()!;
-    List<Map<String, dynamic>> cardsData = List<Map<String, dynamic>>.from(data['cards']);
-    List<Map<String, dynamic>> cardsInPracticeData = List<Map<String, dynamic>>.from(data['cardsInPractice']);
+  Future<void> addOrOverwritePrivateCardStackInFirestore(CardStack cardStack, Folder parentFolder) {
+    String userId = getUserId();
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('folders')
+        .doc(parentFolder.folderId)
+        .collection('cardStacks')
+        .doc(cardStack.cardStackId)
+        .set(cardStack.toMap());
+  }
 
-    List<SuperCard> cards = cardsData.map((cardData) {
-      if (cardData['type'] == 'QuizCard') {
-        return QuizCard(
-          cardData['questionText'],
-          Map<String, bool>.from(cardData['answers']),
-        );
-      } else if (cardData['type'] == 'FlippyCard') {
-        return FlippyCard(
-          cardData['frontText'],
-          cardData['backText'],
-        );
-      } else {
-        throw Exception('Unknown card type');
+  Future<void> addOrOverwritePrivateCardStackInAppData(CardStack cardStack, Folder parentFolder) async {
+    String userId = getUserId();
+    DocumentSnapshot<Map<String, dynamic>> cardStackSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('folders')
+        .doc(parentFolder.folderId)
+        .collection('cardStacks')
+        .doc(cardStack.cardStackId)
+        .get();
+    if (cardStackSnapshot.exists) {
+      parentFolder.cardstacks.removeWhere((cardstack) => cardstack.cardStackId == cardStack.cardStackId);
+      parentFolder.cardstacks.insert(0, cardStack);
+    } else {
+      parentFolder.cardstacks.insert(0, cardStack);
+    }
+    notifyListeners();
+  }
+
+  Future<void> overwriteCardsInPracticeInFirestore(CardStack cardStack, Folder parentFolder) {
+    String userId = getUserId();
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('folders')
+        .doc(parentFolder.folderId)
+        .collection('cardStacks')
+        .doc(cardStack.cardStackId)
+        .update({'cardsInPractice': cardStack.cardsInPractice.map((card) => card.toMap()).toList()});
+  }
+
+  Future<void> overwriteCardsInPracticeInAppData(CardStack cardStack, Folder parentFolder) async {
+    String userId = getUserId();
+    DocumentSnapshot<Map<String, dynamic>> cardStackSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('folders')
+        .doc(parentFolder.folderId)
+        .collection('cardStacks')
+        .doc(cardStack.cardStackId)
+        .get();
+    if (cardStackSnapshot.exists) {
+      parentFolder.cardstacks.removeWhere((cardstack) => cardstack.cardStackId == cardStack.cardStackId);
+      parentFolder.cardstacks.insert(0, cardStack);
+    } else {
+      parentFolder.cardstacks.insert(0, cardStack);
+    }
+    notifyListeners();
+  }
+
+/////////////// public ////////////////////////////////////////////////////////////////////////////////////////////////////
+  Future<void> addCommunityToFirestore(Community community) {
+    return FirebaseFirestore.instance.collection('communities').doc(community.communityId).set(community.toMap());
+  }
+
+  Future<void> addCommunityCardStackToFirestore(CardStack cardStack, String communityId) {
+    return FirebaseFirestore.instance
+        .collection('communities')
+        .doc(communityId)
+        .collection('sharedCardStacks')
+        .doc(cardStack.cardStackId)
+        .set(cardStack.toMap());
+  }
+
+  Future<void> addCommunityCardStackFromDBToAppData(String cardStackId) async {
+    DocumentSnapshot<Map<String, dynamic>> cardStackSnapshot =
+        await FirebaseFirestore.instance.collection('communities').doc(cardStackId).collection('sharedCardStacks').doc(cardStackId).get();
+    CardStack cardStack = CardStack(cardStackSnapshot['name'], cardStackSnapshot['cardStackId'], [], []);
+    cardStackSnapshot['cards'].forEach((card) {
+      if (card['cardType'] == 'QuizCard') {
+        QuizCard quizCard = QuizCard(card['questionText'], {});
+        card['answers'].forEach((key, value) {
+          quizCard.answers[key] = value;
+        });
+        cardStack.cards.add(quizCard);
+        cardStack.cardsInPractice.add(quizCard);
+      } else if (card['cardType'] == 'FlippyCard') {
+        FlippyCard flippyCard = FlippyCard(card['frontText'], card['backText']);
+        cardStack.cards.add(flippyCard);
+        cardStack.cardsInPractice.add(flippyCard);
       }
-    }).toList();
-
-    List<SuperCard> cardsInPractice = cardsInPracticeData.map((cardData) {
-      if (cardData['type'] == 'QuizCard') {
-        return QuizCard(
-          cardData['questionText'],
-          Map<String, bool>.from(cardData['answers']),
-        );
-      } else if (cardData['type'] == 'FlippyCard') {
-        return FlippyCard(
-          cardData['frontText'],
-          cardData['backText'],
-        );
-      } else {
-        throw Exception('Unknown card type');
-      }
-    }).toList();
-
-    return CardStack(
-      data['name'],
-      cardStackId,
-      cards,
-      cardsInPractice,
-    );
+    });
+    rootFolders.cardstacks.insert(0, cardStack);
+    notifyListeners();
   }
 }

@@ -14,7 +14,7 @@ class _CommunityPageState extends State<CommunityPage> {
     return Scaffold(
         body: SafeArea(
       child: StreamBuilder(
-          stream: FirebaseFirestore.instance.collection('Communities').snapshots(),
+          stream: FirebaseFirestore.instance.collection('cardStacks').snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Center(child: CircularProgressIndicator());
@@ -29,7 +29,8 @@ class _CommunityPageState extends State<CommunityPage> {
                     color: Colors.red,
                     child: Card(
                       child: ListTile(
-                        title: Text(ds['cardStacks']),
+                        title: Text(ds['cardStackId']),
+                        subtitle: Text(ds['name']),
                       ),
                     ),
                   );

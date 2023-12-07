@@ -23,11 +23,11 @@ class Folder {
 class CardStack {
   bool isShuffled = false;
   int movedCards = 0;
-  String cardStackId = Uuid().v4();
+  String cardStackId;
   String name;
   List<SuperCard> cards;
   List<SuperCard> cardsInPractice;
-  CardStack(this.name, this.cards, this.cardsInPractice);
+  CardStack(this.name, this.cardStackId, this.cards, this.cardsInPractice);
   Map<String, dynamic> toMap() {
     return {
       'isShuffled': isShuffled,
@@ -66,6 +66,7 @@ class QuizCard extends SuperCard {
       ...super.toMap(),
       'questionText': questionText,
       'answers': answers,
+      'cardType': 'QuizCard',
     };
   }
 }
@@ -90,6 +91,7 @@ class FlippyCard extends SuperCard {
       ...super.toMap(),
       'frontText': frontText,
       'backText': backText,
+      'cardType': 'FlippyCard',
     };
   }
 }
@@ -118,7 +120,8 @@ class AppData extends ChangeNotifier {
 // Functions for the cardstacks /////////////////////////////////////////////////////////////////////////////////////////////////
 
   void addCardStack(Folder parentFolder) {
-    final newCardStack = CardStack("", [], []);
+    String newCardStackId = Uuid().v4();
+    final newCardStack = CardStack("", newCardStackId, [], []);
     parentFolder.cardstacks.insert(0, newCardStack);
     notifyListeners();
   }
@@ -417,5 +420,52 @@ class AppData extends ChangeNotifier {
 // backend connection ////////////////////////////////////////////////////////////////////////////////////////////////////
   Future<void> addCardStackToFirestore(CardStack cardStack) {
     return FirebaseFirestore.instance.collection('cardStacks').doc(cardStack.cardStackId).set(cardStack.toMap());
+  }
+
+  Future<CardStack> getCardStackFromDB(String cardStackId) async {
+    DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance.collection('cardStacks').doc(cardStackId).get();
+
+    Map<String, dynamic> data = snapshot.data()!;
+    List<Map<String, dynamic>> cardsData = List<Map<String, dynamic>>.from(data['cards']);
+    List<Map<String, dynamic>> cardsInPracticeData = List<Map<String, dynamic>>.from(data['cardsInPractice']);
+
+    List<SuperCard> cards = cardsData.map((cardData) {
+      if (cardData['type'] == 'QuizCard') {
+        return QuizCard(
+          cardData['questionText'],
+          Map<String, bool>.from(cardData['answers']),
+        );
+      } else if (cardData['type'] == 'FlippyCard') {
+        return FlippyCard(
+          cardData['frontText'],
+          cardData['backText'],
+        );
+      } else {
+        throw Exception('Unknown card type');
+      }
+    }).toList();
+
+    List<SuperCard> cardsInPractice = cardsInPracticeData.map((cardData) {
+      if (cardData['type'] == 'QuizCard') {
+        return QuizCard(
+          cardData['questionText'],
+          Map<String, bool>.from(cardData['answers']),
+        );
+      } else if (cardData['type'] == 'FlippyCard') {
+        return FlippyCard(
+          cardData['frontText'],
+          cardData['backText'],
+        );
+      } else {
+        throw Exception('Unknown card type');
+      }
+    }).toList();
+
+    return CardStack(
+      data['name'],
+      cardStackId,
+      cards,
+      cardsInPractice,
+    );
   }
 }

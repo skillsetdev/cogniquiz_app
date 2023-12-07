@@ -1,5 +1,6 @@
 //Next Task: add moveCardOverTheStack() by adding them to a separate list if their index exceeds the maxIndex (otherwise last card stay last) and them adding them on the loor adfre the putCardsBack()
 //Next Task: Add community class and work with firebase
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
@@ -27,12 +28,14 @@ class CardStack {
   List<SuperCard> cards;
   List<SuperCard> cardsInPractice;
   CardStack(this.name, this.cards, this.cardsInPractice);
-  Map<String, dynamic> cardBase() {
+  Map<String, dynamic> toMap() {
     return {
       'isShuffled': isShuffled,
       'movedCards': movedCards,
       'cardStackId': cardStackId,
       'name': name,
+      'cards': cards.map((card) => card.toMap()).toList(),
+      'cardsInPractice': cardsInPractice.map((card) => card.toMap()).toList(),
     };
   }
 }
@@ -43,25 +46,51 @@ abstract class SuperCard {
   int okPresses = 0;
   int badPresses = 0;
   int lastPress = 0;
+  Map<String, dynamic> toMap() {
+    return {
+      'cardId': cardId,
+      'goodPresses': goodPresses,
+      'okPresses': okPresses,
+      'badPresses': badPresses,
+      'lastPress': lastPress,
+    };
+  }
 }
 
 class QuizCard extends SuperCard {
   String questionText;
   Map<String, bool> answers;
   QuizCard(this.questionText, this.answers);
+  Map<String, dynamic> toMap() {
+    return {
+      ...super.toMap(),
+      'questionText': questionText,
+      'answers': answers,
+    };
+  }
 }
 
 class FlippyCard extends SuperCard {
+  String frontText;
+  String backText;
+
+  //editing
   FlipCardController flipController = FlipCardController();
   bool renamingQuestion = true;
   bool renamingAnswer = true;
-  String frontText;
-  String backText;
   TextEditingController frontTextController = TextEditingController();
   TextEditingController backTextController = TextEditingController();
+
   FlippyCard(this.frontText, this.backText) {
     frontTextController = TextEditingController(text: frontText);
     backTextController = TextEditingController(text: backText);
+  }
+  Map<String, dynamic> toMap() {
+    return {
+      ...super.toMap(),
+      'frontText': frontText,
+      'backText': backText,
+    };
   }
 }
 
@@ -386,4 +415,7 @@ class AppData extends ChangeNotifier {
   }
 
 // backend connection ////////////////////////////////////////////////////////////////////////////////////////////////////
+  Future<void> addCardStackToFirestore(CardStack cardStack) {
+    return FirebaseFirestore.instance.collection('cardStacks').doc(cardStack.cardStackId).set(cardStack.toMap());
+  }
 }

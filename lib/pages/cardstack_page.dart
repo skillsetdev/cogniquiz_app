@@ -62,8 +62,10 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
           title: Text(pageCardStack.name),
           actions: [
             IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.search),
+              onPressed: () {
+                appData.addCardStackToFirestore(pageCardStack);
+              },
+              icon: Icon(Icons.file_upload_outlined),
             ),
             TextButton(
                 onPressed: () {

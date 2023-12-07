@@ -13,15 +13,28 @@ class _CommunityPageState extends State<CommunityPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: SafeArea(
-            child: SingleChildScrollView(
       child: StreamBuilder(
           stream: FirebaseFirestore.instance.collection('Communities').snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Center(child: CircularProgressIndicator());
             }
-            return Container();
+            return ListView.builder(
+                itemCount: snapshot.data?.docs.length,
+                itemBuilder: (context, index) {
+                  QueryDocumentSnapshot<Map<String, dynamic>> ds = snapshot.data!.docs[index];
+                  return Container(
+                    height: 100,
+                    width: 100,
+                    color: Colors.red,
+                    child: Card(
+                      child: ListTile(
+                        title: Text(ds['cardStacks']),
+                      ),
+                    ),
+                  );
+                });
           }),
-    )));
+    ));
   }
 }

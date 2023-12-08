@@ -230,10 +230,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                               height: screenHeight * 0.12,
                               decoration: BoxDecoration(
                                   border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
-                                  color: !isDarkMode(context)
-                                      ? Color.fromARGB(255, 128, 141, 254)
-                                      //Color.fromARGB(255, 100, 109, 227)
-                                      : Color.fromARGB(255, 72, 80, 197),
+                                  color: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
                                   borderRadius: BorderRadius.circular(12)),
                               child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                                 Row(

@@ -14,18 +14,11 @@ import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
-class Community {
-  String communityId = Uuid().v4();
+class LocalCommunity {
+  String communityId;
   String name;
   List<CardStack> cardstacks;
-  Community(this.name, this.cardstacks);
-  Map<String, dynamic> toMap() {
-    return {
-      'communityId': communityId,
-      'name': name,
-      'cardstacks': cardstacks.map((cardstack) => cardstack.toMap()).toList(),
-    };
-  }
+  LocalCommunity(this.communityId, this.name, this.cardstacks);
 }
 
 //Classes for the folders, cardstacks and cards
@@ -130,6 +123,7 @@ class AppData extends ChangeNotifier {
 // Functions for the folders /////////////////////////////////////////////////////////////////////////////////////////////////
 
   Folder rootFolders = Folder("Root", [], []);
+  List<LocalCommunity> localCommunities = [];
 
   void addFolder(Folder parentFolder) {
     final newFolder = Folder("", [], []);
@@ -532,8 +526,15 @@ class AppData extends ChangeNotifier {
   }
 
 /////////////// public ////////////////////////////////////////////////////////////////////////////////////////////////////
-  Future<void> addCommunityToFirestore(Community community) {
-    return FirebaseFirestore.instance.collection('communities').doc(community.communityId).set(community.toMap());
+  Future<void> createCommunity(String communityName) {
+    String communityId = Uuid().v4();
+    return FirebaseFirestore.instance.collection('communities').doc(communityId).set({'name': communityName});
+  }
+
+  void addCommunityToAppData(String communityId, String communityName) {
+    LocalCommunity localCommunity = LocalCommunity(communityId, communityName, []); //downloaded CardStacks from the community will be added here
+    localCommunities.insert(0, localCommunity);
+    notifyListeners();
   }
 
   Future<void> addCommunityCardStackToFirestore(CardStack cardStack, String communityId) {

@@ -69,6 +69,7 @@ class _CommunityPageState extends State<CommunityPage> with SingleTickerProvider
               child: Container(
                 width: screenWidth,
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Stack(
                       children: [
@@ -148,7 +149,7 @@ class _CommunityPageState extends State<CommunityPage> with SingleTickerProvider
                                   Icon(Icons.folder_outlined,
                                       color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
                                   Spacer(),
-                                  Text('Add Community',
+                                  Text('Create Community',
                                       style: TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w600,
@@ -163,6 +164,17 @@ class _CommunityPageState extends State<CommunityPage> with SingleTickerProvider
                           ),
                         ),
                       ],
+                    ),
+                    SizedBox(
+                      height: screenHeight * 0.025,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: screenWidth * 0.05),
+                      child: Text("My Communities:",
+                          style: TextStyle(
+                            fontSize: 15.5,
+                            color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
+                          )),
                     ),
                     Container(
                         height: screenHeight * 0.8,

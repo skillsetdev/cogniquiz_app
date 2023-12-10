@@ -76,7 +76,7 @@ class _NavPageState extends State<NavPage> {
                     ),
                     GButton(
                       icon: Icons.school_rounded,
-                      text: 'Groups',
+                      text: 'Courses',
                       onPressed: () {
                         setState(() {
                           _pageIndex = 2;

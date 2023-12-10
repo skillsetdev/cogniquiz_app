@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:appinio_swiper/appinio_swiper.dart';
 
-// Next task add WillPopScope and add stats when the back button is pressed
+// Next task add WillPopScope(to make page exitable only on the tap of the button), overwrite the cards in practice... and add stats when the back button is pressed
 
 class CardPracticePage extends StatefulWidget {
   const CardPracticePage({required this.selectedCardStack, super.key});
@@ -131,10 +131,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                               margin: EdgeInsets.fromLTRB(screenWidth * 0.05, 0, screenWidth * 0.05, 0),
                               decoration: BoxDecoration(
                                   border: Border.all(color: isDarkMode(context) ? Colors.white70 : Colors.black54, width: 1),
-                                  color: !isDarkMode(context)
-                                      ? Color.fromARGB(173, 128, 141, 254)
-                                      //Color.fromARGB(255, 100, 109, 227)
-                                      : Color.fromARGB(172, 36, 42, 124),
+                                  color: !isDarkMode(context) ? Color.fromARGB(173, 128, 141, 254) : Color.fromARGB(216, 36, 42, 124),
                                   borderRadius: BorderRadius.circular(12)),
                               child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
                                 SizedBox(
@@ -146,7 +143,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                                     Expanded(
                                       child: Container(
                                         child: Text((card as QuizCard).questionText,
-                                            maxLines: 3,
+                                            maxLines: 5,
                                             softWrap: true,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
@@ -207,7 +204,7 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
                                                     SizedBox(width: screenWidth * 0.04),
                                                     Expanded(
                                                       child: Text(answerText,
-                                                          maxLines: 3,
+                                                          maxLines: 5,
                                                           softWrap: true,
                                                           overflow: TextOverflow.ellipsis,
                                                           style: TextStyle(

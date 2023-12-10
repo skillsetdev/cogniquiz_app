@@ -83,7 +83,13 @@ abstract class SuperCard {
 class QuizCard extends SuperCard {
   String questionText;
   Map<String, bool> answers;
-  QuizCard(this.questionText, this.answers);
+
+  //editing
+  bool renamingQuestion = true;
+  TextEditingController questionTextController = TextEditingController();
+  QuizCard(this.questionText, this.answers) {
+    questionTextController = TextEditingController(text: questionText);
+  }
   Map<String, dynamic> toMap() {
     return {
       ...super.toMap(),
@@ -104,7 +110,6 @@ class FlippyCard extends SuperCard {
   bool renamingAnswer = true;
   TextEditingController frontTextController = TextEditingController();
   TextEditingController backTextController = TextEditingController();
-
   FlippyCard(this.frontText, this.backText) {
     frontTextController = TextEditingController(text: frontText);
     backTextController = TextEditingController(text: backText);
@@ -176,7 +181,6 @@ class AppData extends ChangeNotifier {
       parentCardStack.cardsInPractice.shuffle();
       parentCardStack.isShuffled = true;
     }
-
     notifyListeners();
   }
 
@@ -194,7 +198,15 @@ class AppData extends ChangeNotifier {
     notifyListeners();
   }
 
-///////////Quiz
+///////////Quiz Questions
+
+  void startNamingQuizQuestion(CardStack parentCardStack, int indexToRename) {
+    if (parentCardStack.cards[indexToRename] is QuizCard) {
+      (parentCardStack.cards[indexToRename] as QuizCard).renamingQuestion = true;
+      notifyListeners();
+    }
+  }
+
   void nameQuizQuestion(CardStack parentCardStack, String newQuestion, int indexToRename) {
     if (parentCardStack.cards[indexToRename] is QuizCard) {
       (parentCardStack.cards[indexToRename] as QuizCard).questionText = newQuestion;
@@ -202,7 +214,14 @@ class AppData extends ChangeNotifier {
     }
   }
 
-///////////Flippy
+  void finishNamingQuizQuestion(CardStack parentCardStack, int indexToRename) {
+    if (parentCardStack.cards[indexToRename] is QuizCard) {
+      (parentCardStack.cards[indexToRename] as QuizCard).renamingQuestion = false;
+      notifyListeners();
+    }
+  }
+
+///////////Flippy Questions
   void addFlippyCard(CardStack parentCardStack) {
     final FlippyCard newCard = FlippyCard("", "");
     parentCardStack.cards.add(newCard);

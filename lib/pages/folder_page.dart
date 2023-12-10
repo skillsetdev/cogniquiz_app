@@ -197,7 +197,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                         });
                       },
                       itemBuilder: (context, index) {
-                        if (pageFolder.subfolders[index].name.isNotEmpty) {
+                        if (pageFolder.subfolders[index].renamingFolder == false) {
                           return Dismissible(
                             key: Key(appData.rootFolders.subfolders[index].folderId.toString()),
                             direction: DismissDirection.endToStart,
@@ -236,12 +236,20 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                 Row(
                                   children: [
                                     SizedBox(width: screenWidth * 0.08),
-                                    Icon(Icons.folder_outlined,
-                                        color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
+                                    Visibility(
+                                      visible: pageFolder.subfolders[index].cardstacks.isNotEmpty,
+                                      child: Icon(Icons.folder,
+                                          color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
+                                    ),
+                                    Visibility(
+                                      visible: pageFolder.subfolders[index].cardstacks.isEmpty,
+                                      child: Icon(Icons.folder_outlined,
+                                          color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
+                                    ),
                                     Spacer(),
                                     GestureDetector(
                                       onTap: () {
-                                        appData.nameFolder(pageFolder, "", index);
+                                        appData.startNamingFolder(pageFolder, index);
                                       },
                                       child: Text(pageFolder.subfolders[index].name,
                                           style: TextStyle(
@@ -272,22 +280,28 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                             height: screenHeight * 0.12,
                             decoration: BoxDecoration(
                                 border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
-                                color: !isDarkMode(context)
-                                    ? Color.fromARGB(255, 128, 141, 254)
-                                    //Color.fromARGB(255, 100, 109, 227)
-                                    : Color.fromARGB(255, 72, 80, 197),
+                                color: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
                                 borderRadius: BorderRadius.circular(12)),
                             child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                               Row(
                                 children: [
                                   SizedBox(width: screenWidth * 0.08),
-                                  Icon(Icons.folder_outlined,
-                                      color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
+                                  Visibility(
+                                    visible: pageFolder.subfolders[index].cardstacks.isNotEmpty,
+                                    child: Icon(Icons.folder,
+                                        color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
+                                  ),
+                                  Visibility(
+                                    visible: pageFolder.subfolders[index].cardstacks.isEmpty,
+                                    child: Icon(Icons.folder_outlined,
+                                        color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
+                                  ),
                                   SizedBox(
                                     width: screenWidth * 0.0,
                                   ),
                                   Expanded(
                                       child: TextField(
+                                    controller: pageFolder.subfolders[index].folderTextController,
                                     maxLength: 20,
                                     decoration: InputDecoration(
                                       counterStyle: TextStyle(
@@ -302,7 +316,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                     ),
                                     onChanged: (value) {
                                       setState(() {
-                                        newFolderName = value.trim();
+                                        appData.nameFolder(pageFolder, value.trim(), index);
                                       });
                                     },
                                   )),
@@ -311,15 +325,12 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                   ),
                                   IconButton(
                                     onPressed: () {
-                                      if (newFolderName != checkCardStackName) {
-                                        appData.nameFolder(pageFolder, newFolderName, index);
-                                        setState(() {
-                                          checkCardStackName = newFolderName;
-                                        });
+                                      if (pageFolder.subfolders[index].name != "") {
+                                        appData.finishNamingFolder(pageFolder, index);
                                       }
                                     },
-                                    icon:
-                                        Icon(Icons.done, color: newFolderName != checkCardStackName ? Color.fromARGB(255, 4, 228, 86) : Colors.grey),
+                                    icon: Icon(Icons.done,
+                                        color: pageFolder.subfolders[index].name != "" ? Color.fromARGB(255, 4, 228, 86) : Colors.grey),
                                   ),
                                   SizedBox(width: screenWidth * 0.08),
                                 ],
@@ -338,7 +349,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                   visible: pageFolder.cardstacks.isNotEmpty,
                   child: Padding(
                     padding: EdgeInsets.only(left: screenWidth * 0.05),
-                    child: Text("Cards:",
+                    child: Text("Card Stacks:",
                         style: TextStyle(
                           fontSize: 15.5,
                           color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
@@ -369,10 +380,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                             height: screenHeight * 0.12,
                             decoration: BoxDecoration(
                                 border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
-                                color: !isDarkMode(context)
-                                    ? Color.fromARGB(255, 128, 141, 254)
-                                    //Color.fromARGB(255, 100, 109, 227)
-                                    : Color.fromARGB(255, 72, 80, 197),
+                                color: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
                                 borderRadius: BorderRadius.circular(12)),
                             child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                               Row(
@@ -410,7 +418,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                         });
                       },
                       itemBuilder: (context, index) {
-                        if (pageFolder.cardstacks[index].name.isNotEmpty) {
+                        if (pageFolder.cardstacks[index].renamingCardStack == false) {
                           return Dismissible(
                             key: Key(appData.rootFolders.cardstacks[index].cardStackId.toString()),
                             direction: DismissDirection.endToStart,
@@ -457,7 +465,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                     Spacer(),
                                     GestureDetector(
                                       onTap: () {
-                                        appData.nameCardStack(pageFolder, "", index);
+                                        appData.startNamingCardStack(pageFolder, index);
                                       },
                                       child: Text(pageFolder.cardstacks[index].name,
                                           style: TextStyle(
@@ -469,8 +477,12 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                     Spacer(),
                                     IconButton(
                                       onPressed: () {
-                                        Navigator.push(context,
-                                            MaterialPageRoute(builder: (context) => CardStackPage(selectedCardStack: pageFolder.cardstacks[index])));
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => CardStackPage(
+                                                      selectedCardStack: pageFolder.cardstacks[index],
+                                                    )));
                                       },
                                       icon: Icon(Icons.arrow_forward_ios,
                                           color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
@@ -504,6 +516,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                   ),
                                   Expanded(
                                       child: TextField(
+                                    controller: pageFolder.cardstacks[index].cardStackTextController,
                                     maxLength: 20,
                                     decoration: InputDecoration(
                                       counterStyle: TextStyle(
@@ -518,7 +531,7 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                     ),
                                     onChanged: (value) {
                                       setState(() {
-                                        newCardStackName = value.trim();
+                                        appData.nameCardStack(pageFolder, value.trim(), index);
                                       });
                                     },
                                   )),
@@ -527,12 +540,12 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                                   ),
                                   IconButton(
                                     onPressed: () {
-                                      if (newCardStackName != checkCardStackName) {
-                                        appData.nameCardStack(pageFolder, newCardStackName, index);
+                                      if (pageFolder.cardstacks[index].name != "") {
+                                        appData.finishNamingCardStack(pageFolder, index);
                                       }
                                     },
                                     icon: Icon(Icons.done,
-                                        color: newCardStackName != checkCardStackName ? Color.fromARGB(255, 4, 228, 86) : Colors.grey),
+                                        color: pageFolder.cardstacks[index].name != "" ? Color.fromARGB(255, 4, 228, 86) : Colors.grey),
                                   ),
                                   SizedBox(width: screenWidth * 0.08),
                                 ],

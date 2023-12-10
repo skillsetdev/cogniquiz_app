@@ -1,7 +1,7 @@
 // Next Important Tasks
 
-// 1. add functions like 'startNamingFolder' and 'finishNamingFolder' and name controller to the Folder and CardStack classes like in FlippyCard
-// where 'finishNamingFolder' or 'finishNamingCardStack' is invoked -> also invoke 'addOrOverwritePrivateFolderInFirestore' or 'addOrOverwritePrivateCardStackInFirestore'
+// DONE 1. add functions like 'startNamingFolder' and 'finishNamingFolder' and name controller to the Folder and CardStack classes like in FlippyCard
+// 2. make page exitable only when the back button is pressed
 
 // 2.  if user adds, removes or reorders cards, the whole cardstack should be overwritten in the database
 // make pages not removable on swipe
@@ -28,6 +28,9 @@ class Folder {
   String name;
   List<Folder> subfolders;
   List<CardStack> cardstacks;
+  //editing
+  bool renamingFolder = true;
+  TextEditingController folderTextController = TextEditingController();
   Folder(
     this.name,
     this.subfolders,
@@ -46,11 +49,15 @@ class Folder {
 class CardStack {
   bool isShuffled = false;
   int movedCards = 0;
+  Folder parentFolder;
   String cardStackId;
   String name;
   List<SuperCard> cards;
   List<SuperCard> cardsInPractice;
-  CardStack(this.name, this.cardStackId, this.cards, this.cardsInPractice);
+  //editing
+  bool renamingCardStack = true;
+  TextEditingController cardStackTextController = TextEditingController();
+  CardStack(this.name, this.cardStackId, this.cards, this.cardsInPractice, this.parentFolder);
   Map<String, dynamic> toMap() {
     return {
       'isShuffled': isShuffled,
@@ -136,8 +143,18 @@ class AppData extends ChangeNotifier {
     notifyListeners();
   }
 
+  void startNamingFolder(Folder parentFolder, int indexToRename) {
+    parentFolder.subfolders[indexToRename].renamingFolder = true;
+    notifyListeners();
+  }
+
   void nameFolder(Folder parentFolder, String newFolderName, int indexToRename) {
     parentFolder.subfolders[indexToRename].name = newFolderName;
+    notifyListeners();
+  }
+
+  void finishNamingFolder(Folder parentFolder, int indexToRename) {
+    parentFolder.subfolders[indexToRename].renamingFolder = false;
     notifyListeners();
   }
 
@@ -150,13 +167,23 @@ class AppData extends ChangeNotifier {
 
   void addCardStack(Folder parentFolder) {
     String newCardStackId = Uuid().v4();
-    final newCardStack = CardStack("", newCardStackId, [], []);
+    final newCardStack = CardStack("", newCardStackId, [], [], parentFolder);
     parentFolder.cardstacks.insert(0, newCardStack);
+    notifyListeners();
+  }
+
+  void startNamingCardStack(Folder parentFolder, int indexToRename) {
+    parentFolder.cardstacks[indexToRename].renamingCardStack = true;
     notifyListeners();
   }
 
   void nameCardStack(Folder parentFolder, String newCardStackName, int indexToRename) {
     parentFolder.cardstacks[indexToRename].name = newCardStackName;
+    notifyListeners();
+  }
+
+  void finishNamingCardStack(Folder parentFolder, int indexToRename) {
+    parentFolder.cardstacks[indexToRename].renamingCardStack = false;
     notifyListeners();
   }
 
@@ -460,8 +487,16 @@ class AppData extends ChangeNotifier {
     notifyListeners();
   }
 
-// backend connection ////////////////////////////////////////////////////////////////////////////////////////////////////
+// DB connection ////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////// private ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  Future<void> addUserInfoToFirestore(User user) {
+    String userId = getUserId();
+    return FirebaseFirestore.instance.collection('users').doc(userId).set({
+      'email': user.email,
+    });
+  }
+
   String getUserId() {
     final User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
@@ -470,31 +505,29 @@ class AppData extends ChangeNotifier {
     return user.uid;
   }
 
-  Future<void> addOrOverwritePrivateFolderInFirestore(Folder folder, Folder parentFolder) {
+  Future<void> addOrOverwritePrivateRootFolderInFirestore(Folder folder) {
     String userId = getUserId();
-    return FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('folders')
-        .doc(parentFolder.folderId)
-        .collection('subfolders')
-        .doc(folder.folderId)
-        .set(folder.toMap());
+    return FirebaseFirestore.instance.collection('users').doc(userId).collection('folders').doc(folder.folderId).set(folder.toMap());
   }
 
-  Future<void> addOrOverwritePrivateCardStackInFirestore(CardStack cardStack, Folder parentFolder) {
+  Future<void> addOrOverwritePrivateCardStackInFirestore(CardStack cardStack) {
     String userId = getUserId();
-    return FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('folders')
-        .doc(parentFolder.folderId)
-        .collection('cardStacks')
-        .doc(cardStack.cardStackId)
-        .set(cardStack.toMap());
+    Folder cardStackParentFolder = cardStack.parentFolder;
+    if (cardStackParentFolder == rootFolders) {
+      return FirebaseFirestore.instance.collection('users').doc(userId).collection('cardStacks').doc(cardStack.cardStackId).set(cardStack.toMap());
+    } else {
+      return FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('folders')
+          .doc(cardStackParentFolder.folderId)
+          .collection('subCardStacks')
+          .doc(cardStack.cardStackId)
+          .set(cardStack.toMap());
+    }
   }
 
-  Future<void> addOrOverwritePrivateCardStackInAppData(CardStack cardStack, Folder parentFolder) async {
+  /* Future<void> addOrOverwritePrivateCardStackInAppData(CardStack cardStack, Folder parentFolder) async {
     String userId = getUserId();
     DocumentSnapshot<Map<String, dynamic>> cardStackSnapshot = await FirebaseFirestore.instance
         .collection('users')
@@ -542,8 +575,7 @@ class AppData extends ChangeNotifier {
       parentFolder.cardstacks.insert(0, cardStack);
     }
     notifyListeners();
-  }
-
+  } */
 /////////////// public ////////////////////////////////////////////////////////////////////////////////////////////////////
   Future<void> createCommunity(String communityName) {
     String communityId = Uuid().v4();
@@ -568,7 +600,7 @@ class AppData extends ChangeNotifier {
   Future<void> addCommunityCardStackFromDBToAppData(String cardStackId) async {
     DocumentSnapshot<Map<String, dynamic>> cardStackSnapshot =
         await FirebaseFirestore.instance.collection('communities').doc(cardStackId).collection('sharedCardStacks').doc(cardStackId).get();
-    CardStack cardStack = CardStack(cardStackSnapshot['name'], cardStackSnapshot['cardStackId'], [], []);
+    CardStack cardStack = CardStack(cardStackSnapshot['name'], cardStackSnapshot['cardStackId'], [], [], rootFolders);
     cardStackSnapshot['cards'].forEach((card) {
       if (card['cardType'] == 'QuizCard') {
         QuizCard quizCard = QuizCard(card['questionText'], {});

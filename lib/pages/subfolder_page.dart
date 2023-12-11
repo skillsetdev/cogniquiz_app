@@ -28,7 +28,7 @@ class _SubfolderPageState extends State<SubfolderPage> with WidgetsBindingObserv
     final screenWidth = MediaQuery.of(context).size.width;
     return PopScope(
       onPopInvoked: (bool didPop) {
-        appData.addOrOverwritePrivateRootFolderInFirestore(pageFolder);
+        appData.addOrOverwritePrivateFolderInFirestore(pageFolder);
       },
       child: Consumer(
         builder: (context, value, child) => Scaffold(

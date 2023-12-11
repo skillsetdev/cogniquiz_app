@@ -1308,7 +1308,7 @@ class _CardStackPageState extends State<CardStackPage> with WidgetsBindingObserv
                         child: GestureDetector(
                           onTap: () {
                             if (!editing) {
-                              appData.addCard(pageCardStack);
+                              appData.addQuizCard(pageCardStack);
                             }
                           },
                           child: Container(

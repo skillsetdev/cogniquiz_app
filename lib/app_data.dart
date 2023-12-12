@@ -1,10 +1,9 @@
 // Next Important Tasks
 
 // DONE 1. add functions like 'startNamingFolder' and 'finishNamingFolder' and name controller to the Folder and CardStack classes like in FlippyCard
-// 2. make page exitable only when the back button is pressed
+// DONE 2. make page exitable only when the back button is pressed
 
-// 2.  if user adds, removes or reorders cards, the whole cardstack should be overwritten in the database
-// make pages not removable on swipe
+// 3.  if user adds, removes or reorders cards, the whole cards list should be overwritten in the database
 // add a boolean 'wasChanged' and if it was changed to true, then overwrite the whole cardstack in the database when 'back' button is pressed and set it to false
 
 //Later Task: moveCards() on page exit
@@ -15,7 +14,9 @@ import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
+// !!! user should choose their university when signing up and then be able to see the communities of their university, when they also create a community, it should be added to the list of communities of their university
 class LocalCommunity {
+  // int visits; tag; parentUniversity
   String communityId;
   String name;
   List<CardStack> cardstacks;
@@ -588,7 +589,7 @@ class AppData extends ChangeNotifier {
         .collection('users')
         .doc(userId)
         .collection('folders')
-        .doc(parentFolder.folderId)
+        .doc(parentFolder.folderId)QuerySnapshot
         .collection('cardStacks')
         .doc(cardStack.cardStackId)
         .get();
@@ -605,11 +606,12 @@ class AppData extends ChangeNotifier {
     String userId = getUserId();
 
     QuerySnapshot foldersSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).collection('folders').get();
-
+    //QuerySnapshot contains zero or more DocumentSnapshot objects representing the results of a query. The documents can be accessed as an array via the .docs property.
     QuerySnapshot rootCardStacksSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).collection('cardStacks').get();
+    //.get(): retrieves all documents within the 'cardstacks' sub-collection.
 
     for (var folderDoc in foldersSnapshot.docs) {
-      var data = folderDoc.data() as Map<String, dynamic>?;
+      var data = folderDoc.data() as Map<String, dynamic>?; //.data() contains all the data of this document snapshot
       if (data != null) {
         Folder generatedFolder = Folder(data['name'], [], [], folderDoc.id, false);
 
@@ -678,8 +680,13 @@ class AppData extends ChangeNotifier {
 
 /////////////// public ////////////////////////////////////////////////////////////////////////////////////////////////////
   Future<void> createCommunity(String communityName) {
-    String communityId = Uuid().v4();
-    return FirebaseFirestore.instance.collection('communities').doc(communityId).set({'name': communityName});
+    String communityId = const Uuid().v4();
+    List<String> searchSubstrings =
+        communityName.toLowerCase().split(' ').expand((tag) => List<String>.generate(tag.length, (i) => tag.substring(0, i + 1))).toList();
+    return FirebaseFirestore.instance.collection('communities').doc(communityId).set({
+      'name': communityName,
+      'searchTags': searchSubstrings,
+    });
   }
 
   void addCommunityToAppData(String communityId, String communityName) {

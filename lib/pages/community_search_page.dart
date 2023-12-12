@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 
+//search results: your universitys communities; global communities
 class CommunitySearchPage extends StatefulWidget {
   const CommunitySearchPage({super.key});
 
@@ -14,6 +15,38 @@ class _CommunitySearchPageState extends State<CommunitySearchPage> with SingleTi
   late AppData appData;
   bool isDarkMode(BuildContext context) {
     return MediaQuery.of(context).platformBrightness == Brightness.dark;
+  }
+
+  TextEditingController searchController = TextEditingController();
+  Stream<QuerySnapshot<Map<String, dynamic>>>? searchResults;
+
+  @override
+  void initState() {
+    super.initState();
+    searchController.addListener(searchCommunities);
+    setState(() {
+      searchResults = FirebaseFirestore.instance.collection('communities').snapshots();
+    });
+  }
+
+  @override
+  void dispose() {
+    searchController.removeListener(searchCommunities);
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void searchCommunities() {
+    if (searchController.text.isEmpty) {
+      setState(() {
+        searchResults = FirebaseFirestore.instance.collection('communities').snapshots();
+      });
+    } else {
+      List<String> searchControllerTexts = searchController.text.toLowerCase().split(' ');
+      setState(() {
+        searchResults = FirebaseFirestore.instance.collection('communities').where('searchTags', arrayContainsAny: searchControllerTexts).snapshots();
+      });
+    }
   }
 
   @override
@@ -34,15 +67,52 @@ class _CommunitySearchPageState extends State<CommunitySearchPage> with SingleTi
                 width: screenWidth,
                 child: Column(
                   children: [
+                    SizedBox(height: screenHeight * 0.05),
                     Container(
-                      height: screenHeight * 0.8,
+                      margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
+                      height: screenHeight * 0.12,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
+                          color: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(177, 72, 80, 197),
+                          borderRadius: BorderRadius.circular(12)),
+                      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                        Row(
+                          children: [
+                            SizedBox(width: screenWidth * 0.08),
+                            Expanded(
+                              child: TextField(
+                                controller: searchController,
+                                decoration: InputDecoration(
+                                  hintText: "Search...",
+                                  hintStyle: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  border: InputBorder.none,
+                                ),
+                                onChanged: (query) {},
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {},
+                              icon: Icon(Icons.search,
+                                  color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
+                            ),
+                            SizedBox(width: screenWidth * 0.08),
+                          ],
+                        )
+                      ]),
+                    ),
+                    SizedBox(height: screenHeight * 0.05),
+                    Container(
                       child: StreamBuilder(
-                          stream: FirebaseFirestore.instance.collection('communities').snapshots(),
+                          stream: searchResults,
                           builder: (context, snapshot) {
                             if (!snapshot.hasData) {
                               return Center(child: CircularProgressIndicator());
                             }
                             return ListView.builder(
+                                shrinkWrap: true,
                                 physics: NeverScrollableScrollPhysics(),
                                 itemCount: snapshot.data?.docs.length,
                                 itemBuilder: (context, index) {
@@ -93,6 +163,7 @@ class _CommunitySearchPageState extends State<CommunitySearchPage> with SingleTi
                                 });
                           }),
                     ),
+                    SizedBox(height: screenHeight * 0.05),
                   ],
                 ),
               ),

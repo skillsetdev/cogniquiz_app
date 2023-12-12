@@ -4,14 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 
-class CommunityPage extends StatefulWidget {
-  const CommunityPage({super.key});
+// add community_page to open communities
+// next task: ability to add tags to commmunity cardStacks
+
+class SocialPage extends StatefulWidget {
+  const SocialPage({super.key});
 
   @override
-  State<CommunityPage> createState() => _CommunityPageState();
+  State<SocialPage> createState() => _SocialPageState();
 }
 
-class _CommunityPageState extends State<CommunityPage> with SingleTickerProviderStateMixin {
+class _SocialPageState extends State<SocialPage> with SingleTickerProviderStateMixin {
   String newCommunityName = '';
 
   late AppData appData;

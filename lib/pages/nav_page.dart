@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flashcards/pages/calendar_page.dart';
 import 'package:flashcards/pages/folder_page.dart';
 import 'package:flashcards/pages/home_page.dart';
-import 'package:flashcards/pages/community_page.dart';
+import 'package:flashcards/pages/social_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
@@ -23,7 +23,7 @@ class _NavPageState extends State<NavPage> {
   final List<Widget> _pages = [
     const HomePage(),
     const CardReview(),
-    const CommunityPage(),
+    const SocialPage(),
     const CalendarPage(),
   ];
   @override

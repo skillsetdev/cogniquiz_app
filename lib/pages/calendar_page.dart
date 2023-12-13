@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-// Next Task: Add stats do days
+// Next Task: Add stats to days (graph)
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
 

@@ -2,9 +2,8 @@
 
 // DONE 1. add functions like 'startNamingFolder' and 'finishNamingFolder' and name controller to the Folder and CardStack classes like in FlippyCard
 // DONE 2. make page exitable only when the back button is pressed
-
-// 3.  if user adds, removes or reorders cards, the whole cards list should be overwritten in the database
-// add a boolean 'wasChanged' and if it was changed to true, then overwrite the whole cardstack in the database when 'back' button is pressed and set it to false
+// 3. work on moving cardsInPractice in buildFoldersAndCardStacksOnLogin()
+// 4. Boolean "wasUpdated" (initialised every time as false in the initState()) that is set to true every time a user edits something in the cardStack page; if true -> overwrite the whole cardstack in the database when 'back' button is pressed
 
 //Later Task: moveCards() on page exit
 // add moveCardOverTheStack() by adding them to a separate list if their index exceeds the maxIndex (otherwise last card stay last) and them adding them on the loor adfre the putCardsBack()
@@ -157,6 +156,8 @@ class AppData extends ChangeNotifier {
 // Functions for the folders /////////////////////////////////////////////////////////////////////////////////////////////////
 
   Folder rootFolders = Folder("Root", [], [], const Uuid().v4(), false);
+  String myInstitutionId = '';
+  String myInstitutionName = '';
   List<LocalCommunity> localCommunities = [];
 
   void addFolder(Folder parentFolder) {
@@ -485,7 +486,6 @@ class AppData extends ChangeNotifier {
   void changeSliderValue(double newValue) {
     sliderValue = newValue;
     notifyListeners();
-    print(sliderValue);
   }
 
   void addDaysProgress(DateTime day) {
@@ -679,11 +679,27 @@ class AppData extends ChangeNotifier {
   }
 
 /////////////// public ////////////////////////////////////////////////////////////////////////////////////////////////////
-  Future<void> createCommunity(String communityName) {
+  Future<void> createInstitution(String institutionName, String institutionCountry, String institutionCity) {
+    String institutionId = const Uuid().v4();
+    return FirebaseFirestore.instance.collection('institutions').doc(institutionId).set({
+      'name': institutionName,
+      'country': institutionCountry,
+      'city': institutionCity,
+      'users': 1,
+    });
+  }
+
+  void addInstitutionToAppData(String institutionId, String institutionName) {
+    myInstitutionId = institutionId;
+    myInstitutionName = institutionName;
+    notifyListeners();
+  }
+
+  Future<void> createCommunity(String communityName, String institutionId) {
     String communityId = const Uuid().v4();
     List<String> searchSubstrings =
         communityName.toLowerCase().split(' ').expand((tag) => List<String>.generate(tag.length, (i) => tag.substring(0, i + 1))).toList();
-    return FirebaseFirestore.instance.collection('communities').doc(communityId).set({
+    return FirebaseFirestore.instance.collection('institutions').doc(institutionId).collection('communities').doc(communityId).set({
       'name': communityName,
       'searchTags': searchSubstrings,
     });

@@ -1,5 +1,5 @@
 import 'package:flashcards/app_data.dart';
-import 'package:flashcards/pages/community_search_page.dart';
+import 'package:flashcards/pages/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
@@ -56,7 +56,7 @@ class _SocialPageState extends State<SocialPage> with SingleTickerProviderStateM
               IconButton(
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return CommunitySearchPage();
+                    return SearchPage();
                   }));
                 },
                 icon: Icon(Icons.search),
@@ -70,123 +70,190 @@ class _SocialPageState extends State<SocialPage> with SingleTickerProviderStateM
           body: SingleChildScrollView(
             child: SafeArea(
               child: Container(
-                width: screenWidth,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Stack(
-                      children: [
-                        Visibility(
-                          visible: optionsOpened,
-                          child: Container(height: (screenHeight * 0.12) * 2 + screenHeight * 0.025 * 2),
-                        ),
-                        Transform.translate(
-                          offset: Offset(0, _slideDownAnimation.value),
-                          child: Container(
-                            margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
-                            height: screenHeight * 0.12,
-                            decoration: BoxDecoration(
-                                border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
-                                color: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
-                                borderRadius: BorderRadius.circular(12)),
-                            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                              Row(
-                                children: [
-                                  SizedBox(width: screenWidth * 0.08),
-                                  Expanded(
-                                    child: TextField(
-                                        decoration: InputDecoration(
-                                          hintText: 'Community Name...',
-                                          hintStyle: TextStyle(
-                                            fontSize: 15,
+                  width: screenWidth,
+                  child: appData.myInstitutionId != ''
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: screenWidth,
+                              height: screenWidth * 0.4,
+                              decoration: const BoxDecoration(
+                                color: Colors.deepPurple,
+                                image: DecorationImage(
+                                  image: AssetImage('lib/images/university-1 building landscape.jpg'),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            Stack(
+                              children: [
+                                Visibility(
+                                  visible: optionsOpened,
+                                  child: Container(height: (screenHeight * 0.12) * 2 + screenHeight * 0.025 * 2),
+                                ),
+                                Transform.translate(
+                                  offset: Offset(0, _slideDownAnimation.value),
+                                  child: Container(
+                                    margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
+                                    height: screenHeight * 0.12,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
+                                        color: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
+                                        borderRadius: BorderRadius.circular(12)),
+                                    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                      Row(
+                                        children: [
+                                          SizedBox(width: screenWidth * 0.08),
+                                          Expanded(
+                                            child: TextField(
+                                                decoration: InputDecoration(
+                                                  hintText: 'Community Name...',
+                                                  hintStyle: TextStyle(
+                                                    fontSize: 15,
+                                                  ),
+                                                ),
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    newCommunityName = value;
+                                                  });
+                                                }),
                                           ),
-                                        ),
-                                        onChanged: (value) {
-                                          setState(() {
-                                            newCommunityName = value;
-                                          });
-                                        }),
+                                          IconButton(
+                                            onPressed: () {
+                                              appData.createCommunity(newCommunityName, appData.myInstitutionId);
+                                            },
+                                            icon: Icon(Icons.done,
+                                                color:
+                                                    !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
+                                          ),
+                                          SizedBox(width: screenWidth * 0.08),
+                                        ],
+                                      )
+                                    ]),
                                   ),
-                                  IconButton(
-                                    onPressed: () {
-                                      appData.createCommunity(newCommunityName);
-                                    },
-                                    icon: Icon(Icons.done,
-                                        color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      defaultValue = screenHeight * 0.12 + screenHeight * 0.025;
+                                    });
+                                    reInitialiseAnimation();
+                                    if (!optionsOpened) {
+                                      _slideDownController.forward();
+                                      setState(() {
+                                        optionsOpened = true;
+                                      });
+                                    } else {
+                                      _slideDownController.reverse();
+                                      setState(() {
+                                        optionsOpened = false;
+                                      });
+                                    }
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
+                                    height: screenHeight * 0.12,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
+                                        color: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
+                                        borderRadius: BorderRadius.circular(12)),
+                                    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                      Row(
+                                        children: [
+                                          SizedBox(width: screenWidth * 0.08),
+                                          Icon(Icons.folder_outlined,
+                                              color:
+                                                  !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
+                                          Spacer(),
+                                          Text('Create Community',
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: !isDarkMode(context)
+                                                      ? const Color.fromARGB(255, 7, 12, 59)
+                                                      : Color.fromARGB(255, 227, 230, 255))),
+                                          Spacer(),
+                                          Icon(Icons.add,
+                                              color:
+                                                  !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
+                                          SizedBox(width: screenWidth * 0.08),
+                                        ],
+                                      )
+                                    ]),
                                   ),
-                                  SizedBox(width: screenWidth * 0.08),
-                                ],
-                              )
-                            ]),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              defaultValue = screenHeight * 0.12 + screenHeight * 0.025;
-                            });
-                            reInitialiseAnimation();
-                            if (!optionsOpened) {
-                              _slideDownController.forward();
-                              setState(() {
-                                optionsOpened = true;
-                              });
-                            } else {
-                              _slideDownController.reverse();
-                              setState(() {
-                                optionsOpened = false;
-                              });
-                            }
-                          },
-                          child: Container(
-                            margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
-                            height: screenHeight * 0.12,
-                            decoration: BoxDecoration(
-                                border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
-                                color: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
-                                borderRadius: BorderRadius.circular(12)),
-                            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                              Row(
-                                children: [
-                                  SizedBox(width: screenWidth * 0.08),
-                                  Icon(Icons.folder_outlined,
-                                      color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
-                                  Spacer(),
-                                  Text('Create Community',
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600,
-                                          color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255))),
-                                  Spacer(),
-                                  Icon(Icons.add,
-                                      color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
-                                  SizedBox(width: screenWidth * 0.08),
-                                ],
-                              )
-                            ]),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: screenHeight * 0.025,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: screenWidth * 0.05),
-                      child: Text("My Communities:",
-                          style: TextStyle(
-                            fontSize: 15.5,
-                            color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
-                          )),
-                    ),
-                    Container(
-                        height: screenHeight * 0.8,
-                        child: ListView.builder(
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: appData.localCommunities.length,
-                            itemBuilder: (context, index) {
-                              return Container(
-                                key: Key('$index'),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: screenHeight * 0.025,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: screenWidth * 0.05),
+                              child: Text("My Communities:",
+                                  style: TextStyle(
+                                    fontSize: 15.5,
+                                    color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
+                                  )),
+                            ),
+                            Container(
+                                height: screenHeight * 0.8,
+                                child: ListView.builder(
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemCount: appData.localCommunities.length,
+                                    itemBuilder: (context, index) {
+                                      return Container(
+                                        key: Key('$index'),
+                                        margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
+                                        height: screenHeight * 0.12,
+                                        decoration: BoxDecoration(
+                                            border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
+                                            color: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
+                                            borderRadius: BorderRadius.circular(12)),
+                                        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                          Row(
+                                            children: [
+                                              SizedBox(width: screenWidth * 0.08),
+                                              Icon(Icons.folder_outlined,
+                                                  color: !isDarkMode(context)
+                                                      ? const Color.fromARGB(255, 7, 12, 59)
+                                                      : Color.fromARGB(255, 227, 230, 255)),
+                                              Spacer(),
+                                              GestureDetector(
+                                                onTap: () {},
+                                                child: Text(appData.localCommunities[index].name,
+                                                    style: TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight: FontWeight.w600,
+                                                        color: !isDarkMode(context)
+                                                            ? const Color.fromARGB(255, 7, 12, 59)
+                                                            : Color.fromARGB(255, 227, 230, 255))),
+                                              ),
+                                              Spacer(),
+                                              IconButton(
+                                                onPressed: () {},
+                                                icon: Icon(Icons.arrow_forward_ios,
+                                                    color: !isDarkMode(context)
+                                                        ? const Color.fromARGB(255, 7, 12, 59)
+                                                        : Color.fromARGB(255, 227, 230, 255)),
+                                              ),
+                                              SizedBox(width: screenWidth * 0.08),
+                                            ],
+                                          )
+                                        ]),
+                                      );
+                                    }))
+                          ],
+                        )
+                      : Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                  return SearchPage();
+                                }));
+                              },
+                              child: Container(
                                 margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
                                 height: screenHeight * 0.12,
                                 decoration: BoxDecoration(
@@ -196,35 +263,27 @@ class _SocialPageState extends State<SocialPage> with SingleTickerProviderStateM
                                 child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                                   Row(
                                     children: [
-                                      SizedBox(width: screenWidth * 0.08),
-                                      Icon(Icons.folder_outlined,
+                                      SizedBox(width: screenWidth * 0.07),
+                                      Icon(Icons.school_rounded,
                                           color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
                                       Spacer(),
-                                      GestureDetector(
-                                        onTap: () {},
-                                        child: Text(appData.localCommunities[index].name,
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w600,
-                                                color: !isDarkMode(context)
-                                                    ? const Color.fromARGB(255, 7, 12, 59)
-                                                    : Color.fromARGB(255, 227, 230, 255))),
-                                      ),
+                                      Text('Find My Institution',
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w600,
+                                              color:
+                                                  !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255))),
                                       Spacer(),
-                                      IconButton(
-                                        onPressed: () {},
-                                        icon: Icon(Icons.arrow_forward_ios,
-                                            color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
-                                      ),
+                                      Icon(Icons.search,
+                                          color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
                                       SizedBox(width: screenWidth * 0.08),
                                     ],
                                   )
                                 ]),
-                              );
-                            }))
-                  ],
-                ),
-              ),
+                              ),
+                            ),
+                          ],
+                        )),
             ),
           )),
     );

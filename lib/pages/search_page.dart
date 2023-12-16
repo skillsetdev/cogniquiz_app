@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 
+// institutions search
 //search results: your universitys communities; global communities
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -12,9 +13,30 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateMixin {
+  String newCommunityOrInstitutionName = ''; // reset it after...
+
   late AppData appData;
   bool isDarkMode(BuildContext context) {
     return MediaQuery.of(context).platformBrightness == Brightness.dark;
+  }
+
+  double defaultValue = 0.0;
+  bool optionsOpened = false;
+  late AnimationController _slideDownController;
+  late Animation<double> _slideDownAnimation;
+
+  void reInitialiseAnimation() {
+    _slideDownAnimation = Tween(begin: 0.0, end: defaultValue).animate(CurvedAnimation(parent: _slideDownController, curve: Curves.easeInOut));
+  }
+
+  @override
+  void initState() {
+    _slideDownController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    _slideDownAnimation = Tween(begin: 0.0, end: defaultValue).animate(CurvedAnimation(parent: _slideDownController, curve: Curves.easeInOut));
+    _slideDownController.addListener(() {
+      setState(() {});
+    });
+    super.initState();
   }
 
   TextEditingController searchController = TextEditingController();
@@ -169,13 +191,35 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
                                                           : Color.fromARGB(255, 227, 230, 255))),
                                             ),
                                           ),
-                                          IconButton(
-                                            onPressed: () {},
-                                            icon: Icon(Icons.arrow_forward_ios,
-                                                color:
-                                                    !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
+                                          Visibility(
+                                            visible: appData.myInstitutionId == '',
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                appData.addInstitutionToAppData(ds.id, ds['name']);
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
+                                                foregroundColor:
+                                                    !isDarkMode(context) ? Color.fromARGB(255, 227, 230, 255) : const Color.fromARGB(255, 7, 12, 59),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(12.0),
+                                                ),
+                                              ),
+                                              child: Text('Join'),
+                                            ),
                                           ),
-                                          SizedBox(width: screenWidth * 0.08),
+                                          Visibility(
+                                            visible: appData.myInstitutionId != '',
+                                            child: IconButton(
+                                              onPressed: () {},
+                                              icon: Icon(Icons.arrow_forward_ios,
+                                                  color: !isDarkMode(context)
+                                                      ? const Color.fromARGB(255, 7, 12, 59)
+                                                      : Color.fromARGB(255, 227, 230, 255)),
+                                            ),
+                                          ),
+                                          SizedBox(width: screenWidth * 0.05),
                                         ],
                                       )
                                     ]),
@@ -184,6 +228,104 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
                           }),
                     ),
                     SizedBox(height: screenHeight * 0.05),
+                    Stack(
+                      children: [
+                        Visibility(
+                          visible: optionsOpened,
+                          child: Container(height: (screenHeight * 0.12) * 2 + screenHeight * 0.025 * 2),
+                        ),
+                        Transform.translate(
+                          offset: Offset(0, _slideDownAnimation.value),
+                          child: Container(
+                            margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
+                            height: screenHeight * 0.12,
+                            decoration: BoxDecoration(
+                                border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
+                                color: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                              Row(
+                                children: [
+                                  SizedBox(width: screenWidth * 0.08),
+                                  Expanded(
+                                    child: TextField(
+                                        decoration: InputDecoration(
+                                          hintText: appData.myInstitutionId == '' ? 'University or School Name...' : 'Community Name...',
+                                          hintStyle: TextStyle(
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                        onChanged: (value) {
+                                          setState(() {
+                                            newCommunityOrInstitutionName = value;
+                                          });
+                                        }),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      appData.myInstitutionId == ''
+                                          ? appData.createInstitution(newCommunityOrInstitutionName, '', '')
+                                          : appData.createCommunity(newCommunityOrInstitutionName, appData.myInstitutionId);
+                                    },
+                                    icon: Icon(Icons.done,
+                                        color: newCommunityOrInstitutionName == ''
+                                            ? !isDarkMode(context)
+                                                ? const Color.fromARGB(255, 7, 12, 59)
+                                                : Color.fromARGB(255, 227, 230, 255)
+                                            : Colors.green),
+                                  ),
+                                  SizedBox(width: screenWidth * 0.08),
+                                ],
+                              )
+                            ]),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              defaultValue = screenHeight * 0.12 + screenHeight * 0.025;
+                            });
+                            reInitialiseAnimation();
+                            if (!optionsOpened) {
+                              _slideDownController.forward();
+                              setState(() {
+                                optionsOpened = true;
+                              });
+                            } else {
+                              _slideDownController.reverse();
+                              setState(() {
+                                optionsOpened = false;
+                              });
+                            }
+                          },
+                          child: Container(
+                            margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
+                            height: screenHeight * 0.12,
+                            decoration: BoxDecoration(
+                                border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
+                                color: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                              Row(
+                                children: [
+                                  SizedBox(width: screenWidth * 0.08),
+                                  Spacer(),
+                                  Text(appData.myInstitutionId == '' ? 'Create Your Institution Page' : 'Create Community',
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600,
+                                          color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255))),
+                                  Spacer(),
+                                  Icon(Icons.add,
+                                      color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
+                                  SizedBox(width: screenWidth * 0.08),
+                                ],
+                              )
+                            ]),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),

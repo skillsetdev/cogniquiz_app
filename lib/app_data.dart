@@ -158,6 +158,7 @@ class AppData extends ChangeNotifier {
   Folder rootFolders = Folder("Root", [], [], const Uuid().v4(), false);
   String myInstitutionId = '';
   String myInstitutionName = '';
+  Map<String, dynamic>? myInstitutionData;
   List<LocalCommunity> localCommunities = [];
 
   void addFolder(Folder parentFolder) {
@@ -689,9 +690,11 @@ class AppData extends ChangeNotifier {
     });
   }
 
-  void addInstitutionToAppData(String institutionId, String institutionName) {
+  void addInstitutionToAppData(String institutionId, String institutionName) async {
     myInstitutionId = institutionId;
     myInstitutionName = institutionName;
+    myInstitutionData =
+        await FirebaseFirestore.instance.collection('institutions').doc(institutionId).get().then((value) => value.data() as Map<String, dynamic>?);
     notifyListeners();
   }
 

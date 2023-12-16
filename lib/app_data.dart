@@ -682,11 +682,14 @@ class AppData extends ChangeNotifier {
 /////////////// public ////////////////////////////////////////////////////////////////////////////////////////////////////
   Future<void> createInstitution(String institutionName, String institutionCountry, String institutionCity) {
     String institutionId = const Uuid().v4();
+    List<String> searchSubstrings =
+        institutionName.toLowerCase().split(' ').expand((tag) => List<String>.generate(tag.length, (i) => tag.substring(0, i + 1))).toList();
     return FirebaseFirestore.instance.collection('institutions').doc(institutionId).set({
       'name': institutionName,
       'country': institutionCountry,
       'city': institutionCity,
       'users': 1,
+      'searchTags': searchSubstrings,
     });
   }
 

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 
-// institutions search
+// institution search
 //search results: your universitys communities; global communities
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});

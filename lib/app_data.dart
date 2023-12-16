@@ -160,6 +160,12 @@ class AppData extends ChangeNotifier {
   String myInstitutionName = '';
   Map<String, dynamic>? myInstitutionData;
   List<LocalCommunity> localCommunities = [];
+  TextEditingController searchController = TextEditingController();
+
+  void updateSearchControllerValue(String newValue) {
+    searchController.text = newValue;
+    notifyListeners();
+  }
 
   void addFolder(Folder parentFolder) {
     String folderId = Uuid().v4();

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 
-// institution search
 //search results: your universitys communities; global communities
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -24,6 +23,7 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
   bool optionsOpened = false;
   late AnimationController _slideDownController;
   late Animation<double> _slideDownAnimation;
+  bool wasInitialised = false;
 
   void reInitialiseAnimation() {
     _slideDownAnimation = Tween(begin: 0.0, end: defaultValue).animate(CurvedAnimation(parent: _slideDownController, curve: Curves.easeInOut));
@@ -45,15 +45,20 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    appData = Provider.of<AppData>(context);
-    searchController.addListener(searchCommunities);
-    if (appData.myInstitutionId != '') {
+    if (!wasInitialised) {
+      appData = Provider.of<AppData>(context);
+      searchController.addListener(searchCommunities);
+      if (appData.myInstitutionId != '') {
+        setState(() {
+          searchResults = FirebaseFirestore.instance.collection('institutions').doc(appData.myInstitutionId).collection('communities').snapshots();
+        });
+      } else {
+        setState(() {
+          searchResults = FirebaseFirestore.instance.collection('institutions').snapshots();
+        });
+      }
       setState(() {
-        searchResults = FirebaseFirestore.instance.collection('institutions').doc(appData.myInstitutionId).collection('communities').snapshots();
-      });
-    } else {
-      setState(() {
-        searchResults = FirebaseFirestore.instance.collection('institutions').snapshots();
+        wasInitialised = true;
       });
     }
   }
@@ -142,7 +147,13 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
                               ),
                             ),
                             IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                FocusScopeNode currentFocus = FocusScope.of(context);
+
+                                if (!currentFocus.hasPrimaryFocus) {
+                                  currentFocus.unfocus();
+                                }
+                              },
                               icon: Icon(Icons.search,
                                   color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
                             ),
@@ -196,6 +207,9 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
                                             child: ElevatedButton(
                                               onPressed: () {
                                                 appData.addInstitutionToAppData(ds.id, ds['name']);
+                                                setState(() {
+                                                  wasInitialised = false;
+                                                });
                                               },
                                               style: ElevatedButton.styleFrom(
                                                 backgroundColor:

@@ -37,7 +37,9 @@ class _CardPracticePageState extends State<CardPracticePage> with WidgetsBinding
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return PopScope(
-      onPopInvoked: (bool didPop) {},
+      onPopInvoked: (bool didPop) {
+        appData.addOrOverwritePrivateCardsInPracticeInFireStore(pageCardStack);
+      },
       child: Consumer(
         builder: (context, value, child) => Scaffold(
           appBar: AppBar(

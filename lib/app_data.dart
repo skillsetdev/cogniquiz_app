@@ -109,12 +109,17 @@ class QuizCard extends SuperCard {
   }
 
   factory QuizCard.fromMap(Map<String, dynamic> map) {
-    return QuizCard(
+    QuizCard quizCard = QuizCard(
       map['questionText'],
       false,
       Map<String, bool>.from(map['answers']),
       map['cardId'],
     );
+    quizCard.goodPresses = map['goodPresses'];
+    quizCard.okPresses = map['okPresses'];
+    quizCard.badPresses = map['badPresses'];
+    quizCard.lastPress = map['lastPress'];
+    return quizCard;
   }
 }
 
@@ -142,13 +147,18 @@ class FlippyCard extends SuperCard {
   }
 
   factory FlippyCard.fromMap(Map<String, dynamic> map) {
-    return FlippyCard(
+    FlippyCard flippyCard = FlippyCard(
       map['frontText'],
       false,
       map['backText'],
       false,
       map['cardId'],
     );
+    flippyCard.goodPresses = map['goodPresses'];
+    flippyCard.okPresses = map['okPresses'];
+    flippyCard.badPresses = map['badPresses'];
+    flippyCard.lastPress = map['lastPress'];
+    return flippyCard;
   }
 }
 
@@ -160,12 +170,6 @@ class AppData extends ChangeNotifier {
   String myInstitutionName = '';
   Map<String, dynamic>? myInstitutionData;
   List<LocalCommunity> localCommunities = [];
-  TextEditingController searchController = TextEditingController();
-
-  void updateSearchControllerValue(String newValue) {
-    searchController.text = newValue;
-    notifyListeners();
-  }
 
   void addFolder(Folder parentFolder) {
     String folderId = Uuid().v4();
@@ -198,7 +202,7 @@ class AppData extends ChangeNotifier {
 
   void addCardStack(Folder parentFolder) {
     String newCardStackId = Uuid().v4();
-    final newCardStack = CardStack("", newCardStackId, [], [], parentFolder, false);
+    final newCardStack = CardStack("", newCardStackId, [], [], parentFolder, true);
     parentFolder.cardstacks.insert(0, newCardStack);
     notifyListeners();
   }
@@ -214,7 +218,7 @@ class AppData extends ChangeNotifier {
   }
 
   void finishNamingCardStack(Folder parentFolder, int indexToRename) {
-    parentFolder.cardstacks[indexToRename].renamingCardStack = true;
+    parentFolder.cardstacks[indexToRename].renamingCardStack = false;
     notifyListeners();
   }
 
@@ -548,6 +552,7 @@ class AppData extends ChangeNotifier {
     if (cardStackParentFolder == rootFolders) {
       return FirebaseFirestore.instance.collection('users').doc(userId).collection('cardStacks').doc(cardStack.cardStackId).set(cardStack.toMap());
     } else {
+      // means that the card stack is inside some folder
       return FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
@@ -559,55 +564,41 @@ class AppData extends ChangeNotifier {
     }
   }
 
-  /* Future<void> addOrOverwritePrivateCardStackInAppData(CardStack cardStack, Folder parentFolder) async {
+  Future<void> addOrOverwritePrivateCardsInPracticeInFireStore(CardStack cardStack) {
     String userId = getUserId();
-    DocumentSnapshot<Map<String, dynamic>> cardStackSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('folders')
-        .doc(parentFolder.folderId)
-        .collection('cardStacks')
-        .doc(cardStack.cardStackId)
-        .get();
-    if (cardStackSnapshot.exists) {
-      parentFolder.cardstacks.removeWhere((cardstack) => cardstack.cardStackId == cardStack.cardStackId);
-      parentFolder.cardstacks.insert(0, cardStack);
+    Folder cardStackParentFolder = cardStack.parentFolder;
+    if (cardStackParentFolder == rootFolders) {
+      return FirebaseFirestore.instance.collection('users').doc(userId).collection('cardStacks').doc(cardStack.cardStackId).set(cardStack.toMap());
     } else {
-      parentFolder.cardstacks.insert(0, cardStack);
+      // means that the card stack is inside some folder
+      return FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('folders')
+          .doc(cardStackParentFolder.folderId)
+          .collection('subCardStacks')
+          .doc(cardStack.cardStackId)
+          .set(cardStack.toMap());
     }
-    notifyListeners();
   }
 
-  Future<void> overwriteCardsInPracticeInFirestore(CardStack cardStack, Folder parentFolder) {
+  Future<void> overwriteCardsInPracticeInFireStore(CardStack cardStack) {
     String userId = getUserId();
-    return FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('folders')
-        .doc(parentFolder.folderId)
-        .collection('cardStacks')
-        .doc(cardStack.cardStackId)
-        .update({'cardsInPractice': cardStack.cardsInPractice.map((card) => card.toMap()).toList()});
-  }
-
-  Future<void> overwriteCardsInPracticeInAppData(CardStack cardStack, Folder parentFolder) async {
-    String userId = getUserId();
-    DocumentSnapshot<Map<String, dynamic>> cardStackSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('folders')
-        .doc(parentFolder.folderId)QuerySnapshot
-        .collection('cardStacks')
-        .doc(cardStack.cardStackId)
-        .get();
-    if (cardStackSnapshot.exists) {
-      parentFolder.cardstacks.removeWhere((cardstack) => cardstack.cardStackId == cardStack.cardStackId);
-      parentFolder.cardstacks.insert(0, cardStack);
+    Folder cardStackParentFolder = cardStack.parentFolder;
+    if (cardStackParentFolder == rootFolders) {
+      return FirebaseFirestore.instance.collection('users').doc(userId).collection('cardStacks').doc(cardStack.cardStackId).set(cardStack.toMap());
     } else {
-      parentFolder.cardstacks.insert(0, cardStack);
+      // means that the card stack is inside some folder
+      return FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('folders')
+          .doc(cardStackParentFolder.folderId)
+          .collection('subCardStacks')
+          .doc(cardStack.cardStackId)
+          .update({'cardsInPractice': cardStack.cardsInPractice.map((card) => card.toMap()).toList()});
     }
-    notifyListeners();
-  } */
+  }
 
   Future<void> buildFoldersAndCardStacksOnLogin() async {
     String userId = getUserId();
@@ -645,8 +636,18 @@ class AppData extends ChangeNotifier {
                     throw Exception('Unknown card type');
                   }
                 }).toList();
+                List<SuperCard> cardsInPractice = (cardStackData['cardsInPractice'] as List).map((cardData) {
+                  var cardMap = cardData as Map<String, dynamic>;
+                  if (cardMap['cardType'] == 'QuizCard') {
+                    return QuizCard.fromMap(cardMap);
+                  } else if (cardMap['cardType'] == 'FlippyCard') {
+                    return FlippyCard.fromMap(cardMap);
+                  } else {
+                    throw Exception('Unknown card type');
+                  }
+                }).toList();
 
-                return CardStack(cardStackData['name'], cardStackData['cardStackId'], cards, [], generatedFolder, false);
+                return CardStack(cardStackData['name'], cardStackData['cardStackId'], cards, cardsInPractice, generatedFolder, false);
               }
             })
             .whereType<CardStack>()
@@ -671,8 +672,18 @@ class AppData extends ChangeNotifier {
                 throw Exception('Unknown card type');
               }
             }).toList();
+            List<SuperCard> cardsInPractice = (data['cardsInPractice'] as List).map((cardData) {
+              var cardMap = cardData as Map<String, dynamic>;
+              if (cardMap['cardType'] == 'QuizCard') {
+                return QuizCard.fromMap(cardMap);
+              } else if (cardMap['cardType'] == 'FlippyCard') {
+                return FlippyCard.fromMap(cardMap);
+              } else {
+                throw Exception('Unknown card type');
+              }
+            }).toList();
 
-            CardStack generatedCardStack = CardStack(data['name'], cardStackDoc.id, cards, [], rootFolders, false);
+            CardStack generatedCardStack = CardStack(data['name'], cardStackDoc.id, cards, cardsInPractice, rootFolders, false);
             return generatedCardStack;
           } else {
             throw Exception('Card stack data is null');

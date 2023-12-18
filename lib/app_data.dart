@@ -1,5 +1,5 @@
 // Next Important Tasks
-
+// 0. add communities to firestore and download them to the app
 // DONE 1. add functions like 'startNamingFolder' and 'finishNamingFolder' and name controller to the Folder and CardStack classes like in FlippyCard
 // DONE 2. make page exitable only when the back button is pressed
 // 3. work on moving cardsInPractice in buildFoldersAndCardStacksOnLogin()
@@ -604,7 +604,7 @@ class AppData extends ChangeNotifier {
     String userId = getUserId();
 
     QuerySnapshot foldersSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).collection('folders').get();
-    //QuerySnapshot contains zero or more DocumentSnapshot objects representing the results of a query. The documents can be accessed as an array via the .docs property.
+    //QuerySnapshot contains DocumentSnapshot objects representing the results of a query. The documents can be accessed as an array via the .docs property.
     QuerySnapshot rootCardStacksSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).collection('cardStacks').get();
     //.get(): retrieves all documents within the 'cardstacks' sub-collection.
 
@@ -725,6 +725,7 @@ class AppData extends ChangeNotifier {
     return FirebaseFirestore.instance.collection('institutions').doc(institutionId).collection('communities').doc(communityId).set({
       'name': communityName,
       'searchTags': searchSubstrings,
+      'users': 1,
     });
   }
 
@@ -734,15 +735,15 @@ class AppData extends ChangeNotifier {
     notifyListeners();
   }
 
-/*  Future<void> addCommunityCardStackToFirestore(CardStack cardStack, String communityId) {
+  Future<void> addCommunityCardStackToFirestore(CardStack cardStack, String communityId) {
     return FirebaseFirestore.instance
+        .collection('institutions')
+        .doc(myInstitutionId)
         .collection('communities')
         .doc(communityId)
-        .collection('sharedCardStacks')
-        .doc(cardStack.cardStackId)
         .set(cardStack.toMap());
   }
-
+/* 
   Future<void> addCommunityCardStackFromDBToAppData(String cardStackId) async {
     DocumentSnapshot<Map<String, dynamic>> cardStackSnapshot =
         await FirebaseFirestore.instance.collection('communities').doc(cardStackId).collection('sharedCardStacks').doc(cardStackId).get();

@@ -1,11 +1,13 @@
 import 'dart:ui';
-
+import 'package:flashcards/app_data.dart';
 import 'package:flashcards/pages/calendar_page.dart';
 import 'package:flashcards/pages/folder_page.dart';
 import 'package:flashcards/pages/home_page.dart';
+import 'package:flashcards/pages/search_page.dart';
 import 'package:flashcards/pages/social_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:provider/provider.dart';
 
 class NavPage extends StatefulWidget {
   const NavPage({super.key});
@@ -15,6 +17,7 @@ class NavPage extends StatefulWidget {
 }
 
 class _NavPageState extends State<NavPage> {
+  late AppData appData;
   int _pageIndex = 0;
   bool isDarkMode(BuildContext context) {
     return MediaQuery.of(context).platformBrightness == Brightness.dark;
@@ -25,7 +28,24 @@ class _NavPageState extends State<NavPage> {
     const CardReview(),
     const SocialPage(),
     const CalendarPage(),
+    const SearchPage(),
   ];
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    appData = Provider.of<AppData>(context);
+    setState(() {
+      if (_pageIndex == 2 || _pageIndex == 4) {
+        if (appData.myInstitutionId == '') {
+          _pageIndex = 4;
+        } else {
+          _pageIndex = 2;
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -79,7 +99,11 @@ class _NavPageState extends State<NavPage> {
                       text: 'Courses',
                       onPressed: () {
                         setState(() {
-                          _pageIndex = 2;
+                          if (appData.myInstitutionId == '') {
+                            _pageIndex = 4;
+                          } else {
+                            _pageIndex = 2;
+                          }
                         });
                       },
                     ),

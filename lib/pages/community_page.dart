@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flashcards/app_data.dart';
 import 'package:flashcards/pages/search_page.dart';
+import 'package:flashcards/pages/select_cardstack.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
@@ -125,6 +126,18 @@ class _SocialPageState extends State<CommunityPage> with SingleTickerProviderSta
                           SizedBox(
                             height: screenHeight * 0.025,
                           ),
+                          Padding(
+                              padding: EdgeInsets.only(left: screenWidth * 0.05, right: screenWidth * 0.05),
+                              child: Row(
+                                children: [
+                                  Text("Card Stacks:",
+                                      style: TextStyle(
+                                        fontSize: 15.5,
+                                        color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
+                                      )),
+                                  Spacer(),
+                                ],
+                              )),
                           Container(
                             child: StreamBuilder(
                                 stream: communityCardStacksSnapshot,
@@ -204,6 +217,37 @@ class _SocialPageState extends State<CommunityPage> with SingleTickerProviderSta
                           ),
                           SizedBox(
                             height: screenHeight * 0.025,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context, MaterialPageRoute(builder: (context) => SelectCardStack(communityId: widget.selectedCommunityData.id)));
+                            },
+                            child: Container(
+                              margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
+                              height: screenHeight * 0.12,
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
+                                  color: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                Row(
+                                  children: [
+                                    SizedBox(width: screenWidth * 0.08),
+                                    Spacer(),
+                                    Text('Add To Community',
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                            color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255))),
+                                    Spacer(),
+                                    Icon(Icons.add,
+                                        color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
+                                    SizedBox(width: screenWidth * 0.08),
+                                  ],
+                                )
+                              ]),
+                            ),
                           ),
                         ],
                       )),

@@ -736,11 +736,14 @@ class AppData extends ChangeNotifier {
   }
 
   Future<void> addCommunityCardStackToFirestore(CardStack cardStack, String communityId) {
+    String cardStackId = const Uuid().v4();
     return FirebaseFirestore.instance
         .collection('institutions')
         .doc(myInstitutionId)
         .collection('communities')
         .doc(communityId)
+        .collection('cardstacks')
+        .doc(cardStackId)
         .set(cardStack.toMap());
   }
 /* 

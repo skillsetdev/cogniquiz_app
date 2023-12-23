@@ -223,27 +223,44 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
                                                 ],
                                               ),
                                             ),
-                                            Visibility(
-                                              visible: appData.myInstitutionId == '',
-                                              child: ElevatedButton(
-                                                onPressed: () {
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                if (appData.myInstitutionId == '') {
                                                   appData.addInstitutionToAppData(ds.id, ds['name']);
                                                   setState(() {
                                                     wasInitialised = false;
                                                   });
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor: !isDarkMode(context)
-                                                      ? const Color.fromARGB(255, 7, 12, 59)
-                                                      : Color.fromARGB(255, 227, 230, 255),
-                                                  foregroundColor: !isDarkMode(context)
-                                                      ? Color.fromARGB(255, 227, 230, 255)
-                                                      : const Color.fromARGB(255, 7, 12, 59),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(12.0),
-                                                  ),
+                                                } else {
+                                                  if (appData.localCommunities.any((community) => community.communityId == ds.id)) {
+                                                    return;
+                                                  }
+                                                  appData.addCommunityToAppData(ds.id, ds['name']);
+                                                }
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                elevation: appData.localCommunities.any((community) => community.communityId == ds.id) ? 0 : 2,
+                                                backgroundColor: appData.localCommunities.any((community) => community.communityId == ds.id)
+                                                    ? !isDarkMode(context)
+                                                        ? Color.fromARGB(255, 227, 230, 255)
+                                                        : const Color.fromARGB(255, 7, 12, 59)
+                                                    : !isDarkMode(context)
+                                                        ? const Color.fromARGB(255, 7, 12, 59)
+                                                        : Color.fromARGB(255, 227, 230, 255),
+                                                foregroundColor: appData.localCommunities.any((community) => community.communityId == ds.id)
+                                                    ? !isDarkMode(context)
+                                                        ? const Color.fromARGB(255, 7, 12, 59)
+                                                        : Color.fromARGB(255, 227, 230, 255)
+                                                    : !isDarkMode(context)
+                                                        ? Color.fromARGB(255, 227, 230, 255)
+                                                        : const Color.fromARGB(255, 7, 12, 59),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(12.0),
                                                 ),
-                                                child: Text('Join'),
+                                              ),
+                                              child: Text(
+                                                appData.localCommunities.any((community) => community.communityId == ds.id)
+                                                    ? 'Joined'
+                                                    : 'Join', // The any method checks if at least one element of the list satisfies the provided condition.
                                               ),
                                             ),
                                             SizedBox(width: screenWidth * 0.05),

@@ -65,7 +65,7 @@ class _SocialPageState extends State<SocialPage> with SingleTickerProviderStateM
               backgroundColor: isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
               actions: appData.myInstitutionName == ''
                   ? []
-                  : [Icon(Icons.groups_2_outlined), Text(": ${appData.myInstitutionData?['users']}"), SizedBox(width: screenWidth * 0.05)],
+                  : [Icon(Icons.groups_2_outlined), Text(": ${appData.myInstitutionData?['users count']}"), SizedBox(width: screenWidth * 0.05)],
               expandedHeight: appData.myInstitutionName == '' ? 0 : screenWidth * 0.38,
               floating: false,
               pinned: true,

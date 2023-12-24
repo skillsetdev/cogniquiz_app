@@ -215,9 +215,26 @@ class _SearchPageState extends State<SearchPage> with SingleTickerProviderStateM
                                                         size: 20,
                                                       ),
                                                       Text(
-                                                        ": ${ds['users']}",
+                                                        ": ${ds['users count']}   ",
                                                         style: TextStyle(fontSize: 15),
                                                       ),
+                                                      Visibility(
+                                                        visible: appData.myInstitutionId == '',
+                                                        child: Icon(
+                                                          Icons.diversity_3_rounded,
+                                                          size: 20,
+                                                        ),
+                                                      ),
+                                                      Visibility(
+                                                          visible: appData.myInstitutionId != '',
+                                                          child: Icon(
+                                                            Icons.style_outlined,
+                                                            size: 20,
+                                                          )),
+                                                      Text(
+                                                        ": ${ds['count']}",
+                                                        style: TextStyle(fontSize: 15),
+                                                      )
                                                     ],
                                                   ),
                                                 ],

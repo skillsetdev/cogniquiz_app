@@ -705,7 +705,8 @@ class AppData extends ChangeNotifier {
       'name': institutionName,
       'country': institutionCountry,
       'city': institutionCity,
-      'users': 1,
+      'users count': 0,
+      'count': 0,
       'searchTags': searchSubstrings,
     });
   }
@@ -715,6 +716,9 @@ class AppData extends ChangeNotifier {
     myInstitutionName = institutionName;
     myInstitutionData =
         await FirebaseFirestore.instance.collection('institutions').doc(institutionId).get().then((value) => value.data() as Map<String, dynamic>?);
+    FirebaseFirestore.instance.collection('institutions').doc(institutionId).update({
+      'users count': myInstitutionData!['users count'] + 1,
+    });
     notifyListeners();
   }
 
@@ -722,20 +726,44 @@ class AppData extends ChangeNotifier {
     String communityId = const Uuid().v4();
     List<String> searchSubstrings =
         communityName.toLowerCase().split(' ').expand((tag) => List<String>.generate(tag.length, (i) => tag.substring(0, i + 1))).toList();
+    FirebaseFirestore.instance.collection('institutions').doc(institutionId).update({
+      'count': myInstitutionData!['count'] + 1,
+    });
     return FirebaseFirestore.instance.collection('institutions').doc(institutionId).collection('communities').doc(communityId).set({
       'name': communityName,
       'searchTags': searchSubstrings,
-      'users': 1,
+      'users count': 0,
+      'count': 0,
     });
   }
 
-  void addCommunityToAppData(String communityId, String communityName) {
+  void addCommunityToAppData(String communityId, String communityName) async {
+    Map<String, dynamic> communityData = await FirebaseFirestore.instance
+        .collection('institutions')
+        .doc(myInstitutionId)
+        .collection('communities')
+        .doc(communityId)
+        .get()
+        .then((value) => value.data() as Map<String, dynamic>);
+    FirebaseFirestore.instance.collection('institutions').doc(myInstitutionId).collection('communities').doc(communityId).update({
+      'users count': communityData['users count'] + 1,
+    });
     LocalCommunity localCommunity = LocalCommunity(communityId, communityName, []); //downloaded CardStacks from the community will be added here
     localCommunities.insert(0, localCommunity);
     notifyListeners();
   }
 
-  Future<void> addCommunityCardStackToFirestore(CardStack cardStack, String communityId) {
+  Future<void> addCommunityCardStackToFirestore(CardStack cardStack, String communityId) async {
+    Map<String, dynamic> communityData = await FirebaseFirestore.instance
+        .collection('institutions')
+        .doc(myInstitutionId)
+        .collection('communities')
+        .doc(communityId)
+        .get()
+        .then((value) => value.data() as Map<String, dynamic>);
+    FirebaseFirestore.instance.collection('institutions').doc(myInstitutionId).collection('communities').doc(communityId).update({
+      'count': communityData['count'] + 1,
+    });
     String cardStackId = const Uuid().v4();
     return FirebaseFirestore.instance
         .collection('institutions')

@@ -97,66 +97,6 @@ class _CommunityCardStackPageState extends State<CommunityCardStackPage> with Wi
                   SizedBox(
                     height: screenHeight * 0.025,
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      if (pageCardStack.cards.isNotEmpty) {
-                        //appData.shuffleCards(pageCardStack); //shuffle cards on the first open
-                        appData.putCardsBack(pageCardStack); //put the moved from the end cards back to the beginning
-                        appData.zeroMovedCards(pageCardStack); // set moved cards to 0
-                        appData.addRecentCardStack(pageCardStack); //add to recent cardstacks
-                        Navigator.push(context, MaterialPageRoute(builder: (context) {
-                          return CardPracticePage(selectedCardStack: pageCardStack);
-                        }));
-                      }
-                    },
-                    child: Container(
-                      margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
-                      height: screenHeight * 0.12,
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                              color: pageCardStack.cards.isNotEmpty
-                                  ? !isDarkMode(context)
-                                      ? const Color.fromARGB(255, 7, 12, 59)
-                                      : Colors.white24
-                                  : Colors.grey,
-                              width: 1),
-                          color: !isDarkMode(context)
-                              ? Color.fromARGB(255, 128, 141, 254)
-                              //Color.fromARGB(255, 100, 109, 227)
-                              : Color.fromARGB(255, 72, 80, 197),
-                          borderRadius: BorderRadius.circular(12)),
-                      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(width: screenWidth * 0.08),
-                            GestureDetector(
-                              child: Text("Practice Cards",
-                                  style: TextStyle(
-                                      color: pageCardStack.cards.isNotEmpty
-                                          ? !isDarkMode(context)
-                                              ? const Color.fromARGB(255, 7, 12, 59)
-                                              : Color.fromARGB(255, 227, 230, 255)
-                                          : Colors.grey,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w700)),
-                            ),
-                            SizedBox(width: 10),
-                            Icon(Icons.style_outlined,
-                                color: pageCardStack.cards.isNotEmpty
-                                    ? !isDarkMode(context)
-                                        ? const Color.fromARGB(255, 7, 12, 59)
-                                        : Color.fromARGB(255, 227, 230, 255)
-                                    : Colors.grey),
-                            SizedBox(width: screenWidth * 0.08),
-                          ],
-                        )
-                      ]),
-                    ),
-                  ),
-                  SizedBox(
-                    height: screenHeight * 0.025,
-                  ),
                   Padding(
                     padding: EdgeInsets.only(left: screenWidth * 0.05),
                     child: Text("Cards:",
@@ -189,95 +129,36 @@ class _CommunityCardStackPageState extends State<CommunityCardStackPage> with Wi
                                 SizedBox(
                                   height: screenHeight * 0.025,
                                 ),
-                                Visibility(
-                                  visible: (pageCardStack.cards[index] as QuizCard).renamingQuestion,
-                                  child: Row(
-                                    children: [
-                                      SizedBox(width: screenWidth * 0.04),
-                                      Text('${index + 1}.',
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w600,
-                                              color:
-                                                  !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255))),
-                                      SizedBox(width: screenWidth * 0.02),
-                                      Expanded(
-                                          child: TextField(
-                                        controller: (pageCardStack.cards[index] as QuizCard).questionTextController,
+                                Row(
+                                  children: [
+                                    SizedBox(width: screenWidth * 0.04),
+                                    Text('${index + 1}.',
                                         style: TextStyle(
-                                          color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
-                                        ),
-                                        decoration: InputDecoration(
-                                          counterStyle: TextStyle(
-                                            fontSize: 0,
-                                            color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
-                                          ),
-                                          focusedBorder: UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  width: 1,
-                                                  color: !isDarkMode(context)
-                                                      ? const Color.fromARGB(255, 7, 12, 59)
-                                                      : Color.fromARGB(255, 227, 230, 255))),
-                                        ),
-                                        onChanged: (value) {
-                                          setState(() {
-                                            appData.nameQuizQuestion(pageCardStack, value.trim(), index);
-                                          });
-                                        },
-                                      )),
-                                      SizedBox(
-                                        width: screenWidth * 0.05,
-                                      ),
-                                      IconButton(
-                                        onPressed: () {
-                                          if ((pageCardStack.cards[index] as QuizCard).questionText != "") {
-                                            appData.finishNamingQuizQuestion(pageCardStack, index);
-                                          }
-                                        },
-                                        icon: Icon(Icons.done,
-                                            color: (pageCardStack.cards[index] as QuizCard).questionText != "" ? Colors.green : Colors.grey),
-                                      ),
-                                      SizedBox(width: screenWidth * 0.08),
-                                    ],
-                                  ),
-                                ),
-                                Visibility(
-                                  visible: !(pageCardStack.cards[index] as QuizCard).renamingQuestion,
-                                  child: Row(
-                                    children: [
-                                      SizedBox(width: screenWidth * 0.04),
-                                      Text('${index + 1}.',
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                            color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255))),
+                                    SizedBox(width: screenWidth * 0.02),
+                                    Expanded(
+                                      child: Text((pageCardStack.cards[index] as QuizCard).questionText,
+                                          maxLines: 5,
+                                          softWrap: true,
+                                          overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                               fontSize: 15,
                                               fontWeight: FontWeight.w600,
                                               color:
                                                   !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255))),
-                                      SizedBox(width: screenWidth * 0.02),
-                                      Expanded(
-                                        child: Text((pageCardStack.cards[index] as QuizCard).questionText,
-                                            maxLines: 5,
-                                            softWrap: true,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w600,
-                                                color: !isDarkMode(context)
-                                                    ? const Color.fromARGB(255, 7, 12, 59)
-                                                    : Color.fromARGB(255, 227, 230, 255))),
-                                      ),
-                                      SizedBox(width: screenWidth * 0.04),
-                                    ],
-                                  ),
+                                    ),
+                                    SizedBox(width: screenWidth * 0.04),
+                                  ],
                                 ),
                                 SizedBox(
                                   height: screenHeight * 0.025,
                                 ),
                                 Container(
                                   decoration: BoxDecoration(
-                                      border: Border.symmetric(
-                                          horizontal: BorderSide(
-                                              color: isDarkMode(context) ? Colors.white24 : Colors.black54,
-                                              width: (pageCardStack.cards[index] as QuizCard).answers.isNotEmpty ? 1 : 0.5)),
+                                      border: Border(top: BorderSide(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1)),
+                                      borderRadius: BorderRadius.only(bottomLeft: Radius.circular(12), bottomRight: Radius.circular(12)),
                                       color: isDarkMode(context) ? Color.fromARGB(150, 7, 12, 59) : Color.fromARGB(173, 128, 141, 254)),
                                   child: ListView.builder(
                                       shrinkWrap: true,
@@ -308,26 +189,20 @@ class _CommunityCardStackPageState extends State<CommunityCardStackPage> with Wi
                                                 children: [
                                                   SizedBox(width: screenWidth * 0.04),
                                                   Expanded(
-                                                    child: GestureDetector(
-                                                      onTap: () {
-                                                        appData.nameQuizAnswer(pageCardStack, "", index, answerIndex);
-                                                      },
-                                                      child: Text(answerText,
-                                                          maxLines: 5,
-                                                          softWrap: true,
-                                                          overflow: TextOverflow.ellipsis,
-                                                          style: TextStyle(
-                                                              color: !isDarkMode(context)
-                                                                  ? const Color.fromARGB(255, 7, 12, 59)
-                                                                  : Color.fromARGB(255, 227, 230, 255),
-                                                              fontSize: 15,
-                                                              fontWeight: FontWeight.w600)),
-                                                    ),
+                                                    child: Text(answerText,
+                                                        maxLines: 5,
+                                                        softWrap: true,
+                                                        overflow: TextOverflow.ellipsis,
+                                                        style: TextStyle(
+                                                            color: !isDarkMode(context)
+                                                                ? const Color.fromARGB(255, 7, 12, 59)
+                                                                : Color.fromARGB(255, 227, 230, 255),
+                                                            fontSize: 15,
+                                                            fontWeight: FontWeight.w600)),
                                                   ),
                                                   IconButton(
-                                                    onPressed: () {
-                                                      appData.switchAnswer(pageCardStack, index, answerIndex);
-                                                    },
+                                                    enableFeedback: false,
+                                                    onPressed: () {},
                                                     icon: Icon(answerValue ? Icons.check_circle_outline_rounded : Icons.unpublished_outlined,
                                                         size: 30,
                                                         color: !isDarkMode(context)
@@ -387,14 +262,8 @@ class _CommunityCardStackPageState extends State<CommunityCardStackPage> with Wi
                                                       },
                                                     )),
                                                     IconButton(
-                                                      onPressed: () {
-                                                        if (newAnswerName != checkAnswerName) {
-                                                          appData.nameQuizAnswer(pageCardStack, newAnswerName, index, answerIndex);
-                                                          setState(() {
-                                                            checkAnswerName = newAnswerName;
-                                                          });
-                                                        }
-                                                      },
+                                                      enableFeedback: false,
+                                                      onPressed: () {},
                                                       icon: Icon(Icons.done,
                                                           color: newAnswerName != checkAnswerName ? Color.fromARGB(255, 4, 228, 86) : Colors.grey),
                                                     ),
@@ -406,59 +275,6 @@ class _CommunityCardStackPageState extends State<CommunityCardStackPage> with Wi
                                           );
                                         }
                                       }),
-                                ),
-                                Visibility(
-                                  visible: true,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      if ((pageCardStack.cards[index] as QuizCard).answers.length < 6) {
-                                        appData.addAnswer(pageCardStack, index);
-                                      }
-                                    },
-                                    child: Container(
-                                      margin: EdgeInsets.fromLTRB(
-                                        screenWidth * 0.05,
-                                        screenHeight * 0.025,
-                                        screenWidth * 0.05,
-                                        screenHeight * 0.025,
-                                      ),
-                                      decoration: BoxDecoration(
-                                          border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
-                                          color: !isDarkMode(context)
-                                              ? Color.fromARGB(255, 128, 141, 254)
-                                              //Color.fromARGB(255, 100, 109, 227)
-                                              : Color.fromARGB(255, 72, 80, 197),
-                                          borderRadius: BorderRadius.circular(12)),
-                                      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                        SizedBox(height: screenHeight * 0.015),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            SizedBox(width: screenWidth * 0.08),
-                                            Text("Add Answer",
-                                                style: TextStyle(
-                                                    color: (pageCardStack.cards[index] as QuizCard).answers.length < 6
-                                                        ? !isDarkMode(context)
-                                                            ? const Color.fromARGB(255, 7, 12, 59)
-                                                            : Color.fromARGB(255, 227, 230, 255)
-                                                        : Colors.grey,
-                                                    fontSize: 15,
-                                                    fontWeight: FontWeight.w700)),
-                                            Icon(
-                                              Icons.add,
-                                              color: (pageCardStack.cards[index] as QuizCard).answers.length < 6
-                                                  ? !isDarkMode(context)
-                                                      ? const Color.fromARGB(255, 7, 12, 59)
-                                                      : Color.fromARGB(255, 227, 230, 255)
-                                                  : Colors.grey,
-                                            ),
-                                            SizedBox(width: screenWidth * 0.08),
-                                          ],
-                                        ),
-                                        SizedBox(height: screenHeight * 0.015),
-                                      ]),
-                                    ),
-                                  ),
                                 ),
                               ]),
                             );
@@ -479,85 +295,28 @@ class _CommunityCardStackPageState extends State<CommunityCardStackPage> with Wi
                                 SizedBox(
                                   height: screenHeight * 0.025,
                                 ),
-                                Visibility(
-                                  visible: (pageCardStack.cards[index] as FlippyCard).renamingQuestion,
-                                  child: Row(
-                                    children: [
-                                      SizedBox(width: screenWidth * 0.04),
-                                      Text('${index + 1}.',
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w600,
-                                              color:
-                                                  !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255))),
-                                      SizedBox(width: screenWidth * 0.02),
-                                      Expanded(
-                                          child: TextField(
-                                        controller: (pageCardStack.cards[index] as FlippyCard).frontTextController,
+                                Row(
+                                  children: [
+                                    SizedBox(width: screenWidth * 0.04),
+                                    Text('${index + 1}.',
                                         style: TextStyle(
-                                          color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
-                                        ),
-                                        decoration: InputDecoration(
-                                          counterStyle: TextStyle(
-                                            fontSize: 0,
-                                            color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
-                                          ),
-                                          focusedBorder: UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  width: 1,
-                                                  color: !isDarkMode(context)
-                                                      ? const Color.fromARGB(255, 7, 12, 59)
-                                                      : Color.fromARGB(255, 227, 230, 255))),
-                                        ),
-                                        onChanged: (value) {
-                                          setState(() {
-                                            appData.nameFlipQuestion(pageCardStack, value.trim(), index);
-                                          });
-                                        },
-                                      )),
-                                      SizedBox(
-                                        width: screenWidth * 0.05,
-                                      ),
-                                      IconButton(
-                                        onPressed: () {
-                                          if ((pageCardStack.cards[index] as FlippyCard).frontText != "") {
-                                            appData.finishNamingFlipQuestion(pageCardStack, index);
-                                          }
-                                        },
-                                        icon: Icon(Icons.done,
-                                            color: (pageCardStack.cards[index] as FlippyCard).frontText != "" ? Colors.green : Colors.grey),
-                                      ),
-                                      SizedBox(width: screenWidth * 0.08),
-                                    ],
-                                  ),
-                                ),
-                                Visibility(
-                                  visible: !(pageCardStack.cards[index] as FlippyCard).renamingQuestion,
-                                  child: Row(
-                                    children: [
-                                      SizedBox(width: screenWidth * 0.04),
-                                      Text('${index + 1}.',
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                            color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255))),
+                                    SizedBox(width: screenWidth * 0.02),
+                                    Expanded(
+                                      child: Text((pageCardStack.cards[index] as FlippyCard).frontText,
+                                          maxLines: 5,
+                                          softWrap: true,
+                                          overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                               fontSize: 15,
                                               fontWeight: FontWeight.w600,
                                               color:
                                                   !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255))),
-                                      SizedBox(width: screenWidth * 0.02),
-                                      Expanded(
-                                        child: Text((pageCardStack.cards[index] as FlippyCard).frontText,
-                                            maxLines: 5,
-                                            softWrap: true,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w600,
-                                                color: !isDarkMode(context)
-                                                    ? const Color.fromARGB(255, 7, 12, 59)
-                                                    : Color.fromARGB(255, 227, 230, 255))),
-                                      ),
-                                      SizedBox(width: screenWidth * 0.04),
-                                    ],
-                                  ),
+                                    ),
+                                    SizedBox(width: screenWidth * 0.04),
+                                  ],
                                 ),
                                 SizedBox(
                                   height: screenHeight * 0.025,
@@ -571,68 +330,23 @@ class _CommunityCardStackPageState extends State<CommunityCardStackPage> with Wi
                                 SizedBox(
                                   height: screenHeight * 0.025,
                                 ),
-                                Visibility(
-                                  visible: !(pageCardStack.cards[index] as FlippyCard).renamingAnswer,
-                                  child: Row(
-                                    children: [
-                                      SizedBox(width: screenWidth * 0.04),
-                                      Expanded(
-                                        child: Text((pageCardStack.cards[index] as FlippyCard).backText,
-                                            maxLines: 5,
-                                            softWrap: true,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w600,
-                                                color: !isDarkMode(context)
-                                                    ? const Color.fromARGB(255, 7, 12, 59)
-                                                    : Color.fromARGB(255, 227, 230, 255))),
-                                      ),
-                                      SizedBox(width: screenWidth * 0.04),
-                                    ],
-                                  ),
-                                ),
-                                Visibility(
-                                    visible: (pageCardStack.cards[index] as FlippyCard).renamingAnswer,
-                                    child: Row(
-                                      children: [
-                                        SizedBox(width: screenWidth * 0.04),
-                                        Expanded(
-                                            child: TextField(
+                                Row(
+                                  children: [
+                                    SizedBox(width: screenWidth * 0.04),
+                                    Expanded(
+                                      child: Text((pageCardStack.cards[index] as FlippyCard).backText,
+                                          maxLines: 5,
+                                          softWrap: true,
+                                          overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
-                                            color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Colors.white70,
-                                          ),
-                                          controller: (pageCardStack.cards[index] as FlippyCard).backTextController,
-                                          minLines: 2,
-                                          maxLines: 2,
-                                          decoration: InputDecoration(
-                                            contentPadding: EdgeInsets.all(10),
-                                            border: OutlineInputBorder(),
-                                            counterStyle: TextStyle(
-                                              fontSize: 0,
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    width: 1, color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Colors.white24)),
-                                          ),
-                                          onChanged: (value) {
-                                            appData.nameFlipAnswer(value.trim(), pageCardStack, index);
-                                          },
-                                        )),
-                                        IconButton(
-                                          onPressed: () {
-                                            if ((pageCardStack.cards[index] as FlippyCard).backText != "") {
-                                              appData.finishNamingFlipAnswer(pageCardStack, index);
-                                            }
-                                          },
-                                          icon: Icon(Icons.done,
-                                              color: (pageCardStack.cards[index] as FlippyCard).backText != ""
-                                                  ? Color.fromARGB(255, 4, 228, 86)
-                                                  : Colors.grey),
-                                        ),
-                                        SizedBox(width: screenWidth * 0.04),
-                                      ],
-                                    )),
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w600,
+                                              color:
+                                                  !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255))),
+                                    ),
+                                    SizedBox(width: screenWidth * 0.04),
+                                  ],
+                                ),
                                 SizedBox(
                                   height: screenHeight * 0.025,
                                 ),

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:ui';
 
-// Next Task: name cards only if name is not empty create limit to the amount of cards(limit the add function)
+// Next Task: create limit to the amount of cards(limit the add function); cant create empty cards
 
 class CardStackPage extends StatefulWidget {
   const CardStackPage({required this.selectedCardStack, super.key});

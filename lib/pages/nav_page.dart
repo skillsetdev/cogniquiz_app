@@ -61,7 +61,7 @@ class _NavPageState extends State<NavPage> {
               color: !isDarkMode(context) ? Color.fromARGB(100, 7, 12, 59) : Color.fromARGB(100, 227, 230, 255),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 15),
               child: GNav(
                   tabBackgroundGradient: RadialGradient(
                       colors: isDarkMode(context)

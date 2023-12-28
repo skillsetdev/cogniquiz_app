@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flashcards/app_data.dart';
 import 'package:flashcards/pages/card_practice_page.dart';
 import 'package:flutter/material.dart';

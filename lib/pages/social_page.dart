@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flashcards/app_data.dart';
+import 'package:flashcards/pages/community_page.dart';
 import 'package:flashcards/pages/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -63,16 +64,16 @@ class _SocialPageState extends State<SocialPage> with SingleTickerProviderStateM
           body: CustomScrollView(slivers: <Widget>[
             SliverAppBar(
               backgroundColor: isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
-              actions: appData.myInstitutionName == ''
+              actions: appData.myInstitutionId == ''
                   ? []
-                  : [Icon(Icons.groups_2_outlined), Text(": ${appData.myInstitutionData?['users count']}"), SizedBox(width: screenWidth * 0.05)],
-              expandedHeight: appData.myInstitutionName == '' ? 0 : screenWidth * 0.38,
+                  : [Icon(Icons.person_rounded), Text(": ${appData.myInstitutionData?['users count']}"), SizedBox(width: screenWidth * 0.05)],
+              expandedHeight: appData.myInstitutionId == '' ? 0 : screenWidth * 0.33,
               floating: false,
               pinned: true,
               flexibleSpace: FlexibleSpaceBar(
-                titlePadding: EdgeInsets.fromLTRB(screenWidth * 0.05, 0, screenWidth * 0.05, screenHeight * 0.025),
+                titlePadding: EdgeInsets.fromLTRB(screenWidth * 0.05, 0, screenWidth * 0.05, screenHeight * 0.01),
                 centerTitle: false,
-                expandedTitleScale: 1.5,
+                expandedTitleScale: 1.3,
                 title: Text(
                   appData.myInstitutionName,
                   style: TextStyle(
@@ -82,7 +83,7 @@ class _SocialPageState extends State<SocialPage> with SingleTickerProviderStateM
                   ),
                 ),
                 background: Visibility(
-                  visible: appData.myInstitutionName != '',
+                  visible: appData.myInstitutionId != '',
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
@@ -136,7 +137,7 @@ class _SocialPageState extends State<SocialPage> with SingleTickerProviderStateM
                                                 return SearchPage();
                                               }));
                                             },
-                                            child: Text("View All"))
+                                            child: Text("View All (${appData.myInstitutionData?['count']})"))
                                       ],
                                     )),
                                 Container(
@@ -146,73 +147,112 @@ class _SocialPageState extends State<SocialPage> with SingleTickerProviderStateM
                                         if (!snapshot.hasData) {
                                           return Center(child: CircularProgressIndicator());
                                         }
+                                        List<QueryDocumentSnapshot<Map<String, dynamic>>> filteredDocs = snapshot.data!.docs
+                                            .where((doc) => !appData.localCommunities.any((community) => community.communityId == doc.id))
+                                            .toList();
                                         return ListView.builder(
                                             shrinkWrap: true,
                                             physics: NeverScrollableScrollPhysics(),
-                                            itemCount: min(snapshot.data!.docs.length, 5),
+                                            itemCount: min(filteredDocs.length, appData.localCommunities.length == 0 ? 5 : 2),
                                             itemBuilder: (context, index) {
-                                              QueryDocumentSnapshot<Map<String, dynamic>> ds = snapshot.data!.docs[index];
-                                              return Container(
-                                                key: Key(ds.id),
-                                                margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
-                                                height: screenHeight * 0.12,
-                                                decoration: BoxDecoration(
-                                                    border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
-                                                    color:
-                                                        !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
-                                                    borderRadius: BorderRadius.circular(12)),
-                                                child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                                  Row(
-                                                    children: [
-                                                      SizedBox(width: screenWidth * 0.08),
-                                                      Expanded(
-                                                        child: GestureDetector(
-                                                          onTap: () {},
-                                                          child: Text(ds['name'],
-                                                              softWrap: true,
-                                                              overflow: TextOverflow.ellipsis,
-                                                              style: TextStyle(
-                                                                  fontSize: 15,
-                                                                  fontWeight: FontWeight.w600,
-                                                                  color: !isDarkMode(context)
-                                                                      ? const Color.fromARGB(255, 7, 12, 59)
-                                                                      : Color.fromARGB(255, 227, 230, 255))),
+                                              QueryDocumentSnapshot<Map<String, dynamic>> ds = filteredDocs[index];
+                                              return GestureDetector(
+                                                onTap: () {
+                                                  if (appData.myInstitutionId != '') {
+                                                    Navigator.push(
+                                                        context, MaterialPageRoute(builder: (context) => CommunityPage(selectedCommunityData: ds)));
+                                                  }
+                                                },
+                                                child: Container(
+                                                  key: Key(ds.id),
+                                                  margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
+                                                  height: screenHeight * 0.12,
+                                                  decoration: BoxDecoration(
+                                                      border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
+                                                      color: !isDarkMode(context)
+                                                          ? Color.fromARGB(255, 128, 141, 254)
+                                                          : Color.fromARGB(255, 72, 80, 197),
+                                                      borderRadius: BorderRadius.circular(12)),
+                                                  child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                                    Row(
+                                                      children: [
+                                                        SizedBox(width: screenWidth * 0.08),
+                                                        Expanded(
+                                                          child: Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Text(ds['name'],
+                                                                  softWrap: true,
+                                                                  overflow: TextOverflow.ellipsis,
+                                                                  style: TextStyle(
+                                                                      fontSize: 15,
+                                                                      fontWeight: FontWeight.w600,
+                                                                      color: !isDarkMode(context)
+                                                                          ? const Color.fromARGB(255, 7, 12, 59)
+                                                                          : Color.fromARGB(255, 227, 230, 255))),
+                                                              Row(
+                                                                children: [
+                                                                  Icon(
+                                                                    Icons.person_rounded,
+                                                                    size: 20,
+                                                                  ),
+                                                                  Text(
+                                                                    ": ${ds['users count']}   ",
+                                                                    style: TextStyle(fontSize: 15),
+                                                                  ),
+                                                                  Visibility(
+                                                                      visible: appData.myInstitutionId != '',
+                                                                      child: Icon(
+                                                                        Icons.style_outlined,
+                                                                        size: 20,
+                                                                      )),
+                                                                  Text(
+                                                                    ": ${ds['count']}",
+                                                                    style: TextStyle(fontSize: 15),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                            ],
+                                                          ),
                                                         ),
-                                                      ),
-                                                      Visibility(
-                                                        visible: appData.myInstitutionId == '',
-                                                        child: ElevatedButton(
+                                                        ElevatedButton(
                                                           onPressed: () {
-                                                            appData.addInstitutionToAppData(ds.id, ds['name']);
+                                                            appData.addCommunityToAppData(ds.id, ds['name']);
                                                           },
                                                           style: ElevatedButton.styleFrom(
-                                                            backgroundColor: !isDarkMode(context)
-                                                                ? const Color.fromARGB(255, 7, 12, 59)
-                                                                : Color.fromARGB(255, 227, 230, 255),
-                                                            foregroundColor: !isDarkMode(context)
-                                                                ? Color.fromARGB(255, 227, 230, 255)
-                                                                : const Color.fromARGB(255, 7, 12, 59),
+                                                            elevation:
+                                                                appData.localCommunities.any((community) => community.communityId == ds.id) ? 0 : 2,
+                                                            backgroundColor:
+                                                                appData.localCommunities.any((community) => community.communityId == ds.id)
+                                                                    ? !isDarkMode(context)
+                                                                        ? Color.fromARGB(255, 227, 230, 255)
+                                                                        : const Color.fromARGB(255, 7, 12, 59)
+                                                                    : !isDarkMode(context)
+                                                                        ? const Color.fromARGB(255, 7, 12, 59)
+                                                                        : Color.fromARGB(255, 227, 230, 255),
+                                                            foregroundColor:
+                                                                appData.localCommunities.any((community) => community.communityId == ds.id)
+                                                                    ? !isDarkMode(context)
+                                                                        ? const Color.fromARGB(255, 7, 12, 59)
+                                                                        : Color.fromARGB(255, 227, 230, 255)
+                                                                    : !isDarkMode(context)
+                                                                        ? Color.fromARGB(255, 227, 230, 255)
+                                                                        : const Color.fromARGB(255, 7, 12, 59),
                                                             shape: RoundedRectangleBorder(
                                                               borderRadius: BorderRadius.circular(12.0),
                                                             ),
                                                           ),
-                                                          child: Text('Join'),
+                                                          child: Text(
+                                                            appData.localCommunities.any((community) => community.communityId == ds.id)
+                                                                ? 'Joined'
+                                                                : 'Join', // The any method checks if at least one element of the list satisfies the provided condition.
+                                                          ),
                                                         ),
-                                                      ),
-                                                      Visibility(
-                                                        visible: appData.myInstitutionId != '',
-                                                        child: IconButton(
-                                                          onPressed: () {},
-                                                          icon: Icon(Icons.arrow_forward_ios,
-                                                              color: !isDarkMode(context)
-                                                                  ? const Color.fromARGB(255, 7, 12, 59)
-                                                                  : Color.fromARGB(255, 227, 230, 255)),
-                                                        ),
-                                                      ),
-                                                      SizedBox(width: screenWidth * 0.05),
-                                                    ],
-                                                  )
-                                                ]),
+                                                        SizedBox(width: screenWidth * 0.05),
+                                                      ],
+                                                    )
+                                                  ]),
+                                                ),
                                               );
                                             });
                                       }),
@@ -229,52 +269,122 @@ class _SocialPageState extends State<SocialPage> with SingleTickerProviderStateM
                                       )),
                                 ),
                                 Container(
-                                    height: screenHeight * 0.8,
-                                    child: ListView.builder(
-                                        physics: NeverScrollableScrollPhysics(),
-                                        itemCount: appData.localCommunities.length,
-                                        itemBuilder: (context, index) {
-                                          return Container(
-                                            key: Key('$index'),
-                                            margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
-                                            height: screenHeight * 0.12,
-                                            decoration: BoxDecoration(
-                                                border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
-                                                color: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
-                                                borderRadius: BorderRadius.circular(12)),
-                                            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                              Row(
-                                                children: [
-                                                  SizedBox(width: screenWidth * 0.08),
-                                                  Icon(Icons.folder_outlined,
+                                  child: StreamBuilder(
+                                      stream: communitySnapshot,
+                                      builder: (context, snapshot) {
+                                        if (!snapshot.hasData) {
+                                          return Center(child: CircularProgressIndicator());
+                                        }
+                                        List<QueryDocumentSnapshot<Map<String, dynamic>>> filteredDocsJoined = snapshot.data!.docs
+                                            .where((doc) => appData.localCommunities.any((community) => community.communityId == doc.id))
+                                            .toList();
+                                        return ListView.builder(
+                                            shrinkWrap: true,
+                                            physics: NeverScrollableScrollPhysics(),
+                                            itemCount: filteredDocsJoined.length,
+                                            itemBuilder: (context, index) {
+                                              QueryDocumentSnapshot<Map<String, dynamic>> ds = filteredDocsJoined[index];
+                                              return GestureDetector(
+                                                onTap: () {
+                                                  if (appData.myInstitutionId != '') {
+                                                    Navigator.push(
+                                                        context, MaterialPageRoute(builder: (context) => CommunityPage(selectedCommunityData: ds)));
+                                                  }
+                                                },
+                                                child: Container(
+                                                  key: Key(ds.id),
+                                                  margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
+                                                  height: screenHeight * 0.12,
+                                                  decoration: BoxDecoration(
+                                                      border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
                                                       color: !isDarkMode(context)
-                                                          ? const Color.fromARGB(255, 7, 12, 59)
-                                                          : Color.fromARGB(255, 227, 230, 255)),
-                                                  Spacer(),
-                                                  GestureDetector(
-                                                    onTap: () {},
-                                                    child: Text(appData.localCommunities[index].name,
-                                                        style: TextStyle(
-                                                            fontSize: 15,
-                                                            fontWeight: FontWeight.w600,
-                                                            color: !isDarkMode(context)
-                                                                ? const Color.fromARGB(255, 7, 12, 59)
-                                                                : Color.fromARGB(255, 227, 230, 255))),
-                                                  ),
-                                                  Spacer(),
-                                                  IconButton(
-                                                    onPressed: () {},
-                                                    icon: Icon(Icons.arrow_forward_ios,
-                                                        color: !isDarkMode(context)
-                                                            ? const Color.fromARGB(255, 7, 12, 59)
-                                                            : Color.fromARGB(255, 227, 230, 255)),
-                                                  ),
-                                                  SizedBox(width: screenWidth * 0.08),
-                                                ],
-                                              )
-                                            ]),
-                                          );
-                                        }))
+                                                          ? Color.fromARGB(255, 128, 141, 254)
+                                                          : Color.fromARGB(255, 72, 80, 197),
+                                                      borderRadius: BorderRadius.circular(12)),
+                                                  child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                                    Row(
+                                                      children: [
+                                                        SizedBox(width: screenWidth * 0.08),
+                                                        Expanded(
+                                                          child: Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Text(ds['name'],
+                                                                  softWrap: true,
+                                                                  overflow: TextOverflow.ellipsis,
+                                                                  style: TextStyle(
+                                                                      fontSize: 15,
+                                                                      fontWeight: FontWeight.w600,
+                                                                      color: !isDarkMode(context)
+                                                                          ? const Color.fromARGB(255, 7, 12, 59)
+                                                                          : Color.fromARGB(255, 227, 230, 255))),
+                                                              Row(
+                                                                children: [
+                                                                  Icon(
+                                                                    Icons.person_rounded,
+                                                                    size: 20,
+                                                                  ),
+                                                                  Text(
+                                                                    ": ${ds['users count']}   ",
+                                                                    style: TextStyle(fontSize: 15),
+                                                                  ),
+                                                                  Visibility(
+                                                                      visible: appData.myInstitutionId != '',
+                                                                      child: Icon(
+                                                                        Icons.style_outlined,
+                                                                        size: 20,
+                                                                      )),
+                                                                  Text(
+                                                                    ": ${ds['count']}",
+                                                                    style: TextStyle(fontSize: 15),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        ElevatedButton(
+                                                          onPressed: () {
+                                                            appData.addCommunityToAppData(ds.id, ds['name']);
+                                                          },
+                                                          style: ElevatedButton.styleFrom(
+                                                            elevation:
+                                                                appData.localCommunities.any((community) => community.communityId == ds.id) ? 0 : 2,
+                                                            backgroundColor:
+                                                                appData.localCommunities.any((community) => community.communityId == ds.id)
+                                                                    ? !isDarkMode(context)
+                                                                        ? Color.fromARGB(255, 227, 230, 255)
+                                                                        : const Color.fromARGB(255, 7, 12, 59)
+                                                                    : !isDarkMode(context)
+                                                                        ? const Color.fromARGB(255, 7, 12, 59)
+                                                                        : Color.fromARGB(255, 227, 230, 255),
+                                                            foregroundColor:
+                                                                appData.localCommunities.any((community) => community.communityId == ds.id)
+                                                                    ? !isDarkMode(context)
+                                                                        ? const Color.fromARGB(255, 7, 12, 59)
+                                                                        : Color.fromARGB(255, 227, 230, 255)
+                                                                    : !isDarkMode(context)
+                                                                        ? Color.fromARGB(255, 227, 230, 255)
+                                                                        : const Color.fromARGB(255, 7, 12, 59),
+                                                            shape: RoundedRectangleBorder(
+                                                              borderRadius: BorderRadius.circular(12.0),
+                                                            ),
+                                                          ),
+                                                          child: Text(
+                                                            appData.localCommunities.any((community) => community.communityId == ds.id)
+                                                                ? 'Joined'
+                                                                : 'Join', // The any method checks if at least one element of the list satisfies the provided condition.
+                                                          ),
+                                                        ),
+                                                        SizedBox(width: screenWidth * 0.05),
+                                                      ],
+                                                    )
+                                                  ]),
+                                                ),
+                                              );
+                                            });
+                                      }),
+                                ),
                               ],
                             )
                           : Column(

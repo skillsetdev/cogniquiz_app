@@ -1,9 +1,6 @@
 // Next Important Tasks
-// 0. add communities to firestore and download them to the app
-// DONE 1. add functions like 'startNamingFolder' and 'finishNamingFolder' and name controller to the Folder and CardStack classes like in FlippyCard
-// DONE 2. make page exitable only when the back button is pressed
-// 3. work on moving cardsInPractice in buildFoldersAndCardStacksOnLogin()
-// 4. Boolean "wasUpdated" (initialised every time as false in the initState()) that is set to true every time a user edits something in the cardStack page; if true -> overwrite the whole cardstack in the database when 'back' button is pressed
+// 5. download cardstacks
+// 6. Boolean "wasUpdated" (initialised every time as false in the initState()) that is set to true every time a user edits something in the cardStack page; if true -> overwrite the whole cardstack in the database when 'back' button is pressed
 
 //Later Task: moveCards() on page exit
 // add moveCardOverTheStack() by adding them to a separate list if their index exceeds the maxIndex (otherwise last card stay last) and them adding them on the loor adfre the putCardsBack()

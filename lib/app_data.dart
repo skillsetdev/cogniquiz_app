@@ -163,6 +163,7 @@ class AppData extends ChangeNotifier {
 // Functions for the folders /////////////////////////////////////////////////////////////////////////////////////////////////
 
   Folder rootFolders = Folder("Root", [], [], const Uuid().v4(), false);
+  Folder downloadsFolder = Folder("Downloads", [], [], const Uuid().v4(), false);
   String myInstitutionId = '';
   String myInstitutionName = '';
   Map<String, dynamic>? myInstitutionData;
@@ -771,27 +772,9 @@ class AppData extends ChangeNotifier {
         .doc(cardStackId)
         .set(cardStack.toMap());
   }
-/* 
-  Future<void> addCommunityCardStackFromDBToAppData(String cardStackId) async {
-    DocumentSnapshot<Map<String, dynamic>> cardStackSnapshot =
-        await FirebaseFirestore.instance.collection('communities').doc(cardStackId).collection('sharedCardStacks').doc(cardStackId).get();
-    CardStack cardStack = CardStack(cardStackSnapshot['name'], cardStackSnapshot['cardStackId'], [], [], rootFolders);
-    cardStackSnapshot['cards'].forEach((card) {
-      if (card['cardType'] == 'QuizCard') {
-        QuizCard quizCard = QuizCard(card['questionText'], {});
-        card['answers'].forEach((key, value) {
-          quizCard.answers[key] = value;
-        });
-        cardStack.cards.add(quizCard);
-        cardStack.cardsInPractice.add(quizCard);
-      } else if (card['cardType'] == 'FlippyCard') {
-        FlippyCard flippyCard = FlippyCard(card['frontText'], card['backText']);
-        cardStack.cards.add(flippyCard);
-        cardStack.cardsInPractice.add(flippyCard);
-      }
-    });
-    rootFolders.cardstacks.insert(0, cardStack);
+
+  Future<void> addCommunityCardStackFromDBToAppData(CardStack downloadedCardStack) async {
+    downloadsFolder.cardstacks.add(downloadedCardStack);
     notifyListeners();
   }
-  */
 }

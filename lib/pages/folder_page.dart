@@ -559,6 +559,155 @@ class _CardReviewState extends State<CardReview> with WidgetsBindingObserver {
                 ),
                 SizedBox(
                   height: screenHeight * 0.025,
+                ),
+                Visibility(
+                  visible: appData.downloadsFolder.cardstacks.isNotEmpty,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: screenWidth * 0.05),
+                    child: Text("Downloads:",
+                        style: TextStyle(
+                          fontSize: 15.5,
+                          color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255),
+                        )),
+                  ),
+                ),
+                Container(
+                  height: (screenHeight * 0.145) * appData.downloadsFolder.cardstacks.length,
+                  child: Theme(
+                    data: ThemeData(
+                      canvasColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                    ),
+                    child: ReorderableListView.builder(
+                      proxyDecorator: (widget, index, animation) {
+                        return AnimatedBuilder(
+                          animation: animation,
+                          builder: (BuildContext context, Widget? child) {
+                            const double elevation = 0.0;
+                            return Material(
+                              elevation: elevation,
+                              shadowColor: Colors.black.withOpacity(0.5),
+                              child: child,
+                            );
+                          },
+                          child: Container(
+                            margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
+                            height: screenHeight * 0.12,
+                            decoration: BoxDecoration(
+                                border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
+                                color: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                              Row(
+                                children: [
+                                  SizedBox(width: screenWidth * 0.08),
+                                  Icon(Icons.quiz_outlined),
+                                  Spacer(),
+                                  GestureDetector(
+                                    onTap: () {},
+                                    child: Text(appData.downloadsFolder.cardstacks[index].name,
+                                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                                  ),
+                                  Spacer(),
+                                  IconButton(
+                                    onPressed: () {},
+                                    icon: Icon(Icons.arrow_forward_ios),
+                                  ),
+                                  SizedBox(width: screenWidth * 0.08),
+                                ],
+                              )
+                            ]),
+                          ),
+                        );
+                      },
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: appData.downloadsFolder.cardstacks.length,
+                      onReorder: (oldIndex, newIndex) {
+                        setState(() {
+                          if (newIndex > oldIndex) {
+                            newIndex -= 1;
+                          }
+                          final cardstack = appData.downloadsFolder.cardstacks.removeAt(oldIndex);
+                          appData.downloadsFolder.cardstacks.insert(newIndex, cardstack);
+                        });
+                      },
+                      itemBuilder: (context, index) {
+                        return Dismissible(
+                          key: Key(appData.downloadsFolder.cardstacks[index].cardStackId.toString()),
+                          direction: DismissDirection.endToStart,
+                          onDismissed: (direction) {
+                            appData.deleteCardStack(appData.downloadsFolder, index);
+                          },
+                          background: Container(
+                            margin: EdgeInsets.fromLTRB(0, screenHeight * 0.025, screenWidth * 0.05, 0),
+                            height: screenHeight * 0.12,
+                            decoration: BoxDecoration(
+                                color: Colors.red, borderRadius: BorderRadius.only(topRight: Radius.circular(12), bottomRight: Radius.circular(12))),
+                            child: Padding(
+                              padding: const EdgeInsets.all(15),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: const [
+                                  Icon(Icons.delete, color: Colors.white),
+                                  SizedBox(
+                                    width: 8.0,
+                                  ),
+                                  Text('Delete', style: TextStyle(color: Colors.white)),
+                                ],
+                              ),
+                            ),
+                          ),
+                          child: Container(
+                            key: Key('$index'),
+                            margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
+                            height: screenHeight * 0.12,
+                            decoration: BoxDecoration(
+                                border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
+                                color: !isDarkMode(context)
+                                    ? Color.fromARGB(255, 128, 141, 254)
+                                    //Color.fromARGB(255, 100, 109, 227)
+                                    : Color.fromARGB(255, 72, 80, 197),
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                              Row(
+                                children: [
+                                  SizedBox(width: screenWidth * 0.08),
+                                  Icon(Icons.quiz_outlined,
+                                      color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
+                                  Spacer(),
+                                  GestureDetector(
+                                    onTap: () {},
+                                    child: Text(appData.downloadsFolder.cardstacks[index].name,
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                            color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255))),
+                                  ),
+                                  Spacer(),
+                                  IconButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => CardStackPage(
+                                                    selectedCardStack: appData.downloadsFolder.cardstacks[index],
+                                                  )));
+                                    },
+                                    icon: Icon(Icons.arrow_forward_ios,
+                                        color: !isDarkMode(context) ? const Color.fromARGB(255, 7, 12, 59) : Color.fromARGB(255, 227, 230, 255)),
+                                  ),
+                                  SizedBox(width: screenWidth * 0.08),
+                                ],
+                              )
+                            ]),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: screenHeight * 0.025,
                 )
               ],
             ),

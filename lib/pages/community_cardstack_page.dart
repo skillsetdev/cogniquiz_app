@@ -97,6 +97,89 @@ class _CommunityCardStackPageState extends State<CommunityCardStackPage> with Wi
                   SizedBox(
                     height: screenHeight * 0.025,
                   ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            if (pageCardStack.cards.isNotEmpty) {
+                              appData.addCommunityCardStackFromDBToAppData(pageCardStack);
+                            }
+                          },
+                          child: Container(
+                            margin: EdgeInsets.fromLTRB(screenWidth * 0.05, screenHeight * 0.025, screenWidth * 0.05, 0),
+                            height: screenHeight * 0.08,
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: pageCardStack.cards.isNotEmpty
+                                        ? !isDarkMode(context)
+                                            ? const Color.fromARGB(255, 7, 12, 59)
+                                            : Colors.white24
+                                        : Colors.grey,
+                                    width: 1),
+                                color: !isDarkMode(context) ? Color.fromARGB(255, 128, 141, 254) : Color.fromARGB(255, 72, 80, 197),
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(width: screenWidth * 0.08),
+                                  Text("Download Cards",
+                                      style: TextStyle(
+                                          color: pageCardStack.cards.isNotEmpty
+                                              ? !isDarkMode(context)
+                                                  ? const Color.fromARGB(255, 7, 12, 59)
+                                                  : Color.fromARGB(255, 227, 230, 255)
+                                              : Colors.grey,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w700)),
+                                  SizedBox(width: 10),
+                                  Icon(Icons.download_rounded,
+                                      color: pageCardStack.cards.isNotEmpty
+                                          ? !isDarkMode(context)
+                                              ? const Color.fromARGB(255, 7, 12, 59)
+                                              : Color.fromARGB(255, 227, 230, 255)
+                                          : Colors.grey),
+                                  SizedBox(width: screenWidth * 0.08),
+                                ],
+                              )
+                            ]),
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                            margin: EdgeInsets.fromLTRB(0, screenHeight * 0.025, screenWidth * 0.05, 0),
+                            height: screenHeight * 0.08,
+                            width: screenHeight * 0.08,
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: pageCardStack.cards.isNotEmpty
+                                        ? !isDarkMode(context)
+                                            ? const Color.fromARGB(255, 7, 12, 59)
+                                            : Colors.white24
+                                        : Colors.grey,
+                                    width: 1),
+                                color: !isDarkMode(context)
+                                    ? Color.fromARGB(255, 128, 141, 254)
+                                    //Color.fromARGB(255, 100, 109, 227)
+                                    : Color.fromARGB(255, 72, 80, 197),
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Center(
+                              child: Icon(Icons.menu,
+                                  color: pageCardStack.cards.isNotEmpty
+                                      ? !isDarkMode(context)
+                                          ? const Color.fromARGB(255, 7, 12, 59)
+                                          : Color.fromARGB(255, 227, 230, 255)
+                                      : Colors.grey),
+                            )),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: screenHeight * 0.025,
+                  ),
                   Padding(
                     padding: EdgeInsets.only(left: screenWidth * 0.05),
                     child: Text("Cards:",

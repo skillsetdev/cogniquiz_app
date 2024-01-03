@@ -48,11 +48,34 @@ class StatGraph extends StatefulWidget {
 }
 
 class _StatGraphState extends State<StatGraph> {
+  List<double> weeklySummary = [
+    17.6,
+    2.3,
+    56.6,
+    86.4,
+    36.7,
+    67.4,
+    97.9,
+  ];
   @override
   Widget build(BuildContext context) {
-    return BarChart(BarChartData(
-      maxY: 200,
-      minY: 0,
-    ));
+    BarData myBarData = BarData(
+        monAmount: weeklySummary[0],
+        tueAmount: weeklySummary[1],
+        wedAmount: weeklySummary[2],
+        thuAmount: weeklySummary[3],
+        friAmount: weeklySummary[4],
+        satAmount: weeklySummary[5],
+        sunAmount: weeklySummary[6]);
+    return Center(
+      child: Container(
+        height: 400,
+        child: BarChart(BarChartData(
+          maxY: 100,
+          minY: 0,
+          barGroups: myBarData.barData.map((data) => BarChartGroupData(x: data.x, barRods: [BarChartRodData(toY: data.y)])).toList(),
+        )),
+      ),
+    );
   }
 }

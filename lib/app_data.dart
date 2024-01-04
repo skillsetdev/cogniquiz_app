@@ -489,38 +489,82 @@ class AppData extends ChangeNotifier {
 
 // Calendar ////////////////////////////////////////////////////////////////////////////////////////////////////
   Map<String, Color> daysProgress = {};
+  Map<String, List<double>> cardsStatCount = {};
   double sliderValue = 20.0;
   double completedCards = 0;
+  double wellCompletedCards = 0;
+  double okCompletedCards = 0;
+  double badCompletedCards = 0;
 
   void changeSliderValue(double newValue) {
     sliderValue = newValue;
     notifyListeners();
   }
 
-  void addDaysProgress(DateTime day) {
-    DateTime dayAtMidnightUtc = DateTime.utc(day.year, day.month, day.day);
-    String formattedDate = dayAtMidnightUtc.toString();
-    if (completedCards >= sliderValue) {
-      daysProgress[formattedDate] = Colors.green;
-      notifyListeners();
-    } else {
-      daysProgress[formattedDate] = Colors.yellow;
-      notifyListeners();
+  void addCompletedCard(String answerType) {
+    switch (answerType) {
+      case 'good':
+        wellCompletedCards++;
+        break;
+      case 'ok':
+        okCompletedCards++;
+        break;
+      case 'bad':
+        badCompletedCards++;
+        break;
     }
-    print(daysProgress.toString());
-  }
-
-  void addCompletedCard() {
     completedCards++;
     notifyListeners();
     print(completedCards);
   }
 
+  void addDaysProgress(DateTime day) {
+    //consider date; if date!=prevDate (!containsKey) => resetCompletedCards()
+    DateTime dayAtMidnightUtc = DateTime.utc(day.year, day.month, day.day);
+    String formattedDate = dayAtMidnightUtc.toString();
+    if (daysProgress.containsKey(formattedDate)) {
+      cardsStatCount[formattedDate] = [completedCards, wellCompletedCards, okCompletedCards, badCompletedCards]; //updates the same date
+      if (completedCards >= sliderValue) {
+        daysProgress[formattedDate] = Colors.green;
+        notifyListeners();
+      } else {
+        daysProgress[formattedDate] = Colors.yellow;
+        notifyListeners();
+      }
+    } else {
+      resetCompletedCards();
+      // fill missing dates
+      cardsStatCount[formattedDate] = [completedCards, wellCompletedCards, okCompletedCards, badCompletedCards];
+      if (completedCards >= sliderValue) {
+        daysProgress[formattedDate] = Colors.green;
+        notifyListeners();
+      } else {
+        daysProgress[formattedDate] = Colors.yellow;
+        notifyListeners();
+      }
+    }
+  }
+
   void resetCompletedCards() {
+    wellCompletedCards = 0;
+    okCompletedCards = 0;
+    badCompletedCards = 0;
     completedCards = 0;
     notifyListeners();
   }
 
+  /*
+  void fillMissingDates(DateTime startDate, DateTime endDate) {
+    for (int i = 0; i <= endDate.difference(startDate).inDays; i++) {
+      DateTime currentDay = DateTime.utc(startDate.year, startDate.month, startDate.day).add(Duration(days: i));
+      String formattedDate = currentDay.toString();
+
+      if (!cardsStatCount.containsKey(formattedDate)) {
+        cardsStatCount[formattedDate] = [0.0, 0.0, 0.0, 0.0];
+      }
+    }
+  }
+  */
 // DB connection ////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////// private ////////////////////////////////////////////////////////////////////////////////////////////////////
 

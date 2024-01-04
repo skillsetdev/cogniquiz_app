@@ -3,11 +3,11 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flashcards/app_data.dart';
+import 'package:flashcards/pages/bar_graph.dart';
 import 'package:flashcards/pages/cardstack_page.dart';
 import 'package:flashcards/pages/community_page.dart';
 import 'package:flashcards/pages/stat_graph.dart';
 import 'package:flutter/material.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -57,13 +57,13 @@ class _HomePageState extends State<HomePage> {
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => StatGraph()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => BarChartSample2()));
                 },
                 child: Container(
                   //current streak
                   //completed cards 12/100
                   margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
-                  height: screenHeight * 0.2,
+                  height: screenHeight * 0.3,
                   decoration: BoxDecoration(
                       border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
                       color: !isDarkMode(context)
@@ -71,6 +71,27 @@ class _HomePageState extends State<HomePage> {
                           //Color.fromARGB(255, 100, 109, 227)
                           : Color.fromARGB(255, 72, 80, 197),
                       borderRadius: BorderRadius.circular(12)),
+                  child: BarChartSample2(),
+                ),
+              ),
+              SizedBox(
+                height: screenHeight * 0.05,
+              ),
+              GestureDetector(
+                onTap: () {},
+                child: Container(
+                  //current streak
+                  //completed cards 12/100
+                  margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+                  height: screenHeight * 0.3,
+                  decoration: BoxDecoration(
+                      border: Border.all(color: isDarkMode(context) ? Colors.white24 : Colors.black54, width: 1),
+                      color: !isDarkMode(context)
+                          ? Color.fromARGB(255, 128, 141, 254)
+                          //Color.fromARGB(255, 100, 109, 227)
+                          : Color.fromARGB(255, 72, 80, 197),
+                      borderRadius: BorderRadius.circular(12)),
+                  child: StatGraph(),
                 ),
               ),
               SizedBox(

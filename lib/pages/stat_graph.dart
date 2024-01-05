@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flashcards/app_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +25,9 @@ class _StatGraphState extends State<StatGraph> {
       scrollDirection: Axis.horizontal,
       itemCount: appData.cardsStatCount.length,
       itemBuilder: (context, index) {
+        List<String> keys = appData.cardsStatCount.keys.toList();
+        String key = keys[index];
+        List<double> value = appData.cardsStatCount[key] ?? [];
         if (appData.cardsStatCount.length != 0) {
           return Padding(
               padding: const EdgeInsets.all(16),
@@ -31,7 +36,7 @@ class _StatGraphState extends State<StatGraph> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Container(
-                    height: 200,
+                    height: value[1] * 10,
                     width: 10,
                     decoration: BoxDecoration(
                       color: Colors.green,
@@ -42,11 +47,18 @@ class _StatGraphState extends State<StatGraph> {
                     width: 5,
                   ),
                   Container(
-                    height: 150,
+                    height: (value[2] + value[3]) * 10,
                     width: 10,
                     decoration: BoxDecoration(
                       color: Colors.red,
                       borderRadius: BorderRadius.circular(100),
+                      gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, stops: [
+                        0.3,
+                        0.6
+                      ], colors: [
+                        Colors.red,
+                        Colors.yellow,
+                      ]),
                     ),
                   ),
                 ],

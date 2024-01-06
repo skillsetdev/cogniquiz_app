@@ -74,7 +74,7 @@ class _NavPageState extends State<NavPage> {
                   tabBorder: Border.all(color: Colors.white54, width: 1.2),
                   padding: EdgeInsets.all(16),
                   tabMargin: EdgeInsets.only(bottom: 5),
-                  curve: Curves.easeOutExpo,
+                  curve: Curves.linear, //easeOutExpo
                   tabs: [
                     GButton(
                       icon: Icons.home,
